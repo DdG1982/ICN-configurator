@@ -96,7 +96,8 @@ def panden_3dbag(x, y, r):
         if not nxt or len(uit) > 500:
             break
         d = get(nxt)
-        uit += [(f, tr) for f in d['features']]
+        tr_pagina = d['metadata']['transform']  # elke pagina heeft een eigen transform
+        uit += [(f, tr_pagina) for f in d['features']]
     return uit
 
 

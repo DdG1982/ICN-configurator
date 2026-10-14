@@ -170,7 +170,7 @@ export function maakScene(o: SceneOpties): SceneApi {
   for (const [i, b] of (model.bomen ?? []).entries()) {
     // Kroon als twee overlappende bollen; korte, dunne stam. Kleur varieert licht per boom.
     const kleur = new THREE.Color().setHSL(0.27 + ((i * 37) % 10) / 300, 0.32, 0.24 + ((i * 53) % 10) / 160);
-    const mat = new THREE.MeshStandardMaterial({ color: kleur, roughness: 1 });
+    const mat = new THREE.MeshStandardMaterial({ color: kleur, roughness: 1, transparent: true, opacity: 1 });
     const r = Math.max(1.2, b.r * 1.1);
     const top = Math.max(r * 1.4, b.h);
     for (const [dx, dy, dz, sc] of [[0, 0, 0, 1], [r * 0.35, -r * 0.25, -r * 0.2, 0.8]] as const) {
@@ -261,8 +261,24 @@ export function maakScene(o: SceneOpties): SceneApi {
   const beste = [...(model.dakvlakken ?? [])].filter((v) => v.geschikt && !v.plat).sort((a, b) => b.kwhPerKwp * b.opp - a.kwhPerKwp * a.opp)[0];
   const kijk = beste ? new THREE.Vector3(beste.normaal[0], 0, beste.normaal[2]) : new THREE.Vector3(0.3, 0, 0.7);
   if (kijk.lengthSq() < 0.01) kijk.set(0.3, 0, 0.7);
-  kijk.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.35);
-  const eind = new THREE.Vector3(kijk.x * 0.78, 0.62, kijk.z * 0.78).normalize().multiplyScalar(afstand);
+  kijk.normalize();
+  // Kies de kijkhoek met de minste boomkronen tussen camera en dak.
+  const doelPunt = new THREE.Vector3(0, hoogte * 0.45, 0);
+  const kandidaat = (hoek: number) => {
+    const k = kijk.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), hoek);
+    return new THREE.Vector3(k.x * 0.78, 0.62, k.z * 0.78).normalize().multiplyScalar(afstand);
+  };
+  const blokkades = (pos: THREE.Vector3) => {
+    const r = new THREE.Ray(pos, doelPunt.clone().sub(pos).normalize());
+    const lengte = pos.distanceTo(doelPunt);
+    return (model.bomen ?? []).filter((b) => {
+      const c = new THREE.Vector3(b.x, Math.max(b.r, b.h - b.r), b.z);
+      const t = r.closestPointToPoint(c, new THREE.Vector3()).distanceTo(pos);
+      return t < lengte && r.distanceSqToPoint(c) < (b.r * 1.1) ** 2;
+    }).length;
+  };
+  const hoeken = [0.35, -0.35, 0, 0.7, -0.7, 1.05, -1.05];
+  const eind = hoeken.map(kandidaat).reduce((best, pos) => (blokkades(pos) < blokkades(best) ? pos : best), kandidaat(hoeken[0]));
   const start = new THREE.Vector3(-60, 1300, 700);
   camera.position.copy(o.sober ? eind : start);
   camera.lookAt(controls.target);
@@ -307,6 +323,8 @@ export function maakScene(o: SceneOpties): SceneApi {
   let laatste = performance.now();
   let actief = true;
   let tijd = 0;
+  const zichtlijn = new THREE.Ray();
+  const tmpV = new THREE.Vector3();
   function frame(nu: number) {
     if (!actief) return;
     const dt = Math.min(0.05, (nu - laatste) / 1000); laatste = nu; tijd += dt;
@@ -329,6 +347,17 @@ export function maakScene(o: SceneOpties): SceneApi {
       lm.opacity = (1 - p.doel) * (controls.enabled ? 0.6 : 0);
     }
     celMat.opacity += (warmteDoel - celMat.opacity) * Math.min(1, dt * 6);
+    // Bomen tussen camera en dak worden doorzichtig, zodat het dak altijd zichtbaar blijft.
+    const doelNu = controls.enabled ? controls.target : doelPunt;
+    zichtlijn.set(camera.position, doelNu.clone().sub(camera.position).normalize());
+    const lengte = camera.position.distanceTo(doelNu);
+    for (const k of bomenObj) {
+      const t = zichtlijn.closestPointToPoint(k.position, tmpV).distanceTo(camera.position);
+      const inWeg = t < lengte && zichtlijn.distanceSqToPoint(k.position) < (k.scale.x * 1.3) ** 2;
+      const m = k.material as THREE.MeshStandardMaterial;
+      m.opacity += ((inWeg ? 0.18 : 1) - m.opacity) * Math.min(1, dt * 8);
+      m.depthWrite = m.opacity > 0.9;
+    }
     warmte.visible = celMat.opacity > 0.01;
     if (contour) (contour.material as THREE.LineBasicMaterial).color.setHSL(0.36, 0.55, 0.42 + 0.15 * Math.sin(tijd * 3));
     renderer.render(scene, camera);

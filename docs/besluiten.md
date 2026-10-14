@@ -56,3 +56,14 @@ Er staan 15 rijen, omdat Danny 10 adressen leverde en Claude 5 openbare of zakel
 
 - **Buiten werkgebied:** adressen buiten Groningen, Drenthe, Friesland, Overijssel en Flevoland krijgen in de interface een nette melding "buiten werkgebied ICN". Het resultaat blijft zichtbaar.
 - **Adressen toevoegen kan later:** de voorbeeldadressen komen in een configbestand (`config/showcase.json`), zodat er zonder codewijziging adressen bij kunnen. Danny levert nog een adres in Overijssel en een nieuwbouwadres.
+
+## 14-10-2026: Fase 1 afgerond en richting
+
+- **Huisstijl:** de lichte ICN-richting is standaard (op verzoek van Danny). Goudenuur blijft als vergelijking beschikbaar.
+- **Google Solar:** de test is gedaan (docs/spike-google-solar.md). Advies is de demo op Tier B te bouwen. Danny liet daarop Tier B uitwerken met echte dakdata. Google blijft voorlopig uit.
+- **Paneelplaatsing:** de bezoeker plaatst niet vrij, maar kan op een raster van installeerbare plekken op elk dakvlak (met 40 cm randmarge) elke plek aan of uit zetten. Elke plek krijgt een kleur en een melding als hij minder oplevert. Standaard vullen we het beste dakvlak rij voor rij tot ongeveer het jaarverbruik. Na 2026 loont veel meer dan je verbruikt minder.
+- **Cloudflare (Danny, 14-10-2026):**
+  - Account `51ee524f8b832c49940a28578d5dab52`, Pages-project `icn-zonnepanelen-demo`, adres `https://icn-zonnepanelen-demo.pages.dev`.
+  - Het token (alleen Pages en Workers, geldig t/m 31-12-2026) staat als network secret in de Claude-omgeving, niet in de repo.
+  - De toegangscode staat als Pages-secret `TOEGANGSCODE`. Danny kent de code; hij staat niet in de repo.
+- **Live zoeken op elk adres:** komt later via een Cloudflare Worker. Daarvoor moet het rekenwerk (schaduw, bomen) eerst naar de browser van de bezoeker of naar een betaald Workers-plan. Tot die tijd werkt de demo met de 14 vooraf berekende voorbeeldadressen.

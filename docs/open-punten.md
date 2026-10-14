@@ -17,3 +17,7 @@
   - Zuidveldigerweg 1 heeft ook een 1A.
   - Wethouder Deodatusplantsoen 27X heet in de BAG "27X-27".
   - De andere 13 adressen bestaan zoals opgegeven.
+- **Gevonden en opgelost (14-10-2026): 3DBAG-transform per pagina.** 3DBAG levert resultaten in pagina's met elk een eigen coördinatentransform. De pijplijn en de spike gebruikten die van de eerste pagina, waardoor gebouwen van latere pagina's ongeveer 10 m verschoven. Beide zijn hersteld en opnieuw gedraaid. De conclusies van de 3DBAG-spike (helling, oppervlak, juist pand via BAG) blijven gelijk.
+- **Bomen uit AHN:** AHN-hoogtes min maaiveld, hoger dan 2,5 m en buiten gebouwen, worden geclusterd tot bomen. Kleine bomen en struiken worden soms gemist, en bomenrijen worden opgeknipt in bomen van 3 m straal. De opnamedatum van AHN is niet gecontroleerd.
+- **Bestaande panelen en riet** ziet de pijplijn niet. Daarom stellen we de bezoeker twee vragen. Op de luchtfoto zijn bestaande panelen vaak wel te zien (bijvoorbeeld Eelde en Noordhoek).
+- **Live adressen:** nog niet; zie besluiten.

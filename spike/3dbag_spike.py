@@ -81,7 +81,7 @@ def panden_rond(x, y, r):
         if not nxt or len(uit) > 400:
             break
         d = get(nxt)
-        uit += [(f, tr) for f in d['features']]
+        uit += [(f, d['metadata']['transform']) for f in d['features']]  # transform per pagina
     return uit
 
 

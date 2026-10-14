@@ -4,10 +4,15 @@ import { minderDanBeste, standaardIndeling } from './indeling';
 const plek = (id: string, kwh: number, actief = true) => ({ id, kwh, actief });
 
 describe('standaardindeling', () => {
-  it('kiest de beste plekken tot het verbruik gedekt is', () => {
-    const p = [plek('a', 300), plek('b', 400), plek('c', 350), plek('d', 380), plek('e', 390), plek('f', 200)];
-    const s = standaardIndeling(p, 1100, 1, 1);
-    expect([...s]).toEqual(['b', 'e', 'd']);
+  it('vult eerst het beste dakvlak, rij voor rij, tot het verbruik gedekt is', () => {
+    const p = [
+      { id: 'n1', kwh: 250, actief: true, vlak: 'noord', rij: 0 },
+      { id: 'z1', kwh: 380, actief: true, vlak: 'zuid', rij: 0 },
+      { id: 'z2', kwh: 400, actief: true, vlak: 'zuid', rij: 1 },
+      { id: 'z0', kwh: 390, actief: true, vlak: 'zuid', rij: 0 },
+      { id: 'z3', kwh: 400, actief: true, vlak: 'zuid', rij: 2 },
+    ];
+    expect([...standaardIndeling(p, 1100, 1, 1)]).toEqual(['z1', 'z0', 'z2']);
   });
   it('neemt alleen kandidaten', () => {
     const s = standaardIndeling([plek('a', 500, false), plek('b', 100)], 1000, 1, 1);
