@@ -30,9 +30,33 @@ function pvgisLokaal(): Plugin {
   };
 }
 
+/**
+ * Lokaal testen: /api/lead stuurt niets door, maar toont de lead in de terminal. Zo kan het formulier
+ * lokaal worden getest zonder echte ontvanger. Met LEAD_LOKAAL_FOUT=1 faalt hij, om de wachtrij te testen.
+ */
+function leadLokaal(): Plugin {
+  const handel = (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    if (!req.url?.startsWith('/api/lead') || req.method !== 'POST') return next();
+    let body = '';
+    req.on('data', (d) => { body += d; });
+    req.on('end', () => {
+      const fout = process.env.LEAD_LOKAAL_FOUT === '1';
+      console.log(`[lead lokaal, niet doorgestuurd${fout ? ', fout gesimuleerd' : ''}]`, body);
+      res.statusCode = fout ? 502 : 202;
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify(fout ? { fout: 'gesimuleerd' } : { ok: true }));
+    });
+  };
+  return {
+    name: 'lead-lokaal',
+    configureServer: (s) => { s.middlewares.use(handel); },
+    configurePreviewServer: (s) => { s.middlewares.use(handel); },
+  };
+}
+
 export default defineConfig({
   base: './',
-  plugins: [pvgisLokaal()],
+  plugins: [pvgisLokaal(), leadLokaal()],
   build: { target: 'es2020', chunkSizeWarningLimit: 800 },
   worker: { format: 'es' },
 });
