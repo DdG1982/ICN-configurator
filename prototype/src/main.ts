@@ -11,12 +11,13 @@ import pricing from '../config/pricing.json';
 import type { DakModel, IndexItem, Plek } from './core/dak-model';
 import { minderDanBeste, standaardIndeling } from './calc/indeling';
 import {
-  besparingBand, geschatVerbruik, investeringBand, opbrengstBand, rondAf, terugverdientijd, vermogenKwp,
+  besparingBand, geschatVerbruik, investeringBand, jarenTotTerug, opbrengstBand, rondAf, terugverdientijd, vermogenKwp,
   type Band, type MarktAannames, type Scenario,
 } from './calc/opbrengst';
 import { maakEnergiestroom } from './ui/energiestroom';
 import type { SceneApi, Thema } from './ui/scene3d';
 import { suggesties, type Suggestie } from './live/bronnen';
+import { maakWachtrij, naarApi, nieuwLeadId, utmUit, type Lead } from './core/lead';
 
 /* ---------- Hulpjes ---------- */
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
@@ -192,7 +193,16 @@ function aannames(): MarktAannames {
   const v = (x: number) => ({ low: x, high: x });
   return { ...market, stroomprijsPerKwh: v(staat.eigen.prijs), terugleververgoedingPerKwh: v(staat.eigen.vergoeding), terugleverkostenPerKwh: v(staat.eigen.kosten) };
 }
-const verbruik = () => staat.verbruikEigen ?? geschatVerbruik(staat.personen);
+const schatting = () => geschatVerbruik(staat.personen, market.verbruik, { type: model?.woningtype, bouwjaar: model?.pand?.bouwjaar });
+const verbruik = () => staat.verbruikEigen ?? schatting().kwh;
+const WONINGTYPE_TEKST = { vrijstaand: 'vrijstaand', hoekwoning: 'hoekwoning of twee-onder-een-kap', tussenwoning: 'tussenwoning', appartement: 'appartement' } as const;
+function schattingUitleg() {
+  const s = schatting();
+  const delen = [`${staat.personen >= 5 ? '5 of meer' : staat.personen} ${staat.personen === 1 ? 'persoon' : 'personen'}`];
+  if (model?.woningtype) delen.push(WONINGTYPE_TEKST[model.woningtype]);
+  if (s.extraGasloos) delen.push(`plus ca. ${nl(s.extraGasloos)} kWh voor een warmtepomp (bouwjaar ${model?.pand?.bouwjaar}, waarschijnlijk zonder gas)`);
+  return `geschat op ${nl(s.kwh)} kWh: ${delen.join(', ')}. Pas aan als je het weet.`;
+}
 
 function bereken() {
   const gekozen = plekken.filter((p) => actief.has(p.id));
@@ -202,7 +212,7 @@ function bereken() {
   const zc = staat.batterij ? market.zelfconsumptie.metBatterij : market.zelfconsumptie.zonderBatterij;
   const besparing = besparingBand(opbrengst, verbruik(), zc, aannames(), staat.scenario);
   const investering = investeringBand(gekozen.length * pricing.paneelWp, pricing.prijsPerWp);
-  return { aantal: gekozen.length, kwp, kwh, opbrengst, besparing, investering, terug: terugverdientijd(investering, besparing) };
+  return { aantal: gekozen.length, kwp, kwh, opbrengst, besparing, investering, terug: terugverdientijd(investering, besparing, market) };
 }
 
 function toonResultaat(aantalZichtbaar?: number) {
@@ -217,14 +227,15 @@ function toonResultaat(aantalZichtbaar?: number) {
   $('#besparing').textContent = band({ low: rondAf(r.besparing.low, 10), high: rondAf(r.besparing.high, 10) }, euro);
   $('#investering').textContent = band({ low: rondAf(r.investering.low, 100), high: rondAf(r.investering.high, 100) }, euro);
   const t = r.terug;
-  const centraal = (r.investering.low + r.investering.high) / (r.besparing.low + r.besparing.high);
+  const centraal = jarenTotTerug((r.investering.low + r.investering.high) / 2, (r.besparing.low + r.besparing.high) / 2, market);
   const jr = (x: number) => nl(x, x % 1 ? 1 : 0);
   $('#terugverdien').innerHTML = !isFinite(t.high) || centraal <= 0 ? 'niet terug te verdienen'
     : `ca. ${jr(rondAf(centraal, 0.5))} jaar<small>${Math.abs(t.high - t.low) < 0.01 ? 'met jouw aannames' : `bandbreedte ${jr(rondAf(t.low, 0.5))}–${jr(rondAf(t.high, 0.5))} jaar`}</small>`;
   // Geen panelen (monument, appartement, alles weggetikt): dan geen "0 kWh" maar het advies.
   $('#cta-balk-getal').textContent = r.aantal ? nl(midden) : 'Advies op maat';
   $('#cta-balk-eenheid').textContent = r.aantal ? 'kWh per jaar' : 'van een adviseur';
-  $<HTMLInputElement>('#a-verbruik').placeholder = nl(geschatVerbruik(staat.personen));
+  $<HTMLInputElement>('#a-verbruik').placeholder = nl(schatting().kwh);
+  $('#a-verbruik-basis').textContent = schattingUitleg();
 }
 
 /* ---------- Zon, schaduw en live vermogen ---------- */
@@ -298,6 +309,10 @@ function vulAannames() {
   aIn('#a-kosten').value = String(staat.eigen?.kosten ?? ((market.terugleverkostenPerKwh.low + market.terugleverkostenPerKwh.high) / 2).toFixed(2));
 }
 vulAannames();
+$('#a-degradatie').textContent = `${nl(market.degradatiePerJaar * 100, 1)}%`;
+$('#a-prijsstijging').textContent = market.prijsstijgingPerJaar
+  ? ` en ${nl(market.prijsstijgingPerJaar * 100, 1)}% ${market.prijsstijgingPerJaar > 0 ? 'hogere' : 'lagere'} stroomprijs per jaar`
+  : ' en een gelijkblijvende stroomprijs';
 aIn('#a-personen').addEventListener('input', (e) => { staat.personen = Number((e.target as HTMLInputElement).value) || 3; toonResultaat(); updateZon(); });
 aIn('#a-verbruik').addEventListener('input', (e) => { const v = Number((e.target as HTMLInputElement).value); staat.verbruikEigen = v >= 500 ? v : null; toonResultaat(); updateZon(); });
 $<HTMLSelectElement>('#a-batterij').addEventListener('change', (e) => { staat.batterij = (e.target as HTMLSelectElement).value === 'ja'; toonResultaat(); });
@@ -310,6 +325,36 @@ for (const id of ['#a-prijs', '#a-vergoeding', '#a-kosten']) {
 $('#aannames-reset').addEventListener('click', () => { staat.eigen = null; staat.verbruikEigen = null; aIn('#a-verbruik').value = ''; vulAannames(); toonResultaat(); });
 
 /* ---------- Leadformulier ---------- */
+/** Versie van de toestemmingstekst; ophogen zodra ICN de tekst wijzigt of goedkeurt. */
+const TOESTEMMING_VERSIE = 'concept-2026-10-14';
+const wachtrij = maakWachtrij(opslag, naarApi(new URL('/api/lead', location.href).href));
+// Leads die bij een eerder bezoek niet aankwamen, opnieuw proberen.
+void wachtrij.verwerk();
+addEventListener('online', () => { void wachtrij.verwerk(); });
+
+function maakLead(m: 'schouw' | 'mail', contact: Lead['contact']): Lead {
+  const r = bereken();
+  const nu = new Date().toISOString();
+  return {
+    id: nieuwLeadId(),
+    modus: m,
+    aangemaakt: nu,
+    adres: model ? { label: model.adres.label, bagPandId: model.pand?.id ?? null, lat: model.adres.lat, lon: model.adres.lon, provincie: model.adres.provincie, buitenWerkgebied: model.buitenWerkgebied } : null,
+    woning: model ? { status: model.status, woningtype: model.woningtype ?? null, bouwjaar: model.pand?.bouwjaar ?? null } : null,
+    configuratie: { panelen: r.aantal, kwp: Math.round(r.kwp * 100) / 100, plekken: [...actief] },
+    indicatie: {
+      kwhPerJaar: Math.round(r.kwh), opbrengstBand: r.opbrengst, besparingPerJaar: r.besparing, investering: r.investering,
+      terugverdientijdJaren: r.terug, scenario: staat.scenario, batterij: staat.batterij,
+      verbruikKwh: verbruik(), verbruikGeschat: staat.verbruikEigen === null, personen: staat.personen,
+      aannames: JSON.parse(JSON.stringify({ ...aannames(), paneelWp: pricing.paneelWp, prijsPerWp: pricing.prijsPerWp }), (k, v) => (k.startsWith('_') ? undefined : v)),
+      tekst: 'Indicatie, definitief na schouw. Prijzen zijn placeholders.',
+    },
+    contact,
+    toestemming: { gegeven: true, tijdstip: nu, versie: TOESTEMMING_VERSIE, tekst: ($('label.toestemming span').textContent ?? '').trim() },
+    herkomst: { pagina: location.href, verwijzer: document.referrer, utm: utmUit(location.search) },
+  };
+}
+
 let modus: 'schouw' | 'mail' = 'schouw';
 let formulierGemeten = false;
 $('#lead-form').addEventListener('focusin', () => { if (!formulierGemeten) { formulierGemeten = true; meet('icn_formulier_geopend'); } });
@@ -321,7 +366,7 @@ $('#mail-knop').addEventListener('click', (e) => {
   (e.currentTarget as HTMLElement).textContent = mail ? 'Toch liever een gratis schouw plannen' : 'Liever eerst de indicatie per e-mail';
   $('.cta-kaart h2').textContent = mail ? 'Ontvang je indicatie per e-mail' : 'Plan je gratis schouw';
 });
-$('#lead-form').addEventListener('submit', (e) => {
+$('#lead-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const fout: string[] = [];
   const naam = aIn('#l-naam').value.trim(), email = aIn('#l-email').value.trim(), tel = aIn('#l-tel').value.replace(/[^\d+]/g, '');
@@ -332,7 +377,17 @@ $('#lead-form').addEventListener('submit', (e) => {
   const el = $('#lead-fout');
   if (fout.length) { el.textContent = `Vul nog in: ${fout.join(', ')}.`; el.hidden = false; return; }
   el.hidden = true;
-  meet(modus === 'schouw' ? 'icn_lead_verstuurd' : 'icn_indicatie_gemaild');
+  const knop = $<HTMLButtonElement>('#lead-form button[type=submit]');
+  knop.disabled = true;
+  const m = modus;
+  const aangekomen = await wachtrij.plaats(maakLead(m, m === 'schouw' ? { naam, email, telefoon: tel } : { email }));
+  knop.disabled = false;
+  meet(aangekomen ? (m === 'schouw' ? 'icn_lead_verstuurd' : 'icn_indicatie_gemaild') : 'icn_lead_in_wachtrij');
+  $('#bedankt-tekst').textContent = !aangekomen
+    ? 'We konden je aanvraag nog niet versturen. Hij is bewaard op dit apparaat en we proberen het automatisch opnieuw, ook als je deze pagina later weer opent.'
+    : m === 'schouw' ? 'Je aanvraag is verstuurd. ICN neemt binnen 24 uur contact met je op om de schouw te plannen.'
+      : 'Je aanvraag is verstuurd. ICN mailt je de indicatie.';
+  $('.bedankt-titel').textContent = aangekomen ? 'Dank je wel!' : 'Bijna gelukt';
   $('#lead-form').hidden = true;
   const b = $('#bedankt'); b.hidden = false; b.focus();
 });

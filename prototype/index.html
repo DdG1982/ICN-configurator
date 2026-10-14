@@ -231,7 +231,7 @@
               <input id="a-personen" type="number" min="1" max="8" value="3" />
             </div>
             <div class="aanname-rij">
-              <label for="a-verbruik">Stroomverbruik per jaar (kWh) <small>geschat, pas aan als je het weet</small></label>
+              <label for="a-verbruik">Stroomverbruik per jaar (kWh) <small id="a-verbruik-basis">geschat, pas aan als je het weet</small></label>
               <input id="a-verbruik" type="number" min="500" max="20000" step="100" />
             </div>
             <div class="aanname-rij">
@@ -250,7 +250,7 @@
               <label for="a-kosten">Terugleverkosten per kWh (€)</label>
               <input id="a-kosten" type="number" min="0" max="0.5" step="0.01" />
             </div>
-            <p class="klein">Je waarden vervangen de bandbreedte door één scenario. Prijzen zijn placeholders (€ 0,80 – 1,50 per Wp, marktgemiddelde), geen offerte van ICN.</p>
+            <p class="klein">Je waarden vervangen de bandbreedte door één scenario. Prijzen zijn placeholders (€ 0,80 – 1,50 per Wp, marktgemiddelde), geen offerte van ICN. De terugverdientijd rekent met <span id="a-degradatie">0,5%</span> minder opbrengst per jaar door veroudering van de panelen<span id="a-prijsstijging"></span>.</p>
             <button type="button" class="link-knop" id="aannames-reset">Terug naar de bandbreedte</button>
           </details>
         </div>
@@ -269,7 +269,7 @@
           </form>
           <div class="bedankt" id="bedankt" hidden tabindex="-1">
             <p class="bedankt-titel">Dank je wel!</p>
-            <p>Dit is een ontwerpvoorbeeld: er is niets verstuurd. In de echte versie neemt ICN binnen 24 uur contact met je op.</p>
+            <p id="bedankt-tekst"></p>
           </div>
         </div>
 

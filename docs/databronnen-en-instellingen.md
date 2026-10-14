@@ -1,6 +1,6 @@
 # Databronnen, vaste waarden en instellingen
 
-Stand van de code op `main` (commit `b443c62`, 14-10-2026). Dit document beschrijft wat de configurator **nu echt doet**, gelezen uit de code. Niets is opnieuw doorgerekend of live getest bij het schrijven.
+Stand van de code op `main` (commit `b443c62`, 14-10-2026), bijgewerkt na de fixes van 15-10-2026 (leads versturen, verbruik uit woningtype en bouwjaar, degradatie in de terugverdientijd). Dit document beschrijft wat de configurator **nu echt doet**, gelezen uit de code. Niets is opnieuw doorgerekend of live getest bij het schrijven.
 
 Legenda bij "Wie beslist": **ICN** = bedrijfskeuze of prijs van ICN, **Danny** = keuze in het project, **Techniek** = alleen aanpassen met een reden.
 
@@ -12,7 +12,7 @@ Legenda bij "Wie beslist": **ICN** = bedrijfskeuze of prijs van ICN, **Danny** =
 
 | Bron | Beheerder | Wat de configurator eruit haalt | Effect op de uitkomst | Code |
 |---|---|---|---|---|
-| **3DBAG** (LoD2.2, CityJSON) | TU Delft / 3DGI, CC BY 4.0 | Per dakvlak de helling, windrichting en het oppervlak. Ook de buurpanden binnen 70 m, het maaiveld en kwaliteitsgegevens (`b3_kwaliteitsindicator`, `b3_pw_datum`, `b3_dak_type`) | Bepaalt welke dakvlakken meetellen, de invoer voor PVGIS en waar panelen passen | `prototype/src/live/bronnen.ts`, `bouw.ts` |
+| **3DBAG** (LoD2.2, CityJSON) | TU Delft / 3DGI, CC BY 4.0 | Per dakvlak de helling, windrichting en het oppervlak. Ook de buurpanden binnen 70 m, het maaiveld en kwaliteitsgegevens (`b3_kwaliteitsindicator`, `b3_pw_datum`, `b3_dak_type`). Uit de aangrenzende buren volgt het woningtype (vrijstaand, hoekwoning, tussenwoning) | Bepaalt welke dakvlakken meetellen, de invoer voor PVGIS en waar panelen passen | `prototype/src/live/bronnen.ts`, `bouw.ts` |
 | **PVGIS 5.3** | Europese Commissie (JRC) | De jaaropbrengst in kWh per kWp voor een plek, helling en windrichting (`E_y`) | **De basis van het kWh-getal** | `prototype/functions/api/pvgis.ts` (proxy met 30 dagen cache), `bronnen.ts` |
 | **AHN** (DSM en DTM, 0,5 m) | Rijkswaterstaat, via PDOK | Een hoogtekaart binnen 80 m, met bomen, buren en schoorstenen zoals gemeten. Bomen zijn alles wat hoger is dan 2,5 m boven maaiveld en geen gebouw is | Een schaduwfactor per dakcel en per paneelplek | `prototype/src/live/hoogte.ts` |
 
@@ -23,7 +23,7 @@ Legenda bij "Wie beslist": **ICN** = bedrijfskeuze of prijs van ICN, **Danny** =
 | Bron | Beheerder | Waarvoor |
 |---|---|---|
 | **PDOK Locatieserver** | Kadaster / PDOK | Adressuggesties, coördinaten en provincie (voor de check of het adres in het werkgebied ligt) |
-| **BAG** (WFS) | Kadaster, via PDOK | Pand-id, voetafdruk, bouwjaar, gebruiksdoel en aantal verblijfsobjecten. Daaruit volgt de status: woning, appartement, zakelijk of bijgebouw |
+| **BAG** (WFS) | Kadaster, via PDOK | Pand-id, voetafdruk, bouwjaar, gebruiksdoel en aantal verblijfsobjecten. Daaruit volgt de status: woning, appartement, zakelijk of bijgebouw. Het bouwjaar stuurt ook de verbruiksschatting (nieuwbouw zonder gas) |
 | **Rijksmonumentenregister** (WFS) | RCE, via PDOK | Is het pand een rijksmonument? Zo ja, dan zet de configurator geen panelen neer |
 | **PDOK luchtfoto** (WMS, `Actueel_orthoHR`) | Het Waterschapshuis, via PDOK, CC BY 4.0 | Alleen het beeld (fly-in en ondergrond). Geen invloed op de berekening |
 
@@ -61,8 +61,9 @@ Legenda bij "Wie beslist": **ICN** = bedrijfskeuze of prijs van ICN, **Danny** =
 | `zelfconsumptie.zonderBatterij` | 30% | Deel van de opbrengst dat direct in huis wordt gebruikt | **ICN** (ervaringscijfer?) |
 | `zelfconsumptie.metBatterij` | 60% | Idem, met thuisbatterij | **ICN** |
 | `opbrengstMarge` | ±8% | De bandbreedte rond de kWh-schatting. Een gekozen getal, uit geen bron afgeleid | **Danny / Techniek** |
-| `prijsstijgingPerJaar` | 0% | ⚠️ **Wordt nergens in de code gebruikt** | Techniek: inbouwen of weghalen |
-| `degradatiePerJaar` | 0,5% | ⚠️ **Wordt nergens in de code gebruikt.** De terugverdientijd rekent dus zonder veroudering van de panelen | Techniek: inbouwen of weghalen |
+| `prijsstijgingPerJaar` | 0% | Verandering van de stroomprijs per jaar in de terugverdientijd. 0% = gelijkblijvend, de voorzichtige keuze | **Danny / ICN** |
+| `degradatiePerJaar` | 0,5% | Minder opbrengst per jaar door veroudering van de panelen, in de terugverdientijd | **ICN** (wat garandeert de paneelfabrikant?) |
+| `verbruik.*` | zie 2d | Verbruiksschatting | **ICN / Danny** |
 
 ### 2b. Werkgebied en voorbeelden: `prototype/config/showcase.json`
 
@@ -93,12 +94,15 @@ Deze staan **niet** in een configbestand maar in de code. Aanpassen kan alleen v
 
 | Waarde | Nu | Waar | Opmerking |
 |---|---|---|---|
-| Geschat jaarverbruik per huishoudgrootte | 1 persoon 1.800 · 2 personen 2.700 · 3 personen 3.300 · 4 personen 3.900 · 5+ personen 4.400 kWh | `prototype/src/calc/opbrengst.ts` (`geschatVerbruik`) | Bron van de getallen staat niet in de code. **ICN / Danny:** bevestigen of vervangen |
+| Geschat jaarverbruik per huishoudgrootte (`verbruik.perPersonen`) | 1 persoon 1.800 · 2 personen 2.700 · 3 personen 3.300 · 4 personen 3.900 · 5+ personen 4.400 kWh | `prototype/config/market.json` | Bron van de getallen onbekend. **ICN / Danny:** bevestigen of vervangen |
+| Factor per woningtype (`verbruik.woningtypeFactor`) | appartement 0,88 · tussenwoning 1,00 · hoekwoning 1,12 · vrijstaand 1,58 | `market.json` | Verhouding uit ANWB-cijfers voor 4 personen (bouwjaar 1992–2006), via een zoekmachine gelezen, de pagina zelf niet. Hoekwoning krijgt de factor van twee-onder-een-kap. **ICN:** bevestigen |
+| Nieuwbouw zonder gas (`verbruik.gasloosVanafBouwjaar`, `extraKwhGasloos`) | bouwjaar 2020 of later: + 2.500 kWh voor een warmtepomp | `market.json` | Aanname zonder bron. Gasloos bouwen is verplicht voor vergunningen vanaf 1 juli 2018. Oudere woningen met een warmtepomp missen we; nieuwbouw op stadswarmte krijgt ten onrechte de toeslag. De bezoeker ziet de toeslag en kan het verbruik aanpassen. **ICN:** bevestigen |
+| Woningtype bepalen | Aantal buurpanden van ≥ 30 m² binnen 0,5 m: 0 = vrijstaand, 1 = hoekwoning, 2+ = tussenwoning. Appartement uit de BAG | `prototype/src/live/bouw.ts` (`bepaalWoningtype`) | Een aangebouwde garage van de buren kan een vrijstaand huis tot hoekwoning maken. Getest op 5 adressen, 2 nagekeken op de luchtfoto |
 | Standaard huishouden | 3 personen | `prototype/src/main.ts` | |
 | Eigen verbruik invullen | Telt pas vanaf 500 kWh | `main.ts` | |
 | Verbruik over de dag | Een zelfgekozen curve met pieken rond 8:00 en 18:30 | `main.ts` (`huisVerbruikKw`) | Alleen voor de animatie "live vermogen", niet voor de besparing |
 
-⚠️ **Wijkt af van een besluit:** in `docs/besluiten.md` staat dat het verbruik wordt geschat uit woningtype, bouwjaar en huishoudgrootte. De code gebruikt **alleen de huishoudgrootte**.
+De schatting staat met uitleg in beeld bij de aannames (bijvoorbeeld "geschat op 5.200 kWh: 3 personen, vrijstaand"), zodat de bezoeker ziet waarop hij rust.
 
 ### 2e. Teksten en beloftes in beeld (`prototype/index.html`)
 
@@ -109,6 +113,7 @@ Deze staan **niet** in een configbestand maar in de code. Aanpassen kan alleen v
 | Toestemmingstekst AVG | Gemarkeerd als *(concepttekst)*. De link naar de privacyverklaring werkt nog niet (`href="#"`). **ICN** moet de tekst goedkeuren en de link geven |
 | Plek voor reviews, garanties en certificaten | Leeg, met een interne plaatshouder. **ICN** levert aan |
 | Demobalk "Ontwerpvoorbeeld … placeholders" | Moet weg of aangepast bij livegang |
+| Bedanktekst na verzenden | "ICN neemt binnen 24 uur contact met je op" (schouw) of "ICN mailt je de indicatie" (e-mail). **Let op:** de configurator mailt zelf niets; de ontvanger van de webhook moet die mail versturen |
 
 ---
 
@@ -135,7 +140,7 @@ Dit zijn modelkeuzes. ICN hoeft hier niets mee, maar ze bepalen wel de uitkomst.
 
 - **Na 2026 (standaard):** de eigen verbruikte stroom (opbrengst × zelfconsumptie, nooit meer dan het jaarverbruik) levert de stroomprijs op. Teruggeleverde stroom levert vergoeding min terugleverkosten op. Dat kan negatief uitvallen.
 - **Salderen tot eind 2026:** opbrengst tot het jaarverbruik tegen de stroomprijs, het overschot tegen de vergoeding. Terugleverkosten tellen in dit scenario niet mee.
-- **Terugverdientijd:** investering gedeeld door besparing in het eerste jaar. Dus **zonder** prijsstijging, **zonder** degradatie, **zonder** rente en **zonder** omvormervervanging. Het is een eenvoudige terugverdientijd, geen rendement over 25 jaar.
+- **Terugverdientijd:** de besparing wordt jaar voor jaar opgeteld tot de investering terug is, met `degradatiePerJaar` (0,5%) minder opbrengst en `prijsstijgingPerJaar` (0%) per jaar. Het laatste jaar telt naar rato. Wat na 50 jaar niet terug is, heet "niet terug te verdienen". Nog steeds **zonder** rente en **zonder** vervanging van de omvormer. Het is geen rendement over 25 jaar.
 - **Bandbreedte:** "laag" combineert lage opbrengst, lage stroomprijs, lage vergoeding en hoge terugleverkosten. "Hoog" doet het omgekeerde. Daardoor is de band breed: een bewuste keuze tegen schijnnauwkeurigheid.
 - **Afronding in beeld:** kWh op 100, euro's besparing op 10, investering op 100, terugverdientijd op een half jaar.
 - De bezoeker kan stroomprijs, vergoeding, terugleverkosten, verbruik, huishoudgrootte en batterij zelf aanpassen. Dan vervangt één scenario de bandbreedte.
@@ -146,7 +151,10 @@ Dit zijn modelkeuzes. ICN hoeft hier niets mee, maar ze bepalen wel de uitkomst.
 
 ### Wat nog niet werkt of ontbreekt
 
-1. **Leads worden nergens heen gestuurd.** Het formulier controleert de velden, meet een event en toont "bedankt", maar verstuurt niets: geen webhook, geen e-mail. De demo zegt dat eerlijk ("er is niets verstuurd"). Voor livegang nodig: een webhook met retry en een wachtrij, zoals de brief voorschrijft (sectie 9), plus een ontvanger.
+1. **Leads gaan via `/api/lead` naar een webhook** (`prototype/functions/api/lead.ts`). De browser zet elke lead eerst in een wachtrij (`localStorage`) en verstuurt pas daarna. Wat mislukt, blijft staan en gaat opnieuw bij de volgende poging, bij het terugkomen van de verbinding of bij een volgend bezoek. De lead bevat adres, BAG-pand-id, woningtype, gekozen panelen, de indicatie met alle aannames, contactgegevens, toestemming (tijdstip, versie, tekst) en UTM/herkomst. Elke lead heeft een vast `id`, zodat de ontvanger dubbele leveringen kan herkennen.
+   - **Nog te doen door Danny:** een ontvanger kiezen en in Cloudflare Pages de secret `LEAD_WEBHOOK_URL` zetten (optioneel `LEAD_WEBHOOK_TOKEN`). Zonder die secret antwoordt `/api/lead` met 503 en blijven leads in de browser van de bezoeker wachten. Een ontvanger kan bijvoorbeeld Make, Zapier, n8n of een Google Apps Script zijn die de lead naar danny@merckwaardig.com mailt (besluit leads).
+   - **Beperking:** een bezoeker die offline was en nooit terugkomt, of die geen opslag toestaat, kan een lead alsnog kwijtraken. Een volledig verliesvrije route vraagt opslag aan de serverkant (bijv. Cloudflare KV of D1); dat is nog niet gebouwd.
+   - Lokaal (`npm run dev` of `preview`) wordt de lead alleen in de terminal getoond; met `LEAD_LOKAAL_FOUT=1` simuleer je een fout.
 2. **Eén schaduwmethode, één rekenroute.** De oude Python-pijplijn rekent schaduw anders. Gebruik voor nieuwe voorbeelden alleen de TS-route, of haal de Python-versie weg om verwarring te voorkomen.
 3. **Bedrijfspanden:** de configurator herkent "zakelijk" uit de BAG. Of de aparte route met de melding "netcapaciteit eerst checken" (brief, sectie 8) volledig werkt, heb ik niet gecontroleerd.
 4. **Bestaande panelen, rieten daken, dakkapellen en dakramen** zitten niet in de data. De configurator stelt de bezoeker vragen over bestaande panelen en riet. Dakkapellen en dakramen worden niet herkend. De AHN-hoogtekaart vangt een deel van de schoorstenen op als schaduw, maar maakt er geen vrije plek van.
@@ -181,3 +189,5 @@ Dit zijn modelkeuzes. ICN hoeft hier niets mee, maar ze bepalen wel de uitkomst.
 10. Wie ontvangt de leads, in welk systeem (CRM), en wie houdt de stroomprijzen bij?
 11. Reviews, garanties en projectfoto's voor het vertrouwensblok.
 12. Werkgebied: klopt de provinciegrens, of liever een straal rond Roden?
+13. Verbruiksschatting: kloppen de getallen per huishouden, de factoren per woningtype en de toeslag van 2.500 kWh voor nieuwbouw zonder gas?
+14. Degradatie: welk jaarlijks opbrengstverlies garandeert de fabrikant van jullie paneel?
