@@ -50,7 +50,7 @@ Er staan 15 rijen, omdat Danny 10 adressen leverde en Claude 5 openbare of zakel
 - **Demo-gebruik (vraag 10):** alleen ICN en Danny, met tientallen testers. De demo krijgt een eenvoudige toegangscode, noindex en `X-Robots-Tag`. Google staat in de demo uit tot Fase 3b.
 - **Elementor (vraag 11):** er is nog geen beheerderstoegang. De embed-test in Fase 2b wacht daarop.
 - **Vertrouwen (vraag 12):** de belofte "reactie binnen 24 uur" mag in de configurator, want ICN bevestigt die. Voor reviews, garanties en certificaten maken we lege plekken, zoals de brief voorschrijft.
-- **Tech-keuzes (zelf besloten):** TypeScript, Vite met Lit voor de web component (shadow DOM), Hono voor de portable proxy, Vitest voor tests en Three.js lazy geladen. De mappen volgen het voorstel in brief §6.
+- **Tech-keuzes (zelf besloten):** TypeScript, Vite, Vitest en Three.js (lazy geladen). Het prototype (Fase 2a) gebruikt geen framework en staat in `prototype/`. In Fase 2b komt de web component (shadow DOM) en Hono voor de portable proxy. Lettertypen worden zelf gehost (Inter en Fraunces via Fontsource), dus er is geen verzoek naar Google Fonts nodig.
 
 ## 14-10-2026: aanvullingen
 

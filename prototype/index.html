@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Zonnepanelen-configurator · ontwerpvoorbeeld</title>
+  <meta name="description" content="Ontwerpvoorbeeld van de zonnepanelen-configurator voor Installatie Comfort Nederland. Vaste voorbeelddata, prijzen zijn placeholders." />
+</head>
+<body data-richting="goudenuur">
+  <div class="demo-balk" role="note">
+    <p><strong>Ontwerpvoorbeeld</strong> <span class="lang">met vaste voorbeelddata. Geen echte berekening, prijzen zijn placeholders.</span><span class="kort">· vaste data, placeholderprijzen</span></p>
+    <div class="richting-keuze" role="group" aria-label="Visuele richting">
+      <button type="button" data-richting-knop="goudenuur" aria-pressed="true">A · Goudenuur</button>
+      <button type="button" data-richting-knop="daglicht" aria-pressed="false">B · Daglicht</button>
+    </div>
+  </div>
+
+  <header class="kop">
+    <a class="merk" href="#" aria-label="Installatie Comfort Nederland, terug naar begin" data-terug>
+      <span class="merk-teken" aria-hidden="true"></span>
+      <span class="merk-naam">Installatie Comfort <span>Nederland</span></span>
+    </a>
+    <span class="kop-tag">Zonnepanelen-check</span>
+  </header>
+
+  <main>
+    <!-- 1. Start: één adresveld -->
+    <section id="start" class="start" aria-labelledby="start-titel">
+      <div class="start-tekst">
+        <p class="bovenregel">Zonnepanelen voor Groningen, Drenthe, Friesland en Overijssel</p>
+        <h1 id="start-titel">Wat levert <em>jouw</em> dak op?</h1>
+        <p class="intro">Vul je adres in. Je ziet je eigen dak in 3D, hoeveel panelen erop passen en wat ze opleveren, met de zon en schaduw van jouw plek.</p>
+
+        <form class="adres" id="adres-form" autocomplete="off" novalidate>
+          <label for="adres-veld">Je adres</label>
+          <div class="adres-rij">
+            <div class="combo">
+              <input id="adres-veld" name="adres" type="text" inputmode="search" placeholder="Straat en huisnummer, of postcode"
+                role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="adres-lijst" />
+              <ul id="adres-lijst" role="listbox" hidden></ul>
+            </div>
+            <button type="submit" class="knop knop-hoofd">Bekijk mijn dak</button>
+          </div>
+          <p class="veld-fout" id="adres-fout" role="alert" hidden></p>
+          <p class="klein">Gratis en vrijblijvend. Je hoeft alleen je adres in te vullen.</p>
+        </form>
+
+        <button type="button" class="link-knop" id="voorbeeld-knop">Of bekijk eerst een voorbeeldwoning <span aria-hidden="true">→</span></button>
+
+        <ul class="belofte">
+          <li><span class="belofte-icoon" aria-hidden="true">◷</span> Reactie binnen 24 uur</li>
+          <li><span class="belofte-icoon" aria-hidden="true">⌂</span> Vrijblijvende schouw op locatie</li>
+          <li><span class="belofte-icoon" aria-hidden="true">✓</span> Gecertificeerde installateurs</li>
+        </ul>
+      </div>
+
+      <div class="start-beeld" aria-hidden="true">
+        <svg viewBox="0 0 560 460" class="illustratie">
+          <defs>
+            <radialGradient id="gloed" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0" stop-color="var(--zon)" stop-opacity="0.9" />
+              <stop offset="0.35" stop-color="var(--zon)" stop-opacity="0.25" />
+              <stop offset="1" stop-color="var(--zon)" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="paneel-v" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="var(--paneel-1)" />
+              <stop offset="1" stop-color="var(--paneel-2)" />
+            </linearGradient>
+          </defs>
+          <path class="zonbaan" d="M40 330 Q280 -40 520 330" />
+          <g class="zonbaan-uren">
+            <circle cx="88" cy="248" r="3" /><circle cx="160" cy="160" r="3" /><circle cx="280" cy="125" r="3" /><circle cx="400" cy="160" r="3" /><circle cx="472" cy="248" r="3" />
+          </g>
+          <circle class="zon-gloed" cx="400" cy="160" r="90" fill="url(#gloed)" />
+          <circle class="zon-schijf" cx="400" cy="160" r="16" />
+          <line class="horizon" x1="0" y1="400" x2="560" y2="400" />
+          <g class="huis">
+            <path class="huis-muur" d="M150 400 V300 H410 V400 Z" />
+            <path class="huis-dak" d="M126 304 L280 196 L434 304 Z" />
+            <g class="dak-panelen">
+              <path d="M178 284 L214 259 L250 259 L214 284 Z" /><path d="M222 284 L258 259 L294 259 L258 284 Z" />
+              <path d="M266 284 L302 259 L338 259 L302 284 Z" /><path d="M310 284 L346 259 L382 259 L346 284 Z" />
+              <path d="M210 253 L246 228 L282 228 L246 253 Z" /><path d="M254 253 L290 228 L326 228 L290 253 Z" />
+              <path d="M298 253 L334 228 L370 228 L334 253 Z" />
+            </g>
+            <rect class="huis-raam" x="186" y="330" width="62" height="40" rx="2" />
+            <rect class="huis-raam" x="314" y="330" width="62" height="40" rx="2" />
+            <rect class="huis-deur" x="266" y="336" width="30" height="64" rx="2" />
+          </g>
+          <g class="straal"><line x1="384" y1="174" x2="330" y2="236" /><line x1="392" y1="182" x2="356" y2="262" /></g>
+        </svg>
+        <p class="beeld-label">Zonnebaan op 21 juni, Roden</p>
+      </div>
+    </section>
+
+    <section class="stappen" aria-label="Zo werkt het" id="stappen">
+      <ol>
+        <li><span class="stap-nr">1</span><h2>Adres in</h2><p>We zoeken je woning op in openbare kaartdata.</p></li>
+        <li><span class="stap-nr">2</span><h2>Je dak in 3D</h2><p>We meten de dakvlakken en rekenen met de zon en schaduw op jouw plek.</p></li>
+        <li><span class="stap-nr">3</span><h2>Eerlijke indicatie</h2><p>Opbrengst en besparing als bandbreedte, met alle aannames zichtbaar.</p></li>
+      </ol>
+    </section>
+
+    <!-- 2-7. De configurator -->
+    <section id="app" class="app" hidden aria-label="Jouw dak">
+      <div class="podium" id="podium">
+        <canvas id="scene" aria-label="3D-weergave van het dak met zonnepanelen. Gebruik de bediening rechts of onder voor dezelfde informatie."></canvas>
+        <div class="podium-fallback" id="fallback" hidden>
+          <p>Je apparaat toont geen 3D-beeld. Je indicatie en alle aannames staan gewoon in de kaarten.</p>
+        </div>
+        <div class="vlucht-label" id="vlucht-label" aria-live="polite"></div>
+        <button type="button" class="knop knop-glas sla-over" id="sla-over" hidden>Overslaan</button>
+        <div class="scan-status" id="scan-status" hidden aria-live="polite">
+          <span class="scan-puls" aria-hidden="true"></span>
+          <span id="scan-tekst">Dak wordt gescand…</span>
+        </div>
+        <div class="warmte-legenda" id="warmte-legenda" hidden>
+          <span>Minder zon</span><span class="schaal" aria-hidden="true"></span><span>Meeste zon</span>
+        </div>
+        <p class="podium-hint" id="podium-hint" hidden>Sleep om te draaien <span class="lang">· tik op een paneel om het weg te halen of toe te voegen</span><span class="kort">· tik op een paneel</span></p>
+      </div>
+
+      <aside class="paneel" id="paneel" aria-live="polite">
+        <div class="kaart adres-kaart">
+          <p class="adres-regel" id="adres-regel">Voorbeeldwoning</p>
+          <div class="badges" id="badges"></div>
+          <p class="melding-buiten" id="melding-buiten" hidden>Dit adres ligt buiten het werkgebied van ICN (Groningen, Drenthe, Friesland, Overijssel en Flevoland). De indicatie werkt, maar ICN installeert hier niet.</p>
+        </div>
+
+        <div class="kaart resultaat" id="resultaat">
+          <p class="resultaat-kop"><span id="paneel-aantal">0</span> panelen · <span id="vermogen">0,0</span> kWp</p>
+          <p class="groot-getal"><span id="opbrengst">–</span><span class="eenheid"> kWh per jaar</span></p>
+          <p class="band" id="opbrengst-band">&nbsp;</p>
+          <div class="besparing">
+            <p class="besparing-getal" id="besparing">–</p>
+            <p class="besparing-sub">besparing per jaar, indicatie</p>
+          </div>
+          <div class="segment" role="radiogroup" aria-label="Scenario">
+            <button type="button" role="radio" aria-checked="true" data-scenario="na2026">Vanaf 2027 <small>zonder saldering</small></button>
+            <button type="button" role="radio" aria-checked="false" data-scenario="saldering2026">Tot eind 2026 <small>met saldering</small></button>
+          </div>
+          <p class="eerlijk"><span aria-hidden="true">ⓘ</span> Indicatie, definitief na schouw. Saldering stopt op 1 januari 2027, daarom rekenen we standaard zonder.</p>
+        </div>
+
+        <div class="kaart zon-kaart">
+          <div class="kaart-kop">
+            <h2>Zon en schaduw</h2>
+            <p class="live"><span class="live-stip" aria-hidden="true"></span><span id="live-kw">0,0</span> kW nu</p>
+          </div>
+          <label class="schuif">
+            <span class="schuif-label">Tijdstip <output id="uur-uit">17:00</output></span>
+            <input type="range" id="uur" min="5" max="22" step="0.25" value="17" />
+          </label>
+          <label class="schuif">
+            <span class="schuif-label">Datum <output id="dag-uit">21 juni</output></span>
+            <input type="range" id="dag" min="1" max="365" step="1" value="172" />
+          </label>
+          <div class="zon-acties">
+            <button type="button" class="knop knop-zacht" id="speel-dag" aria-pressed="false"><span aria-hidden="true">▶</span> Speel een dag af</button>
+            <label class="schakel"><input type="checkbox" id="warmte-schakel" /><span class="schakel-baan" aria-hidden="true"></span> Zonkaart</label>
+          </div>
+          <p class="schaduw-uitleg" id="schaduw-uitleg">&nbsp;</p>
+        </div>
+
+        <div class="kaart stroom-kaart">
+          <h2>Waar gaat je stroom heen?</h2>
+          <div class="stroom" id="stroom"></div>
+          <p class="stroom-uitleg" id="stroom-uitleg">&nbsp;</p>
+        </div>
+
+        <div class="kaart geld-kaart">
+          <h2>Investering en terugverdientijd</h2>
+          <dl class="cijfers">
+            <div><dt>Investering</dt><dd id="investering">–</dd></div>
+            <div><dt>Terugverdientijd</dt><dd id="terugverdien">–</dd></div>
+          </dl>
+          <details class="aannames">
+            <summary>Bekijk en wijzig de aannames</summary>
+            <div class="aanname-rij">
+              <label for="a-personen">Personen in huis</label>
+              <input id="a-personen" type="number" min="1" max="8" value="3" />
+            </div>
+            <div class="aanname-rij">
+              <label for="a-verbruik">Stroomverbruik per jaar (kWh) <small>geschat, pas aan als je het weet</small></label>
+              <input id="a-verbruik" type="number" min="500" max="20000" step="100" />
+            </div>
+            <div class="aanname-rij">
+              <label for="a-batterij">Thuisbatterij</label>
+              <select id="a-batterij"><option value="nee">Nee (30% zelf verbruikt)</option><option value="ja">Ja (60% zelf verbruikt)</option></select>
+            </div>
+            <div class="aanname-rij">
+              <label for="a-prijs">Stroomprijs per kWh (€)</label>
+              <input id="a-prijs" type="number" min="0.05" max="1" step="0.01" />
+            </div>
+            <div class="aanname-rij">
+              <label for="a-vergoeding">Terugleververgoeding per kWh (€)</label>
+              <input id="a-vergoeding" type="number" min="0" max="0.5" step="0.01" />
+            </div>
+            <div class="aanname-rij">
+              <label for="a-kosten">Terugleverkosten per kWh (€)</label>
+              <input id="a-kosten" type="number" min="0" max="0.5" step="0.01" />
+            </div>
+            <p class="klein">Je waarden vervangen de bandbreedte door één scenario. Prijzen zijn placeholders (€ 0,80 – 1,50 per Wp, marktgemiddelde), geen offerte van ICN.</p>
+            <button type="button" class="link-knop" id="aannames-reset">Terug naar de bandbreedte</button>
+          </details>
+        </div>
+
+        <div class="kaart cta-kaart" id="cta">
+          <h2>Plan je gratis schouw</h2>
+          <p>Een adviseur van ICN bekijkt je dak op locatie en maakt een definitieve offerte. Je hoort binnen 24 uur van ons.</p>
+          <form id="lead-form" class="lead" novalidate>
+            <div class="veld"><label for="l-naam">Naam</label><input id="l-naam" name="naam" autocomplete="name" required /></div>
+            <div class="veld"><label for="l-email">E-mail</label><input id="l-email" name="email" type="email" autocomplete="email" required /></div>
+            <div class="veld"><label for="l-tel">Telefoon</label><input id="l-tel" name="telefoon" type="tel" autocomplete="tel" required /></div>
+            <label class="toestemming"><input type="checkbox" id="l-ok" required /> <span>Ik geef ICN toestemming mijn gegevens en deze indicatie te gebruiken om contact met me op te nemen over een schouw. Zie de <a href="#" onclick="return false">privacyverklaring</a>. <em>(concepttekst)</em></span></label>
+            <p class="veld-fout" id="lead-fout" role="alert" hidden></p>
+            <button type="submit" class="knop knop-hoofd knop-breed">Plan mijn gratis schouw</button>
+            <button type="button" class="link-knop" id="mail-knop">Liever eerst de indicatie per e-mail</button>
+          </form>
+          <div class="bedankt" id="bedankt" hidden tabindex="-1">
+            <p class="bedankt-titel">Dank je wel!</p>
+            <p>Dit is een ontwerpvoorbeeld: er is niets verstuurd. In de echte versie neemt ICN binnen 24 uur contact met je op.</p>
+          </div>
+        </div>
+
+        <div class="kaart vertrouwen" data-intern hidden>
+          <p class="klein">Plaatshouder (intern): hier komen reviews, garanties en certificaten van ICN zodra ICN die aanlevert.</p>
+        </div>
+
+        <footer class="bronnen">
+          <p><strong>Indicatie, definitief na schouw.</strong> Dit ontwerpvoorbeeld gebruikt een illustratieve woning, niet het dak op jouw adres. In de live versie komen dakvorm en omgeving uit 3DBAG en de luchtfoto uit PDOK (beide CC BY 4.0) en de opbrengst uit PVGIS (Europese Commissie).</p>
+        </footer>
+      </aside>
+    </section>
+  </main>
+
+  <div class="cta-balk" id="cta-balk" hidden>
+    <div><strong id="cta-balk-getal">–</strong><span>kWh per jaar</span></div>
+    <a class="knop knop-hoofd" href="#cta">Plan gratis schouw</a>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
