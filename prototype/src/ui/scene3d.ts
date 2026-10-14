@@ -9,7 +9,7 @@ import type { Gebouw, RoofModel } from '../core/roof-model';
 import type { Plek } from '../calc/layout';
 import { klokNaarUtc, zonstand, zonVector } from '../calc/sun';
 
-export type Thema = 'goudenuur' | 'daglicht';
+export type Thema = 'goudenuur' | 'natuur';
 
 export interface SceneOpties {
   canvas: HTMLCanvasElement;
@@ -29,6 +29,8 @@ export interface SceneApi {
   zetZon(dag: number, klokuur: number): void;
   zetWarmtekaart(aan: boolean): void;
   zetThema(t: Thema): void;
+  /** Breedte (px) die rechts door een zwevend paneel wordt afgedekt; het beeld centreert in de rest. */
+  zetUitsnede(px: number): void;
   opKlikPlek(cb: (id: string) => void): void;
   resize(): void;
   dispose(): void;
@@ -395,7 +397,7 @@ export function maakScene(o: SceneOpties): SceneApi {
   const warmteTex = canvasTex(nu * 8, nv * 8, (c) => {
     const kleur = (x: number) => {
       // Sequentieel: diep paars -> rood -> amber -> lichtgeel.
-      const stops: [number, number[]][] = [[0.55, [58, 28, 98]], [0.75, [170, 45, 70]], [0.88, [232, 128, 34]], [1, [255, 226, 120]]];
+      const stops: [number, number[]][] = [[0.55, [11, 28, 106]], [0.75, [71, 149, 202]], [0.9, [58, 182, 74]], [1, [250, 214, 90]]];
       let a = stops[0], b = stops[stops.length - 1];
       for (let i = 0; i < stops.length - 1; i++) if (x >= stops[i][0] && x <= stops[i + 1][0]) { a = stops[i]; b = stops[i + 1]; }
       const f = Math.min(1, Math.max(0, (x - a[0]) / (b[0] - a[0] || 1)));
@@ -468,6 +470,7 @@ export function maakScene(o: SceneOpties): SceneApi {
   // Renderlus.
   let vlucht: { van: THREE.Vector3; t0: number; duur: number; klaar: () => void } | null = null;
   let klik: (id: string) => void = () => {};
+  let uitsnede = 0;
   let laatste = performance.now();
   let actief = true;
   function frame(nu: number) {
@@ -534,6 +537,7 @@ export function maakScene(o: SceneOpties): SceneApi {
     zetZon(dag, uur) { zonData = { dag, uur }; pasLichtToe(); },
     zetWarmtekaart(aan) { warmteDoel = aan ? 0.82 : 0; },
     zetThema(t) { thema = t; pasLichtToe(); },
+    zetUitsnede(px) { uitsnede = px; api.resize(); },
     opKlikPlek(cb) { klik = cb; },
     resize() {
       const el = renderer.domElement;
@@ -543,6 +547,8 @@ export function maakScene(o: SceneOpties): SceneApi {
       camera.aspect = b / h;
       // Op smalle schermen iets verder weg zodat het hele dak in beeld blijft.
       camera.fov = b / h < 0.9 ? 50 : 38;
+      if (uitsnede > 0 && uitsnede < b * 0.6) camera.setViewOffset(b, h, uitsnede / 2, 0, b, h);
+      else camera.clearViewOffset();
       camera.updateProjectionMatrix();
     },
     dispose() { actief = false; renderer.dispose(); },

@@ -18,7 +18,10 @@ Handige URL-parameters: `?richting=goudenuur` of `?richting=daglicht`, `?licht=1
 ## Wat erin zit
 
 - De hele flow: één adresveld met suggesties uit `config/showcase.json`, de fly-in met overslaan-knop (ca. 3,8 s), het dak dat gescand wordt met panelen die een voor een verschijnen, één groot getal met bandbreedte, de zonnebaan met tijd- en datumschuif en bewegende schaduw, het live vermogen, de zonkaart (warmtekaart), de energiestroom, investering en terugverdientijd met aanpasbare aannames, en het formulier "plan je gratis schouw" of "mail de indicatie".
-- Twee richtingen, te wisselen in de demobalk: **A Goudenuur** (donker en warm) en **B Daglicht** (licht).
+- Twee richtingen, te wisselen in de demobalk:
+  - **Licht · ICN** (standaard sinds 14-10-2026, op verzoek van Danny): licht en ecologisch, met de ICN-kleuren uit de homepage (groen #3AB64A, navy #0B1C6A, blauw #4795CA) en Poppins. Op de desktop zweven de kaarten als matglas over het 3D-beeld. De leeskaarten zijn bijna dekkend gemaakt, zodat de tekst goed leesbaar blijft.
+  - **Donker · Goudenuur**: de eerste richting, ter vergelijking.
+  Richting B Daglicht is vervallen.
 - Panelen toevoegen en weghalen door erop te tikken. Lege plekken zie je als omlijning.
 - Scenario's "vanaf 2027 zonder saldering" (standaard) en "tot eind 2026 met saldering".
 - De versie zonder WebGL, de lichte modus (Save-Data, 2G of weinig geheugen) en `prefers-reduced-motion` werken: geen vlucht, panelen staan er meteen.
@@ -46,7 +49,7 @@ Handige URL-parameters: `?richting=goudenuur` of `?richting=daglicht`, `?licht=1
 
 ## Ontwerpronden
 
-Schermafbeeldingen staan in `docs/screens/2026-10-14-r1` t/m `r4`. Van r1 t/m r3 zijn alleen vergelijkingsbeelden bewaard, van r4 de volledige set.
+Schermafbeeldingen staan in `docs/screens/2026-10-14-r1` t/m `r6`. Ronde 5 en 6 tonen de lichte ICN-richting. Van r1 t/m r3 zijn alleen vergelijkingsbeelden bewaard, van r4 de volledige set.
 
 1. **r1:** de resultaatkaart klapte in (flex-shrink), het adresveld viel op de telefoon onder de vouw, bomen blokkeerden het dak, en het label "LUCHTFOTO" in de vlucht was onjuist omdat er geen luchtfoto is.
 2. **r2:** de panelen waren pikzwart zonder reflectie, Goudenuur was niet warm, en de terugverdientijd liep tot 62 jaar door te strenge placeholder-terugleverkosten.
@@ -60,6 +63,8 @@ Schermafbeeldingen staan in `docs/screens/2026-10-14-r1` t/m `r4`. Van r1 t/m r3
 - **De voorbeeldwoning heeft geen dakkapel, schoorsteen of dakramen.**
 - **Op de telefoon schuift het 3D-beeld weg zodra je bij "Investering" komt.** Als je terug naar boven scrolt, verschijnt het ineens weer, zonder overgang.
 - **De bandbreedte van de terugverdientijd is breed (6,5–36,5 jaar).** Dat is eerlijk bij deze placeholders, maar het verkoopt niet. Daarom tonen we een middenwaarde ("ca. 14 jaar") met de bandbreedte eronder. Met echte ICN-prijzen wordt dit smaller.
-- **Er is nog geen logo.** Het ICN-logo kon niet worden opgehaald, dus er staat een tekstmerk met een amber blokje. De kleuren zijn een neutraal palet.
+- **Er is nog geen logo.** Het echte ICN-logo-bestand ontbreekt. Er staat een tekstmerk in Poppins met een groen-blauwe druppelvorm die het logo benadert. Die vervangen we door het echte bestand.
+- **De groene knop is iets donkerder dan ICN's groen** (#2B9A3B tot #36AD46 in plaats van #3AB64A). Witte tekst op #3AB64A haalt het WCAG-contrast niet.
+- **Glas kost rekenkracht.** Op de desktop vervaagt het glas het bewegende 3D-beeld, en dat kan op zwakke laptops haperen. Op de telefoon zweven alleen kleine labels over het beeld.
 - **Er zijn nog geen concurrenten bekeken als benchmark** (brief 4c), want hun sites waren niet bereikbaar.
 - **De onderdelen zijn nog geen web component met shadow DOM.** Dat komt in Fase 2b, de embed-fase.

@@ -25,6 +25,12 @@ body[data-richting='goudenuur'] {
   --accent-2: #ffcf7a;
   --accent-tekst: #f6b65a;
   --op-accent: #1b1206;
+  --knop-1: #ffcf7a;
+  --knop-2: #f3a83b;
+  --navy: #f4efe7;
+  --blauw: #8fb8e0;
+  --glas-sterk: rgba(16, 20, 28, 0.78);
+  --glas-rand: rgba(255, 240, 220, 0.18);
   --zon: #ffbf57;
   --paneel-1: #24324a; --paneel-2: #121a28;
   --glas: rgba(16, 20, 28, 0.62);
@@ -35,29 +41,38 @@ body[data-richting='goudenuur'] {
   --kop-spatie: -0.01em;
 }
 
-body[data-richting='daglicht'] {
+/* C · ICN Natuur: licht en ecologisch, met de ICN-kleuren (groen #3AB64A, navy #0B1C6A, blauw #4795CA)
+   en Poppins zoals op installatiecomfortnederland.nl. */
+body[data-richting='natuur'] {
   color-scheme: light;
-  --bg: #f6f4ef;
-  --bg-2: #efece4;
+  --bg: #f3f7f1;
+  --bg-2: #e6efe3;
   --vlak: #ffffff;
-  --vlak-2: #f7f5f0;
-  --lijn: rgba(25, 30, 38, 0.10);
-  --lijn-sterk: rgba(25, 30, 38, 0.18);
-  --tekst: #191d24;
-  --tekst-2: #4c5361;
-  --tekst-3: #6b7280;
-  --accent: #f2a12e;
-  --accent-2: #ffd38a;
-  --accent-tekst: #9a5a00;
-  --op-accent: #1c1404;
-  --zon: #f6a623;
-  --paneel-1: #2b3b56; --paneel-2: #17223a;
-  --glas: rgba(255, 255, 255, 0.78);
-  --schaduw: 0 20px 50px rgba(30, 35, 45, 0.12);
-  --goed: #1f7a43;
-  --kop-font: var(--font-tekst);
-  --kop-gewicht: 680;
-  --kop-spatie: -0.025em;
+  --vlak-2: #f2f6f0;
+  --lijn: rgba(11, 28, 106, 0.09);
+  --lijn-sterk: rgba(11, 28, 106, 0.17);
+  --tekst: #111a3a;
+  --tekst-2: #45506b;
+  --tekst-3: #5d6880;
+  --accent: #3ab64a;
+  --accent-2: #4cc35b;
+  --accent-tekst: #1f7a32;
+  --knop-1: #36ad46;
+  --knop-2: #2b9a3b;
+  --op-accent: #ffffff;
+  --navy: #0b1c6a;
+  --blauw: #4795ca;
+  --zon: #f4b740;
+  --paneel-1: #24407a; --paneel-2: #0b1c6a;
+  --glas: rgba(255, 255, 255, 0.58);
+  --glas-sterk: rgba(255, 255, 255, 0.86);
+  --glas-rand: rgba(255, 255, 255, 0.8);
+  --schaduw: 0 18px 50px rgba(11, 28, 106, 0.10);
+  --goed: #2b9a3b;
+  --font-tekst: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --kop-font: 'Poppins', system-ui, sans-serif;
+  --kop-gewicht: 700;
+  --kop-spatie: -0.02em;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -116,8 +131,8 @@ a { color: var(--accent-tekst); }
 }
 .knop:active { transform: translateY(1px) scale(.99); }
 .knop-hoofd {
-  background: linear-gradient(180deg, var(--accent-2), var(--accent) 60%);
-  color: var(--op-accent);
+  background: linear-gradient(180deg, var(--knop-1), var(--knop-2));
+  color: var(--op-accent); font-size: 18px; font-weight: 700;
   box-shadow: 0 1px 0 rgba(255, 255, 255, .4) inset, 0 10px 28px color-mix(in srgb, var(--accent) 38%, transparent);
 }
 .knop-hoofd:hover { box-shadow: 0 1px 0 rgba(255, 255, 255, .4) inset, 0 14px 34px color-mix(in srgb, var(--accent) 50%, transparent); }
@@ -138,7 +153,7 @@ a { color: var(--accent-tekst); }
 .bovenregel { font-size: 15px; color: var(--tekst-2); margin-bottom: 18px; letter-spacing: .01em; }
 .start h1 { font-size: clamp(42px, 6.2vw, 80px); line-height: 1.02; margin-bottom: 22px; }
 .start h1 em { font-style: italic; color: var(--accent-tekst); }
-body[data-richting='daglicht'] .start h1 em { font-style: normal; color: inherit; background: linear-gradient(transparent 62%, color-mix(in srgb, var(--accent) 45%, transparent) 62%); }
+body[data-richting='natuur'] .start h1 em { font-style: normal; color: var(--accent-tekst); }
 .intro { font-size: clamp(18px, 1.6vw, 20px); color: var(--tekst-2); max-width: 34em; margin-bottom: 32px; }
 
 .adres label { display: block; font-weight: 600; margin-bottom: 8px; }
@@ -229,7 +244,7 @@ body[data-richting='goudenuur'] .podium::after {
   position: absolute; left: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 14px;
   padding: 10px 14px; border-radius: 12px; background: var(--glas); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--lijn-sterk);
 }
-.warmte-legenda .schaal { width: 120px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, rgb(58,28,98), rgb(170,45,70), rgb(232,128,34), rgb(255,226,120)); }
+.warmte-legenda .schaal { width: 120px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, rgb(11,28,106), rgb(71,149,202), rgb(58,182,74), rgb(250,214,90)); }
 .podium-hint {
   pointer-events: none;
   position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); font-size: 14px; color: var(--tekst-2);
@@ -324,6 +339,7 @@ input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius
 
 @media (min-width: 901px) {
   body.app-actief { height: 100svh; overflow: hidden; }
+  html:has(body.app-actief) { overflow: hidden; }
 }
 .cijfers dd small { display: block; font-weight: 500; font-size: 13px; color: var(--tekst-3); margin-top: 2px; }
 
@@ -369,3 +385,59 @@ input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- C · Natuur: sfeer en glas ---------- */
+body[data-richting='natuur'] {
+  background:
+    radial-gradient(900px 600px at 85% -10%, rgba(71, 149, 202, 0.14), transparent 60%),
+    radial-gradient(800px 600px at -10% 20%, rgba(58, 182, 74, 0.12), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+body[data-richting='natuur'] .kop { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); }
+body[data-richting='natuur'] .merk-naam { font-weight: 500; color: var(--tekst); }
+body[data-richting='natuur'] .merk-naam span { color: var(--tekst); font-weight: 500; }
+body[data-richting='natuur'] .merk-naam .comfort { color: var(--blauw); }
+body[data-richting='natuur'] .merk-teken {
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: linear-gradient(140deg, #3ab64a 0 48%, #4795ca 52% 100%);
+  box-shadow: none; width: 26px; height: 32px;
+}
+body[data-richting='natuur'] .demo-balk { background: rgba(11, 28, 106, 0.04); }
+body[data-richting='natuur'] .stappen li,
+body[data-richting='natuur'] .belofte-icoon { background: rgba(255, 255, 255, 0.7); }
+body[data-richting='natuur'] .stap-nr { background: rgba(58, 182, 74, 0.14); }
+body[data-richting='natuur'] .groot-getal { color: var(--navy); }
+
+/* Glas: alleen voor elementen die over het 3D-beeld zweven. Leeskaarten blijven bijna dekkend. */
+.glas {
+  background: var(--glas);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  border: 1px solid var(--glas-rand);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 10px 30px rgba(11, 28, 106, 0.12);
+}
+@media (min-width: 901px) {
+  body[data-richting='natuur'] .app { grid-template-columns: minmax(0, 1fr); position: relative; }
+  body[data-richting='natuur'] .podium { grid-area: 1 / 1; }
+  body[data-richting='natuur'] .paneel {
+    grid-area: 1 / 1; justify-self: end; width: calc(var(--paneel-b) + 32px); height: 100%;
+    background: transparent; border-left: 0; padding: 16px 16px 16px 16px; position: relative; z-index: 3;
+  }
+  body[data-richting='natuur'] .paneel > .kaart {
+    background: var(--glas-sterk);
+    backdrop-filter: blur(24px) saturate(115%);
+    -webkit-backdrop-filter: blur(24px) saturate(115%);
+    border: 1px solid var(--glas-rand);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 16px 40px rgba(11, 28, 106, 0.12);
+  }
+  body[data-richting='natuur'] .paneel > .cta-kaart { background: linear-gradient(160deg, rgba(232, 246, 234, 0.92), rgba(255, 255, 255, 0.86)); }
+  body[data-richting='natuur'] .bronnen { background: var(--glas-sterk); border-radius: var(--r-m); padding: 12px 14px; }
+  body[data-richting='natuur'] .sla-over,
+  body[data-richting='natuur'] .warmte-legenda { }
+  body[data-richting='natuur'] .podium-hint { left: calc((100% - var(--paneel-b) - 32px) / 2); }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glas, body[data-richting='natuur'] .paneel > .kaart { background: var(--vlak); }
+}
+body[data-richting='natuur'] .resultaat::before { background: radial-gradient(circle, rgba(58, 182, 74, 0.18), transparent 70%); }

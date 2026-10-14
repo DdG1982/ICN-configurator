@@ -13,7 +13,7 @@ const maten = [
   { naam: 'laptop', width: 1366, height: 768 },
   { naam: 'groot', width: 1920, height: 1080 },
 ];
-const richtingen = (process.env.RICHTING ?? 'goudenuur,daglicht').split(',');
+const richtingen = (process.env.RICHTING ?? 'natuur,goudenuur').split(',');
 
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 for (const r of richtingen) {

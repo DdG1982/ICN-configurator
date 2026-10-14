@@ -1,5 +1,9 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/fraunces';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
 import './styles.css';
 
 import market from '../config/market.json';
@@ -35,14 +39,20 @@ const opslag = {
 };
 
 /* ---------- Richting A/B ---------- */
-let richting: Thema = (params.get('richting') as Thema) || (opslag.lees('icn-richting') as Thema) || 'goudenuur';
+let richting: Thema = (params.get('richting') as Thema) || (opslag.lees('icn-richting') as Thema) || 'natuur';
 let scene: SceneApi | null = null;
 function zetRichting(r: Thema) {
-  richting = r === 'daglicht' ? 'daglicht' : 'goudenuur';
+  richting = r === 'goudenuur' ? 'goudenuur' : 'natuur';
   document.body.dataset.richting = richting;
   document.querySelectorAll<HTMLButtonElement>('[data-richting-knop]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.richtingKnop === richting)));
   opslag.zet('icn-richting', richting);
   scene?.zetThema(richting);
+  pasUitsnedeAan();
+}
+function pasUitsnedeAan() {
+  if (!scene) return;
+  const zwevend = richting === 'natuur' && matchMedia('(min-width: 901px)').matches;
+  scene.zetUitsnede(zwevend ? document.querySelector<HTMLElement>('#paneel')!.offsetWidth : 0);
 }
 zetRichting(richting);
 document.querySelectorAll<HTMLButtonElement>('[data-richting-knop]').forEach((b) => b.addEventListener('click', () => zetRichting(b.dataset.richtingKnop as Thema)));
@@ -125,7 +135,7 @@ const staat = {
   batterij: false,
   eigen: null as null | { prijs: number; vergoeding: number; kosten: number },
   dag: 172,
-  uur: richting === 'goudenuur' ? 19 : 13.5,
+  uur: richting === 'goudenuur' ? 19 : 15,
 };
 
 function aannames(): MarktAannames {
@@ -318,7 +328,8 @@ async function start(adres: Adres) {
   scan.hidden = false; $('#scan-tekst').textContent = 'Woning wordt geladen…';
   const { maakScene } = await import('./ui/scene3d');
   scene = maakScene({ canvas: $<HTMLCanvasElement>('#scene'), model, plekken, raster, paneel: pricing.paneelMaat, thema: richting, sober: sober || minderBeweging });
-  window.addEventListener('resize', () => scene?.resize());
+  window.addEventListener('resize', () => { scene?.resize(); pasUitsnedeAan(); });
+  pasUitsnedeAan();
   new ResizeObserver(() => scene?.resize()).observe($('#podium'));
   scene.zetZon(staat.dag, staat.uur);
   scene.opKlikPlek((id) => {
