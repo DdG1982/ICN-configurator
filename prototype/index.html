@@ -9,7 +9,7 @@
 </head>
 <body data-richting="natuur">
   <div class="demo-balk" role="note">
-    <p><strong>Ontwerpvoorbeeld</strong> <span class="lang">met vaste voorbeelddata. Geen echte berekening, prijzen zijn placeholders.</span><span class="kort">· vaste data, placeholderprijzen</span></p>
+    <p><strong>Ontwerpvoorbeeld</strong> <span class="lang">met echte dakdata voor 14 voorbeeldadressen. Prijzen zijn placeholders.</span><span class="kort">· vaste data, placeholderprijzen</span></p>
     <div class="richting-keuze" role="group" aria-label="Visuele richting">
       <button type="button" data-richting-knop="natuur" aria-pressed="true">Licht · ICN</button>
       <button type="button" data-richting-knop="goudenuur" aria-pressed="false">Donker · Goudenuur</button>
@@ -31,20 +31,20 @@
       <div class="start-tekst">
         <p class="bovenregel">Zonnepanelen voor Groningen, Drenthe, Friesland en Overijssel</p>
         <h1 id="start-titel">Wat levert <em>jouw</em> dak op?</h1>
-        <p class="intro">Vul je adres in. Je ziet je eigen dak in 3D, hoeveel panelen erop passen en wat ze opleveren, met de zon en schaduw van jouw plek.</p>
+        <p class="intro">Vul je adres in. Je ziet je eigen dak in 3D, met de echte buren en bomen eromheen, hoeveel panelen erop passen en wat ze opleveren.</p>
 
         <form class="adres" id="adres-form" autocomplete="off" novalidate>
           <label for="adres-veld">Je adres</label>
           <div class="adres-rij">
             <div class="combo">
-              <input id="adres-veld" name="adres" type="text" inputmode="search" placeholder="Straat en huisnummer, of postcode"
+              <input id="adres-veld" name="adres" type="text" inputmode="search" placeholder="Kies een voorbeeldadres"
                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="adres-lijst" />
               <ul id="adres-lijst" role="listbox" hidden></ul>
             </div>
             <button type="submit" class="knop knop-hoofd">Bekijk mijn dak</button>
           </div>
           <p class="veld-fout" id="adres-fout" role="alert" hidden></p>
-          <p class="klein">Gratis en vrijblijvend. Je hoeft alleen je adres in te vullen.</p>
+          <p class="klein">In dit ontwerpvoorbeeld werken 14 voorbeeldadressen met echte dakdata. Klik in het veld voor de lijst.</p>
         </form>
 
         <button type="button" class="link-knop" id="voorbeeld-knop">Of bekijk eerst een voorbeeldwoning <span aria-hidden="true">→</span></button>
@@ -126,6 +126,7 @@
         <div class="kaart adres-kaart">
           <p class="adres-regel" id="adres-regel">Voorbeeldwoning</p>
           <div class="badges" id="badges"></div>
+          <p class="melding-status" id="melding-status" hidden></p>
           <p class="melding-buiten" id="melding-buiten" hidden>Dit adres ligt buiten het werkgebied van ICN (Groningen, Drenthe, Friesland, Overijssel en Flevoland). De indicatie werkt, maar ICN installeert hier niet.</p>
         </div>
 
@@ -142,6 +143,29 @@
             <button type="button" role="radio" aria-checked="false" data-scenario="saldering2026">Tot eind 2026 <small>met saldering</small></button>
           </div>
           <p class="eerlijk"><span aria-hidden="true">ⓘ</span> Indicatie, definitief na schouw. Saldering stopt op 1 januari 2027, daarom rekenen we standaard zonder.</p>
+          <p class="eerlijk" id="dak-uitleg"></p>
+        </div>
+
+        <div class="kaart vragen-kaart" id="vragen" hidden>
+          <h2>Twee vragen over je dak</h2>
+          <p class="klein">Dit staat niet in de 3D-kaart. Je antwoord helpt de adviseur.</p>
+          <div class="vraag">
+            <p>Liggen er al zonnepanelen op je dak?</p>
+            <div class="keuze" role="group" aria-label="Al zonnepanelen">
+              <button type="button" data-vraag="panelen" data-antwoord="nee" aria-pressed="false">Nee</button>
+              <button type="button" data-vraag="panelen" data-antwoord="ja" aria-pressed="false">Ja</button>
+              <button type="button" data-vraag="panelen" data-antwoord="weet-niet" aria-pressed="false">Weet ik niet</button>
+            </div>
+            <p class="vraag-uitleg" id="uitleg-panelen" hidden></p>
+          </div>
+          <div class="vraag">
+            <p>Is (een deel van) je dak van riet?</p>
+            <div class="keuze" role="group" aria-label="Rieten dak">
+              <button type="button" data-vraag="riet" data-antwoord="nee" aria-pressed="false">Nee</button>
+              <button type="button" data-vraag="riet" data-antwoord="ja" aria-pressed="false">Ja</button>
+            </div>
+            <p class="vraag-uitleg" id="uitleg-riet" hidden></p>
+          </div>
         </div>
 
         <div class="kaart zon-kaart">
@@ -230,11 +254,13 @@
         </div>
 
         <footer class="bronnen">
-          <p><strong>Indicatie, definitief na schouw.</strong> Dit ontwerpvoorbeeld gebruikt een illustratieve woning, niet het dak op jouw adres. In de live versie komen dakvorm en omgeving uit 3DBAG en de luchtfoto uit PDOK (beide CC BY 4.0) en de opbrengst uit PVGIS (Europese Commissie).</p>
+          <p><strong>Indicatie, definitief na schouw.</strong> Dakvorm en buren: 3DBAG (TU Delft/3DGI, CC BY 4.0). Adres en pand: BAG via PDOK. Luchtfoto: PDOK (CC BY 4.0). Bomen: AHN (Rijkswaterstaat). Opbrengst: PVGIS (Europese Commissie). Bomen, schoorstenen, dakramen en dakkapellen kunnen afwijken van de werkelijkheid; de schouw is bepalend.</p>
         </footer>
       </aside>
     </section>
   </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <div class="cta-balk" id="cta-balk" hidden>
     <div><strong id="cta-balk-getal">–</strong><span>kWh per jaar</span></div>

@@ -394,13 +394,14 @@ def verwerk(adres, werkgebied):
         model['footprint'] = lokaal([[p[0], p[1], 0] for p in bag['footprint']], ox, oy, 0)[:, [0, 2]].round(2).tolist() if bag else []
         json.dump(model, open(os.path.join(map_, 'model.json'), 'w'), separators=(',', ':'))
         return s, model
-    if 'woonfunctie' in gd and eenheden >= 3:
+    andere = [d for d in gd.split(',') if d and d != 'woonfunctie']
+    if 'woonfunctie' in gd and not andere and eenheden >= 3:
         model['status'] = 'appartement'
     elif adres.get('soort') == 'monument':
         model['status'] = 'monument'
     elif gd and 'woonfunctie' not in gd and 'overige' in gd:
         model['status'] = 'bijgebouw'
-    elif gd and 'woonfunctie' not in gd:
+    elif andere:
         model['status'] = 'zakelijk'
     else:
         model['status'] = 'woning'

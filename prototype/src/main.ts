@@ -8,11 +8,8 @@ import './styles.css';
 
 import market from '../config/market.json';
 import pricing from '../config/pricing.json';
-import showcase from '../config/showcase.json';
-import { voorbeeldwoning as model } from './data/voorbeeldwoning';
-import { instraling, instralingsRaster, jaarsomMidden, puntOpVlak } from './calc/shade';
-import { paneelPlekken, type Plek } from './calc/layout';
-import { vlakNormaal } from './calc/sun';
+import type { DakModel, IndexItem, Plek } from './core/dak-model';
+import { minderDanBeste, standaardIndeling } from './calc/indeling';
 import {
   besparingBand, geschatVerbruik, investeringBand, opbrengstBand, rondAf, terugverdientijd, vermogenKwp,
   type Band, type MarktAannames, type Scenario,
@@ -60,17 +57,18 @@ if (params.get('intern') === '1') document.querySelectorAll<HTMLElement>('[data-
 document.querySelector('[data-terug]')?.addEventListener('click', (e) => { e.preventDefault(); location.href = location.pathname + location.search; });
 
 /* ---------- Adresveld met suggesties ---------- */
-interface Adres { label: string; provincie: string; soort: string }
-const adressen: Adres[] = showcase.adressen;
+const BASIS = './data';
+let adressen: IndexItem[] = [];
+const indexKlaar = fetch(`${BASIS}/index.json`).then((r) => r.json()).then((d: IndexItem[]) => { adressen = d; return d; }).catch(() => []);
 const veld = $<HTMLInputElement>('#adres-veld');
 const lijst = $<HTMLUListElement>('#adres-lijst');
-let gekozen: Adres | null = null;
+let gekozen: IndexItem | null = null;
 let actiefIndex = -1;
-let treffers: Adres[] = [];
+let treffers: IndexItem[] = [];
 
-function toonSuggesties() {
+function toonSuggesties(alles = false) {
   const q = veld.value.trim().toLowerCase().replace(/\s+/g, ' ');
-  treffers = q.length < 2 ? [] : adressen.filter((a) => a.label.toLowerCase().replace(/\s+/g, ' ').includes(q)).slice(0, 6);
+  treffers = alles ? adressen.slice(0, 20) : q.length < 2 ? [] : adressen.filter((a) => a.label.toLowerCase().replace(/\s+/g, ' ').includes(q)).slice(0, 8);
   lijst.innerHTML = treffers.map((a, i) => {
     const [straat, rest] = a.label.split(/,(.+)/);
     return `<li role="option" id="opt-${i}" aria-selected="${i === actiefIndex}"><span>${straat}</span><small>${rest?.trim() ?? ''}</small></li>`;
@@ -79,15 +77,16 @@ function toonSuggesties() {
   veld.setAttribute('aria-expanded', String(!lijst.hidden));
   veld.setAttribute('aria-activedescendant', actiefIndex >= 0 ? `opt-${actiefIndex}` : '');
 }
-function kies(a: Adres) {
+function kies(a: IndexItem) {
   gekozen = a; veld.value = a.label; lijst.hidden = true; veld.setAttribute('aria-expanded', 'false');
   $('#adres-fout').hidden = true;
 }
 veld.addEventListener('input', () => { gekozen = null; actiefIndex = -1; toonSuggesties(); });
+veld.addEventListener('focus', () => { if (!veld.value) { indexKlaar.then(() => toonSuggesties(true)); } });
 veld.addEventListener('keydown', (e) => {
   if (lijst.hidden) return;
-  if (e.key === 'ArrowDown') { actiefIndex = Math.min(treffers.length - 1, actiefIndex + 1); toonSuggesties(); e.preventDefault(); }
-  else if (e.key === 'ArrowUp') { actiefIndex = Math.max(0, actiefIndex - 1); toonSuggesties(); e.preventDefault(); }
+  if (e.key === 'ArrowDown') { actiefIndex = Math.min(treffers.length - 1, actiefIndex + 1); toonSuggesties(!veld.value); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { actiefIndex = Math.max(0, actiefIndex - 1); toonSuggesties(!veld.value); e.preventDefault(); }
   else if (e.key === 'Enter' && actiefIndex >= 0) { kies(treffers[actiefIndex]); e.preventDefault(); }
   else if (e.key === 'Escape') { lijst.hidden = true; }
 });
@@ -97,36 +96,34 @@ lijst.addEventListener('mousedown', (e) => {
   e.preventDefault();
   kies(treffers[Number(li.id.replace('opt-', ''))]);
 });
-veld.addEventListener('blur', () => setTimeout(() => (lijst.hidden = true), 120));
+veld.addEventListener('blur', () => setTimeout(() => (lijst.hidden = true), 150));
 
-$('#adres-form').addEventListener('submit', (e) => {
+$('#adres-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const tekst = veld.value.trim();
+  await indexKlaar;
+  const tekst = veld.value.trim().toLowerCase();
+  if (!gekozen) gekozen = adressen.find((a) => a.label.toLowerCase() === tekst || a.label.toLowerCase().startsWith(tekst) && tekst.length > 6) ?? null;
   if (!gekozen) {
-    const exact = adressen.find((a) => a.label.toLowerCase() === tekst.toLowerCase());
-    if (exact) gekozen = exact;
-  }
-  if (!gekozen) {
-    if (!/\d/.test(tekst)) {
-      const fout = $('#adres-fout');
-      fout.textContent = 'Vul je straat en huisnummer in, of kies een adres uit de lijst.';
-      fout.hidden = false; veld.focus();
-      return;
-    }
-    gekozen = { label: tekst, provincie: 'onbekend', soort: 'woning' };
+    const fout = $('#adres-fout');
+    fout.textContent = tekst
+      ? 'In dit ontwerpvoorbeeld werken alleen de voorbeeldadressen uit de lijst. Live zoeken op elk adres komt in de volgende versie.'
+      : 'Kies een adres uit de lijst.';
+    fout.hidden = false; veld.focus(); toonSuggesties(true);
+    return;
   }
   start(gekozen);
 });
-$('#voorbeeld-knop').addEventListener('click', () => start({ label: 'Voorbeeldwoning', provincie: 'Drenthe', soort: 'voorbeeld' }));
+$('#voorbeeld-knop').addEventListener('click', async () => {
+  await indexKlaar;
+  const peest = adressen.find((a) => a.slug.startsWith('zuidveldigerweg')) ?? adressen.find((a) => a.status === 'woning');
+  if (peest) start(peest);
+});
 
 /* ---------- Berekening ---------- */
-const zuid = model.dakvlakken[0];
-const noord = model.dakvlakken[1];
-const raster = instralingsRaster(model, zuid, 26, 10);
-let plekken: Plek[] = paneelPlekken(zuid.breedte, zuid.diepte, pricing.paneelMaat, 0.3, raster, 0.88);
-const noordRatio = jaarsomMidden(model, noord) / jaarsomMidden(model, zuid);
-const kwhPerKwp = 930; // Placeholder: PVGIS-orde voor Noord-Nederland bij zuid 40°, wordt live uit PVGIS gehaald.
-const zuidNormaal = vlakNormaal(zuid.helling, zuid.azimut);
+let model: DakModel | null = null;
+let plekken: Plek[] = [];
+let actief = new Set<string>();
+let besteKwh = 1;
 
 const staat = {
   scenario: 'na2026' as Scenario,
@@ -146,14 +143,14 @@ function aannames(): MarktAannames {
 const verbruik = () => staat.verbruikEigen ?? geschatVerbruik(staat.personen);
 
 function bereken() {
-  const actief = plekken.filter((p) => p.actief);
-  const kwp = vermogenKwp(actief.length, pricing.paneelWp);
-  const kwh = actief.reduce((s, p) => s + (pricing.paneelWp / 1000) * kwhPerKwp * p.factor, 0);
+  const gekozen = plekken.filter((p) => actief.has(p.id));
+  const kwp = vermogenKwp(gekozen.length, pricing.paneelWp);
+  const kwh = gekozen.reduce((s, p) => s + p.kwh, 0);
   const opbrengst = opbrengstBand(kwh, market.opbrengstMarge);
   const zc = staat.batterij ? market.zelfconsumptie.metBatterij : market.zelfconsumptie.zonderBatterij;
   const besparing = besparingBand(opbrengst, verbruik(), zc, aannames(), staat.scenario);
-  const investering = investeringBand(actief.length * pricing.paneelWp, pricing.prijsPerWp);
-  return { aantal: actief.length, kwp, kwh, opbrengst, besparing, investering, terug: terugverdientijd(investering, besparing) };
+  const investering = investeringBand(gekozen.length * pricing.paneelWp, pricing.prijsPerWp);
+  return { aantal: gekozen.length, kwp, kwh, opbrengst, besparing, investering, terug: terugverdientijd(investering, besparing) };
 }
 
 function toonResultaat(aantalZichtbaar?: number) {
@@ -195,21 +192,13 @@ function updateZon() {
   const uur = staat.uur, dag = staat.dag;
   $('#uur-uit').textContent = `${String(Math.floor(uur)).padStart(2, '0')}:${String(Math.round((uur % 1) * 60)).padStart(2, '0')}`;
   $('#dag-uit').textContent = datumLabel(dag);
-  let kw = 0, schaduw = 0, zonOp = false;
-  const actief = plekken.filter((p) => p.actief);
-  for (const p of actief) {
-    const pt = puntOpVlak(model, zuid, p.u, p.v); pt.y += 0.15;
-    const r = instraling(model, pt, zuidNormaal, dag, uur);
-    if (r.wm2 > 0) zonOp = true;
-    if (r.schaduw) schaduw++;
-    kw += (pricing.paneelWp / 1000) * (r.wm2 / 1000) * 0.86;
-  }
+  const r = scene ? scene.vermogenNu(actief, dag, uur) : { kw: 0, schaduw: 0, zonOp: true };
+  const kw = r.kw, schaduw = r.schaduw, zonOp = r.zonOp;
   $('#live-kw').textContent = nl(kw, 1);
   $('#schaduw-uitleg').textContent = !zonOp ? 'De zon staat onder de horizon.'
     : schaduw === 0 ? 'Geen schaduw op je panelen op dit moment.'
-      : `Schaduw van de boom of de buren op ${schaduw} van de ${actief.length} panelen.`;
+      : `Schaduw van bomen of gebouwen op ${schaduw} van de ${actief.size} panelen.`;
   $('#stroom-uitleg').textContent = stroomUpdate({ pv: kw, verbruik: huisVerbruikKw(uur) });
-  scene?.zetZon(dag, uur);
 }
 const uurIn = $<HTMLInputElement>('#uur'), dagIn = $<HTMLInputElement>('#dag');
 uurIn.value = String(staat.uur);
@@ -217,7 +206,7 @@ let zonGemeten = false;
 for (const i of [uurIn, dagIn]) {
   vulSchuif(i);
   i.addEventListener('input', () => {
-    staat.uur = Number(uurIn.value); staat.dag = Number(dagIn.value); vulSchuif(i); updateZon();
+    staat.uur = Number(uurIn.value); staat.dag = Number(dagIn.value); vulSchuif(i); scene?.zetZon(staat.dag, staat.uur); updateZon();
     if (!zonGemeten) { zonGemeten = true; meet('icn_zonbaan_gebruikt'); }
   });
 }
@@ -229,11 +218,11 @@ $('#speel-dag').addEventListener('click', (e) => {
   const t0 = performance.now(), van = 5, tot = 22, duur = 9000;
   const stap = (nu: number) => {
     const f = Math.min(1, (nu - t0) / duur);
-    staat.uur = van + (tot - van) * f; uurIn.value = String(staat.uur); vulSchuif(uurIn); updateZon();
+    staat.uur = van + (tot - van) * f; uurIn.value = String(staat.uur); vulSchuif(uurIn); scene?.zetZon(staat.dag, staat.uur); updateZon();
     if (f < 1) speelt = requestAnimationFrame(stap);
     else { speelt = 0; knop.setAttribute('aria-pressed', 'false'); knop.innerHTML = '<span aria-hidden="true">▶</span> Speel een dag af'; }
   };
-  if (minderBeweging) { staat.uur = 13; uurIn.value = '13'; vulSchuif(uurIn); updateZon(); knop.setAttribute('aria-pressed', 'false'); knop.innerHTML = '<span aria-hidden="true">▶</span> Speel een dag af'; return; }
+  if (minderBeweging) { staat.uur = 13; uurIn.value = '13'; vulSchuif(uurIn); scene?.zetZon(staat.dag, 13); updateZon(); knop.setAttribute('aria-pressed', 'false'); knop.innerHTML = '<span aria-hidden="true">▶</span> Speel een dag af'; return; }
   speelt = requestAnimationFrame(stap);
 });
 $<HTMLInputElement>('#warmte-schakel').addEventListener('change', (e) => {
@@ -303,38 +292,72 @@ function soberApparaat() {
   return !!(n.connection?.saveData || /2g/.test(n.connection?.effectiveType ?? '') || (n.deviceMemory && n.deviceMemory <= 2) || params.get('licht') === '1');
 }
 
-async function start(adres: Adres) {
-  meet('icn_adres_gekozen', { soort: adres.soort });
+const STATUS_TEKST: Record<string, string> = {
+  zakelijk: 'Dit is een bedrijfspand. Voor bedrijven checken we eerst de netcapaciteit bij de netbeheerder; in delen van Groningen, Drenthe en Overijssel is die beperkt. De indicatie hieronder is daarom extra voorlopig.',
+  bijgebouw: 'Dit adres is volgens de BAG een bijgebouw (bijvoorbeeld een garage of berging), geen woning. Zonnepanelen kunnen hier soms wel, maar de aansluiting op je huis bepaalt de mogelijkheden.',
+  appartement: 'Dit gebouw heeft meerdere woningen. Zonnepanelen op een gedeeld dak regel je samen via de VvE. We tonen het dak, maar plaatsen geen panelen voor één woning.',
+  monument: 'Dit is een monument. Zonnepanelen op een monument hebben meestal een vergunning nodig, en vaak mag het niet op het zichtbare dakvlak. Daarom plaatsen we hier niets automatisch.',
+  'niet-in-3dbag': 'Dit pand is te nieuw voor de landelijke 3D-kaart (3DBAG). We hebben het dak daarom nog niet in 3D. We maken je indicatie na een korte check door een adviseur.',
+};
+
+async function start(item: IndexItem) {
+  meet('icn_adres_gekozen', { status: item.status });
   $('#start').hidden = true; $('#stappen').hidden = true;
   $('#app').hidden = false;
   document.body.classList.add('app-actief');
   window.scrollTo(0, 0);
-  $('#adres-regel').textContent = adres.label;
-  const buiten = !showcase.werkgebiedProvincies.includes(adres.provincie) && adres.provincie !== 'onbekend';
-  $('#badges').innerHTML = `<span class="badge badge-accent">Ontwerpvoorbeeld · illustratieve woning</span><span class="badge">Indicatie, definitief na schouw</span>`;
-  $('#melding-buiten').hidden = !buiten;
+  const basis = `${BASIS}/${item.slug}`;
+  model = await (await fetch(`${basis}/model.json`)).json() as DakModel;
+  plekken = model.plekken ?? [];
+  besteKwh = Math.max(1, ...plekken.map((p) => p.kwh));
+  const magPanelen = !['appartement', 'monument', 'niet-in-3dbag'].includes(model.status);
+  actief = magPanelen ? standaardIndeling(plekken, verbruik(), 1.0, 4) : new Set();
+
+  $('#adres-regel').textContent = model.adres.label;
+  const pj = model.kwaliteit?.puntenwolkJaar;
+  $('#badges').innerHTML = [
+    '<span class="badge badge-accent">Echte dakdata · 3DBAG en PDOK</span>',
+    model.pand?.bouwjaar ? `<span class="badge">Bouwjaar ${model.pand.bouwjaar}</span>` : '',
+    pj ? `<span class="badge">Dak gemeten in ${pj}</span>` : '',
+    model.kwaliteit && !model.kwaliteit['3dbagGoed'] ? '<span class="badge badge-let-op">3D-model met lage zekerheid</span>' : '',
+  ].join('');
+  $('#melding-buiten').hidden = !model.buitenWerkgebied;
+  const st = $('#melding-status');
+  st.hidden = !STATUS_TEKST[model.status];
+  st.textContent = STATUS_TEKST[model.status] ?? '';
+  $('#vragen').hidden = !['woning', 'bijgebouw'].includes(model.status);
+  const geenResultaat = model.status === 'niet-in-3dbag';
+  for (const id of ['#resultaat', '.zon-kaart', '.stroom-kaart', '.geld-kaart']) $(id).hidden = geenResultaat;
+  const vlakTekst = beschrijfDak();
+  $('#dak-uitleg').textContent = vlakTekst;
   toonResultaat(0);
-  updateZon();
 
   const sober = soberApparaat();
   const vlucht = !sober && !minderBeweging;
   if (!heeftWebgl() || params.get('webgl') === '0') {
     $('#fallback').hidden = false;
     document.body.classList.add('zonder-3d');
-    toonResultaat(); klaar();
+    toonResultaat(); updateZon(); klaar();
     return;
   }
   const scan = $('#scan-status');
   scan.hidden = false; $('#scan-tekst').textContent = 'Woning wordt geladen…';
   const { maakScene } = await import('./ui/scene3d');
-  scene = maakScene({ canvas: $<HTMLCanvasElement>('#scene'), model, plekken, raster, paneel: pricing.paneelMaat, thema: richting, sober: sober || minderBeweging });
+  scene = maakScene({ canvas: $<HTMLCanvasElement>('#scene'), model, basis, thema: richting, sober: sober || minderBeweging });
   window.addEventListener('resize', () => { scene?.resize(); pasUitsnedeAan(); });
   pasUitsnedeAan();
   new ResizeObserver(() => scene?.resize()).observe($('#podium'));
   scene.zetZon(staat.dag, staat.uur);
   scene.opKlikPlek((id) => {
-    plekken = plekken.map((p) => (p.id === id ? { ...p, actief: !p.actief } : p));
-    scene!.zetPanelen(plekken); toonResultaat(); updateZon();
+    if (!magPanelen) { toast('Op dit dak plaatsen we in de indicatie geen panelen. Een adviseur bekijkt de mogelijkheden.'); return; }
+    const p = plekken.find((x) => x.id === id)!;
+    if (actief.has(id)) actief.delete(id);
+    else {
+      actief.add(id);
+      const minder = minderDanBeste(p.kwh, besteKwh);
+      if (minder >= 15) toast(`Deze plek levert ca. ${minder}% minder op dan je beste plek${p.schaduw < 0.85 ? ', vooral door schaduw' : ''}.`);
+    }
+    scene!.zetPanelen(actief); toonResultaat(); updateZon();
     meet('icn_paneel_gewijzigd');
   });
 
@@ -342,8 +365,8 @@ async function start(adres: Adres) {
     const sla = $('#sla-over'); sla.hidden = false;
     sla.onclick = () => scene?.sla();
     const label = $('#vlucht-label');
-    const plaats = adres.label.split(',').pop()?.replace(/\d{4}\s?[A-Z]{2}/, '').trim() || 'jouw buurt';
-    const reeks = [`${adres.provincie !== 'onbekend' ? adres.provincie : 'Nederland'}<small>PROVINCIE</small>`, `${plaats}<small>PLAATS</small>`, `Jouw dak<small>${adres.label.split(',')[0].toUpperCase()}</small>`];
+    const plaats = model.adres.label.split(',').pop()?.replace(/\d{4}\s?[A-Z]{2}/, '').trim() || 'jouw buurt';
+    const reeks = [`${model.adres.provincie}<small>PROVINCIE</small>`, `${plaats}<small>PLAATS</small>`, `Jouw dak<small>${model.adres.label.split(',')[0].toUpperCase()}</small>`];
     scan.hidden = true;
     const vliegt = scene.flyIn(3800);
     (async () => {
@@ -356,27 +379,65 @@ async function start(adres: Adres) {
   }
 
   scan.hidden = false; scan.classList.remove('klaar');
+  if (geenResultaat) {
+    $('#scan-tekst').textContent = 'Nog niet in de 3D-kaart';
+    scan.classList.add('klaar');
+    klaar();
+    return;
+  }
   $('#scan-tekst').textContent = 'Dakvlakken meten…';
   await wacht(minderBeweging ? 0 : 450);
   $('#scan-tekst').textContent = 'Panelen plaatsen…';
-  await scene.toonPanelen(minderBeweging ? 0 : 140, (n) => toonResultaat(n));
+  await scene.toonPanelen([...actief], minderBeweging ? 0 : Math.max(40, Math.min(140, 2400 / Math.max(1, actief.size))), (n) => toonResultaat(n));
   toonResultaat();
+  updateZon();
   scan.classList.add('klaar');
-  $('#scan-tekst').textContent = `${bereken().aantal} panelen · ca. ${nl(rondAf(bereken().kwh, 100))} kWh per jaar`;
+  const r = bereken();
+  $('#scan-tekst').textContent = magPanelen ? `${r.aantal} panelen · ca. ${nl(rondAf(r.kwh, 100))} kWh per jaar` : 'Dak gemeten';
   klaar();
 }
 
+function beschrijfDak(): string {
+  if (!model?.dakvlakken?.length) return '';
+  const richting = (az: number) => ['noord', 'noordoost', 'oost', 'zuidoost', 'zuid', 'zuidwest', 'west', 'noordwest'][Math.round(az / 45) % 8];
+  const grote = [...model.dakvlakken].sort((a, b) => b.opp - a.opp).slice(0, 3)
+    .map((v) => v.plat ? `plat (${nl(v.opp)} m²)` : `${richting(v.azimut)} ${nl(v.helling)}° (${nl(v.opp)} m²)`);
+  const beste = [...model.dakvlakken].sort((a, b) => b.kwhPerKwp - a.kwhPerKwp)[0];
+  return `Je dak volgens 3DBAG: ${grote.join(', ')}. Het beste vlak levert volgens PVGIS ca. ${nl(beste.kwhPerKwp)} kWh per kWp per jaar, vóór schaduw. We vullen panelen tot ongeveer je jaarverbruik; tik op een lege plek om er een toe te voegen.`;
+}
+
+let toastTimer = 0;
+function toast(tekst: string) {
+  const t = $('#toast');
+  t.textContent = tekst; t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => (t.hidden = true), 4500);
+}
+
+/* Vragen die 3DBAG niet kan beantwoorden. */
+const antwoorden: Record<string, string> = {};
+document.querySelectorAll<HTMLButtonElement>('[data-vraag]').forEach((b) => b.addEventListener('click', () => {
+  const v = b.dataset.vraag!, a = b.dataset.antwoord!;
+  antwoorden[v] = a;
+  document.querySelectorAll(`[data-vraag="${v}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  const uitleg = $(`#uitleg-${v}`);
+  const teksten: Record<string, string> = {
+    'panelen-ja': 'Bestaande panelen zitten niet in de 3D-kaart. Tik in het 3D-beeld de plekken weg waar al panelen liggen; de adviseur controleert het bij de schouw.',
+    'riet-ja': 'Op riet plaatsen we geen panelen, vanwege brandveiligheid. Tik de plekken op het rieten deel weg. De adviseur kijkt naar alternatieven, zoals een bijgebouw.',
+  };
+  uitleg.textContent = teksten[`${v}-${a}`] ?? '';
+  uitleg.hidden = !uitleg.textContent;
+  meet('icn_vraag_beantwoord', { vraag: v, antwoord: a });
+}));
+
 function klaar() {
-  meet('icn_resultaat_getoond', bereken());
-  $('#podium-hint').hidden = !scene;
-  const noordTekst = `Het noordvlak krijgt ongeveer ${nl(Math.round(noordRatio * 100))}% van de zon op het zuidvlak. Daar raden we geen panelen aan.`;
-  $('.eerlijk').insertAdjacentHTML('afterend', `<p class="eerlijk">${noordTekst}</p>`);
+  meet('icn_resultaat_getoond', { status: model?.status, ...bereken() });
+  $('#podium-hint').hidden = !scene || !(model?.plekken?.length);
   const balk = $('#cta-balk');
   balk.hidden = false;
   new IntersectionObserver(([e]) => { balk.hidden = e.isIntersecting; }).observe($('#cta'));
   setTimeout(() => $('#podium-hint').hidden = true, 9000);
-  // Telefoon: het 3D-beeld blijft bovenin staan zolang je met de zon speelt, daarna scrolt het weg
-  // zodat het formulier de volle hoogte heeft.
+  // Telefoon: het 3D-beeld blijft bovenin staan zolang je met de zon speelt, daarna scrolt het weg.
   const geld = $('.geld-kaart'), podium = $('#podium');
   const check = () => {
     if (matchMedia('(min-width: 901px)').matches) return document.body.classList.remove('podium-los');

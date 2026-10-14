@@ -29,7 +29,7 @@ for (const r of richtingen) {
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: `${map}${r}-${m.naam}-1-start.png` });
     if (m.naam === 'laptop') await page.screenshot({ path: `${map}${r}-${m.naam}-1b-start-vol.png`, fullPage: true });
-    await page.fill('#adres-veld', 'Dwazz');
+    await page.fill('#adres-veld', process.env.ADRES ?? 'Zuidveld');
     await page.waitForTimeout(150);
     await page.screenshot({ path: `${map}${r}-${m.naam}-2-suggestie.png` });
     await page.click('#adres-lijst li');

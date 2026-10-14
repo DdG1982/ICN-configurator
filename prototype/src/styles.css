@@ -447,3 +447,22 @@ body[data-richting='natuur'] .resultaat::before { background: radial-gradient(ci
 body[data-richting='natuur'] .merk-logo { display: block; }
 body[data-richting='natuur'] .merk-teken, body[data-richting='natuur'] .merk-naam { display: none; }
 @media (max-width: 900px) { .merk-logo { height: 28px; } }
+
+/* ---------- Echte data: meldingen, vragen, toast ---------- */
+.melding-status { margin-top: 12px; font-size: 15px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--blauw, #4795ca) 12%, transparent); border: 1px solid color-mix(in srgb, var(--blauw, #4795ca) 35%, transparent); color: var(--tekst); }
+.badge-let-op { border-color: #c98a12; color: #8a5a00; background: rgba(240, 170, 40, 0.12); }
+body[data-richting='goudenuur'] .badge-let-op { color: #f6c46a; }
+.vragen-kaart h2 { margin-bottom: 4px; }
+.vraag { margin-top: 14px; }
+.vraag > p:first-child { font-weight: 600; margin-bottom: 8px; }
+.keuze { display: flex; flex-wrap: wrap; gap: 8px; }
+.keuze button { min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--lijn-sterk); background: var(--vlak); color: var(--tekst); font-weight: 600; cursor: pointer; }
+.keuze button[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--op-accent); }
+.vraag-uitleg { margin-top: 8px; font-size: 15px; color: var(--tekst-2); }
+.toast {
+  position: fixed; z-index: 40; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  max-width: min(520px, calc(100% - 32px)); padding: 12px 16px; border-radius: 14px; font-size: 15px;
+  background: var(--glas-sterk, var(--vlak)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--lijn-sterk); box-shadow: var(--schaduw); color: var(--tekst);
+}
+@media (min-width: 901px) { .toast { bottom: 32px; left: calc((100% - var(--paneel-b)) / 2); } }
