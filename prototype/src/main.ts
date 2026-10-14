@@ -16,6 +16,7 @@ import {
 } from './calc/opbrengst';
 import { maakEnergiestroom } from './ui/energiestroom';
 import type { SceneApi, Thema } from './ui/scene3d';
+import { suggesties, type Suggestie } from './live/bronnen';
 
 /* ---------- Hulpjes ---------- */
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
@@ -54,69 +55,120 @@ function pasUitsnedeAan() {
 zetRichting(richting);
 document.querySelectorAll<HTMLButtonElement>('[data-richting-knop]').forEach((b) => b.addEventListener('click', () => zetRichting(b.dataset.richtingKnop as Thema)));
 if (params.get('intern') === '1') document.querySelectorAll<HTMLElement>('[data-intern]').forEach((e) => (e.hidden = false));
-document.querySelector('[data-terug]')?.addEventListener('click', (e) => { e.preventDefault(); location.href = location.pathname + location.search; });
+document.querySelectorAll('[data-terug]').forEach((el) => el.addEventListener('click', (e) => {
+  e.preventDefault();
+  location.href = location.pathname + location.search;
+}));
 
-/* ---------- Adresveld met suggesties ---------- */
+/* ---------- Adresveld: voorbeeldwoningen + elk adres in Nederland (PDOK) ---------- */
 const BASIS = './data';
+type Keuze = { soort: 'voorbeeld'; item: IndexItem } | { soort: 'live'; id: string; label: string };
 let adressen: IndexItem[] = [];
 const indexKlaar = fetch(`${BASIS}/index.json`).then((r) => r.json()).then((d: IndexItem[]) => { adressen = d; return d; }).catch(() => []);
 const veld = $<HTMLInputElement>('#adres-veld');
 const lijst = $<HTMLUListElement>('#adres-lijst');
-let gekozen: IndexItem | null = null;
+let gekozen: Keuze | null = null;
 let actiefIndex = -1;
-let treffers: IndexItem[] = [];
+let treffers: Keuze[] = [];
+let liveTreffers: Suggestie[] = [];
+let alleVoorbeelden = false;
+let zoekTimer = 0;
+let zoekAfbreken: AbortController | null = null;
+
+/** Vergelijkbaar maken: kleine letters, enkele spaties, postcode zonder spatie. */
+const norm = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/(\d{4}) ?([a-z]{2})\b/g, '$1$2').trim();
+const keuzeLabel = (k: Keuze) => (k.soort === 'voorbeeld' ? k.item.label : k.label);
+const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 
 function toonSuggesties(alles = false) {
-  const q = veld.value.trim().toLowerCase().replace(/\s+/g, ' ');
-  treffers = alles ? adressen.slice(0, 20) : q.length < 2 ? [] : adressen.filter((a) => a.label.toLowerCase().replace(/\s+/g, ' ').includes(q)).slice(0, 8);
-  lijst.innerHTML = treffers.map((a, i) => {
-    const [straat, rest] = a.label.split(/,(.+)/);
-    return `<li role="option" id="opt-${i}" aria-selected="${i === actiefIndex}"><span>${straat}</span><small>${rest?.trim() ?? ''}</small></li>`;
+  alleVoorbeelden = alles;
+  const q = norm(veld.value);
+  // Voorbeeld past als elk getypt woord erin voorkomt (komma's en postcodespatie maken niet uit).
+  const woorden = q.replace(/,/g, ' ').split(' ').filter(Boolean);
+  const past = (label: string) => { const l = norm(label).replace(/,/g, ' '); return woorden.every((w) => l.includes(w)); };
+  const vb: Keuze[] = (alles ? adressen.slice(0, 20) : q.length < 2 ? [] : adressen.filter((a) => past(a.label)).slice(0, 3))
+    .map((item) => ({ soort: 'voorbeeld', item }));
+  const lv: Keuze[] = alles ? [] : liveTreffers
+    .filter((s) => !vb.some((v) => norm(keuzeLabel(v)) === norm(s.label)))
+    .map((s) => ({ soort: 'live', id: s.id, label: s.label }));
+  treffers = [...vb, ...lv].slice(0, 8);
+  lijst.innerHTML = (alles && treffers.length ? '<li class="kopje" role="presentation">Voorbeeldwoningen</li>' : '') + treffers.map((k, i) => {
+    const [straat, rest] = keuzeLabel(k).split(/,(.+)/);
+    const tag = k.soort === 'voorbeeld' && !alles ? '<span class="tag">voorbeeld</span>' : '';
+    return `<li role="option" id="opt-${i}" aria-selected="${i === actiefIndex}"><span>${esc(straat)}</span><span class="rechts"><small>${esc(rest?.trim() ?? '')}</small>${tag}</span></li>`;
   }).join('');
   lijst.hidden = treffers.length === 0;
   veld.setAttribute('aria-expanded', String(!lijst.hidden));
   veld.setAttribute('aria-activedescendant', actiefIndex >= 0 ? `opt-${actiefIndex}` : '');
 }
-function kies(a: IndexItem) {
-  gekozen = a; veld.value = a.label; lijst.hidden = true; veld.setAttribute('aria-expanded', 'false');
+function kies(k: Keuze) {
+  gekozen = k; veld.value = keuzeLabel(k); lijst.hidden = true; veld.setAttribute('aria-expanded', 'false');
   $('#adres-fout').hidden = true;
 }
-veld.addEventListener('input', () => { gekozen = null; actiefIndex = -1; toonSuggesties(); });
-veld.addEventListener('focus', () => { if (!veld.value) { indexKlaar.then(() => toonSuggesties(true)); } });
+function zoekLive(q: string) {
+  clearTimeout(zoekTimer);
+  zoekAfbreken?.abort();
+  if (norm(q).length < 3) { liveTreffers = []; return; }
+  zoekTimer = window.setTimeout(() => {
+    zoekAfbreken = new AbortController();
+    suggesties(q, zoekAfbreken.signal)
+      .then((r) => { liveTreffers = r; if (document.activeElement === veld) toonSuggesties(); })
+      .catch(() => { /* afgebroken of geen verbinding: dan alleen voorbeelden */ });
+  }, 160);
+}
+veld.addEventListener('input', () => { gekozen = null; actiefIndex = -1; liveTreffers = []; toonSuggesties(); zoekLive(veld.value); });
+veld.addEventListener('focus', () => { if (!veld.value) indexKlaar.then(() => toonSuggesties(true)); else if (treffers.length) toonSuggesties(); });
 veld.addEventListener('keydown', (e) => {
   if (lijst.hidden) return;
-  if (e.key === 'ArrowDown') { actiefIndex = Math.min(treffers.length - 1, actiefIndex + 1); toonSuggesties(!veld.value); e.preventDefault(); }
-  else if (e.key === 'ArrowUp') { actiefIndex = Math.max(0, actiefIndex - 1); toonSuggesties(!veld.value); e.preventDefault(); }
+  if (e.key === 'ArrowDown') { actiefIndex = Math.min(treffers.length - 1, actiefIndex + 1); toonSuggesties(alleVoorbeelden); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { actiefIndex = Math.max(0, actiefIndex - 1); toonSuggesties(alleVoorbeelden); e.preventDefault(); }
   else if (e.key === 'Enter' && actiefIndex >= 0) { kies(treffers[actiefIndex]); e.preventDefault(); }
   else if (e.key === 'Escape') { lijst.hidden = true; }
 });
 lijst.addEventListener('mousedown', (e) => {
   const li = (e.target as HTMLElement).closest('li');
-  if (!li) return;
+  if (!li || !li.id) return;
   e.preventDefault();
   kies(treffers[Number(li.id.replace('opt-', ''))]);
 });
 veld.addEventListener('blur', () => setTimeout(() => (lijst.hidden = true), 150));
 
+function adresFout(tekst: string, lijstTonen = false) {
+  const fout = $('#adres-fout');
+  fout.textContent = tekst; fout.hidden = false; veld.focus();
+  if (lijstTonen) toonSuggesties();
+}
+
 $('#adres-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   await indexKlaar;
-  const tekst = veld.value.trim().toLowerCase();
-  if (!gekozen) gekozen = adressen.find((a) => a.label.toLowerCase() === tekst || a.label.toLowerCase().startsWith(tekst) && tekst.length > 6) ?? null;
+  const tekst = veld.value.trim();
+  if (!gekozen && !tekst) return adresFout('Vul je adres in: straat, huisnummer en plaats.');
   if (!gekozen) {
-    const fout = $('#adres-fout');
-    fout.textContent = tekst
-      ? 'In dit ontwerpvoorbeeld werken alleen de voorbeeldadressen uit de lijst. Live zoeken op elk adres komt in de volgende versie.'
-      : 'Kies een adres uit de lijst.';
-    fout.hidden = false; veld.focus(); toonSuggesties(true);
-    return;
+    const vb = adressen.find((a) => norm(a.label) === norm(tekst));
+    if (vb) gekozen = { soort: 'voorbeeld', item: vb };
+  }
+  if (!gekozen) {
+    try {
+      liveTreffers = await suggesties(tekst);
+    } catch {
+      return adresFout('Adressen zoeken lukt nu even niet. Controleer je verbinding en probeer het opnieuw.');
+    }
+    // Alleen zelf kiezen als het eerste deel (straat + huisnummer) precies overeenkomt; anders de lijst laten zien.
+    const kaal = (t: string) => norm(t.replace(/,/g, ' ')) + ' ';
+    const exact = liveTreffers.filter((s) => kaal(tekst).startsWith(kaal(s.label.split(',')[0])) && /\d/.test(s.label.split(',')[0]));
+    const kandidaat = exact.sort((x, y) => y.label.split(',')[0].length - x.label.split(',')[0].length)[0]
+      ?? (liveTreffers.length === 1 ? liveTreffers[0] : undefined);
+    if (kandidaat) gekozen = { soort: 'live', id: kandidaat.id, label: kandidaat.label };
+    else if (liveTreffers.length) return adresFout('Kies je adres uit de lijst.', true);
+    else return adresFout('We vinden dit adres niet. Typ straat, huisnummer en plaats.');
   }
   start(gekozen);
 });
 $('#voorbeeld-knop').addEventListener('click', async () => {
   await indexKlaar;
   const peest = adressen.find((a) => a.slug.startsWith('zuidveldigerweg')) ?? adressen.find((a) => a.status === 'woning');
-  if (peest) start(peest);
+  if (peest) start({ soort: 'voorbeeld', item: peest });
 });
 
 /* ---------- Berekening ---------- */
@@ -169,7 +221,9 @@ function toonResultaat(aantalZichtbaar?: number) {
   const jr = (x: number) => nl(x, x % 1 ? 1 : 0);
   $('#terugverdien').innerHTML = !isFinite(t.high) || centraal <= 0 ? 'niet terug te verdienen'
     : `ca. ${jr(rondAf(centraal, 0.5))} jaar<small>${Math.abs(t.high - t.low) < 0.01 ? 'met jouw aannames' : `bandbreedte ${jr(rondAf(t.low, 0.5))}–${jr(rondAf(t.high, 0.5))} jaar`}</small>`;
-  $('#cta-balk-getal').textContent = nl(midden);
+  // Geen panelen (monument, appartement, alles weggetikt): dan geen "0 kWh" maar het advies.
+  $('#cta-balk-getal').textContent = r.aantal ? nl(midden) : 'Advies op maat';
+  $('#cta-balk-eenheid').textContent = r.aantal ? 'kWh per jaar' : 'van een adviseur';
   $<HTMLInputElement>('#a-verbruik').placeholder = nl(geschatVerbruik(staat.personen));
 }
 
@@ -300,14 +354,97 @@ const STATUS_TEKST: Record<string, string> = {
   'niet-in-3dbag': 'Dit pand is te nieuw voor de landelijke 3D-kaart (3DBAG). We hebben het dak daarom nog niet in 3D. We maken je indicatie na een korte check door een adviseur.',
 };
 
-async function start(item: IndexItem) {
-  meet('icn_adres_gekozen', { status: item.status });
+/* ---------- Laadscherm voor live adressen ---------- */
+const STAP_VOLGORDE = ['adres', 'pand', '3d', 'hoogte', 'opbrengst', 'schaduw'];
+let stapRij: Promise<void> = Promise.resolve();
+function ladenReset(label: string) {
+  const l = $('#laden');
+  l.hidden = false; l.classList.remove('weg');
+  $('#laden-fout').hidden = true;
+  $('#laden-titel').textContent = 'We meten je dak';
+  $('#laden-adres').textContent = label;
+  document.querySelectorAll<HTMLElement>('#laden-stappen li').forEach((li, i) => { li.className = i === 0 ? 'bezig' : ''; });
+  document.body.classList.add('laadt');
+}
+/** Stappen komen soms vlak na elkaar binnen; we vinken ze rustig één voor één af. */
+function ladenStap(stap: string, info: Record<string, unknown>) {
+  stapRij = stapRij.then(async () => {
+    const lis = [...document.querySelectorAll<HTMLElement>('#laden-stappen li')];
+    const i = STAP_VOLGORDE.indexOf(stap);
+    lis.forEach((li, j) => {
+      if (li.classList.contains('overgeslagen')) return;
+      li.classList.toggle('klaar', j <= i);
+      li.classList.toggle('bezig', j === i + 1);
+    });
+    if (stap === 'adres' && info.label) $('#laden-adres').textContent = String(info.label);
+    if (stap === 'adres' && typeof info.wijd === 'string') {
+      const img = $<HTMLImageElement>('#laden-foto');
+      img.crossOrigin = 'anonymous';
+      img.onload = () => img.classList.add('geladen');
+      img.src = info.wijd;
+    }
+    if (stap === '3d' && info.gevonden === false) lis.slice(3).forEach((li) => { li.classList.remove('bezig'); li.classList.add('overgeslagen'); });
+    await wacht(minderBeweging ? 0 : 170);
+  });
+}
+async function ladenKlaar() {
+  await stapRij;
+  await wacht(minderBeweging ? 0 : 260);
+  $('#laden').classList.add('weg');
+  document.body.classList.remove('laadt');
+  setTimeout(() => ($('#laden').hidden = true), 700);
+}
+function ladenFout(bron: string, bericht: string, opnieuw: () => void) {
+  const teksten: Record<string, string> = {
+    PVGIS: 'De zonnedata van de Europese Commissie (PVGIS) reageert nu niet. Probeer het over een minuut opnieuw.',
+    '3DBAG': 'De 3D-kaart van Nederland (3DBAG) reageert nu niet. Probeer het zo opnieuw.',
+    'PDOK Locatieserver': 'Het adressenregister reageert nu niet. Probeer het zo opnieuw.',
+    tijd: 'Het ophalen van de kaartdata duurt te lang. Probeer het opnieuw.',
+  };
+  $('#laden-titel').textContent = 'Dat lukte niet';
+  $('#laden-fout-tekst').textContent = bron === 'adres' || (bron === 'BAG' && /geen gebouw/.test(bericht)) ? bericht : teksten[bron] ?? 'Er ging iets mis bij het ophalen van de kaartdata. Probeer het opnieuw.';
+  $('#laden-fout').hidden = false;
+  $('#laden-opnieuw').hidden = bron === 'adres' || bron === 'BAG';
+  document.querySelectorAll('#laden-stappen li.bezig').forEach((li) => li.classList.remove('bezig'));
+  $('#laden-opnieuw').onclick = opnieuw;
+  meet('icn_live_fout', { bron });
+}
+
+/**
+ * Het gekozen adres staat in de #-hash, niet in de query: zo blijft een link te delen en te herladen,
+ * maar komt het adres niet in de paginaweergaven van analytics terecht (die laten de hash weg).
+ */
+const hashParams = () => new URLSearchParams(location.hash.slice(1));
+function zetUrl(k: string, v: string) {
+  history.replaceState(null, '', `${location.pathname}${location.search}#${k}=${encodeURIComponent(v)}`);
+}
+
+async function start(keuze: Keuze) {
   $('#start').hidden = true; $('#stappen').hidden = true;
   $('#app').hidden = false;
   document.body.classList.add('app-actief');
   window.scrollTo(0, 0);
-  const basis = `${BASIS}/${item.slug}`;
-  model = await (await fetch(`${basis}/model.json`)).json() as DakModel;
+  let basis = '';
+  if (keuze.soort === 'voorbeeld') {
+    zetUrl('voorbeeld', keuze.item.slug);
+    basis = `${BASIS}/${keuze.item.slug}`;
+    model = await (await fetch(`${basis}/model.json`)).json() as DakModel;
+  } else {
+    zetUrl('adres', keuze.id);
+    ladenReset(keuze.label);
+    const t0 = performance.now();
+    try {
+      const { bouwLive } = await import('./live/live');
+      model = await bouwLive(keuze.id, ladenStap);
+    } catch (e) {
+      const f = e as { bron?: string; message?: string };
+      ladenFout(f.bron ?? 'onbekend', f.message ?? '', () => start(keuze));
+      return;
+    }
+    meet('icn_live_berekend', { ms: Math.round(performance.now() - t0) });
+    await ladenKlaar();
+  }
+  meet('icn_adres_gekozen', { status: model.status, bron: keuze.soort });
   plekken = model.plekken ?? [];
   besteKwh = Math.max(1, ...plekken.map((p) => p.kwh));
   const magPanelen = !['appartement', 'monument', 'niet-in-3dbag'].includes(model.status);
@@ -325,6 +462,9 @@ async function start(item: IndexItem) {
   const st = $('#melding-status');
   st.hidden = !STATUS_TEKST[model.status];
   st.textContent = STATUS_TEKST[model.status] ?? '';
+  const ww = $('#melding-waarschuwing');
+  ww.hidden = !model.waarschuwingen?.length;
+  ww.textContent = model.waarschuwingen?.join(' ') ?? '';
   $('#vragen').hidden = !['woning', 'bijgebouw'].includes(model.status);
   const geenResultaat = model.status === 'niet-in-3dbag';
   for (const id of ['#resultaat', '.zon-kaart', '.stroom-kaart', '.geld-kaart']) $(id).hidden = geenResultaat;
@@ -402,8 +542,13 @@ function beschrijfDak(): string {
   const richting = (az: number) => ['noord', 'noordoost', 'oost', 'zuidoost', 'zuid', 'zuidwest', 'west', 'noordwest'][Math.round(az / 45) % 8];
   const grote = [...model.dakvlakken].sort((a, b) => b.opp - a.opp).slice(0, 3)
     .map((v) => v.plat ? `plat (${nl(v.opp)} m²)` : `${richting(v.azimut)} ${nl(v.helling)}° (${nl(v.opp)} m²)`);
-  const beste = [...model.dakvlakken].sort((a, b) => b.kwhPerKwp - a.kwhPerKwp)[0];
-  return `Je dak volgens 3DBAG: ${grote.join(', ')}. Het beste vlak levert volgens PVGIS ca. ${nl(beste.kwhPerKwp)} kWh per kWp per jaar, vóór schaduw. We vullen panelen tot ongeveer je jaarverbruik; tik op een lege plek om er een toe te voegen.`;
+  // Beste vlak waar ook echt panelen op passen (een klein zuiddakje zonder plekken telt niet).
+  const metPlek = model.dakvlakken.filter((v) => model!.plekken?.some((p) => p.vlak === v.id));
+  const beste = [...(metPlek.length ? metPlek : model.dakvlakken)].sort((a, b) => b.kwhPerKwp - a.kwhPerKwp)[0];
+  const slot = ['appartement', 'monument'].includes(model.status)
+    ? 'We plaatsen hier niets automatisch; een adviseur bekijkt wat kan.'
+    : 'We vullen panelen tot ongeveer je jaarverbruik; tik op een lege plek om er een toe te voegen.';
+  return `Je dak volgens 3DBAG: ${grote.join(', ')}. Het beste vlak levert volgens PVGIS ca. ${nl(beste.kwhPerKwp)} kWh per kWp per jaar, vóór schaduw. ${slot}`;
 }
 
 let toastTimer = 0;
@@ -446,3 +591,11 @@ function klaar() {
   addEventListener('scroll', check, { passive: true });
   addEventListener('resize', check);
 }
+
+/* ---------- Direct openen via de link (#adres=… of #voorbeeld=…) ---------- */
+const vanLink = hashParams();
+if (vanLink.get('adres')) start({ soort: 'live', id: vanLink.get('adres')!, label: '' });
+else if (vanLink.get('voorbeeld')) indexKlaar.then(() => {
+  const item = adressen.find((a) => a.slug === vanLink.get('voorbeeld'));
+  if (item) start({ soort: 'voorbeeld', item });
+});

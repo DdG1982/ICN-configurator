@@ -125,12 +125,17 @@ export function maakScene(o: SceneOpties): SceneApi {
 
   // Luchtfoto's: wijd (fly-in, 1,6 km) en dichtbij (160 m, ook op de daken geprojecteerd).
   const laad = new THREE.TextureLoader();
-  const fotoDichtbij = laad.load(`${o.basis}/${model.luchtfoto.dichtbij.bestand}`);
-  const fotoWijd = laad.load(`${o.basis}/${model.luchtfoto.wijd.bestand}`);
+  // Voorbeeldadressen: bestand naast model.json. Live: volledige PDOK-URL.
+  const bron = (b: string) => (/^https?:/.test(b) ? b : `${o.basis}/${b}`);
+  laad.setCrossOrigin('anonymous');
+  const fotoDichtbij = laad.load(bron(model.luchtfoto.dichtbij.bestand));
+  const fotoWijd = laad.load(bron(model.luchtfoto.wijd.bestand));
   for (const t of [fotoDichtbij, fotoWijd]) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; }
   const halfN = model.luchtfoto.dichtbij.half, halfW = model.luchtfoto.wijd.half;
   const grondWijd = new THREE.Mesh(new THREE.PlaneGeometry(2 * halfW, 2 * halfW), new THREE.MeshStandardMaterial({ map: fotoWijd, roughness: 1 }));
   grondWijd.rotation.x = -Math.PI / 2; grondWijd.position.y = -0.08;
+  const mw = model.luchtfoto.wijd.midden;
+  if (mw) grondWijd.position.set(mw[0], -0.08, mw[1]);
   const grond = new THREE.Mesh(new THREE.PlaneGeometry(2 * halfN, 2 * halfN), new THREE.MeshStandardMaterial({ map: fotoDichtbij, roughness: 1 }));
   grond.rotation.x = -Math.PI / 2; grond.receiveShadow = true;
   scene.add(grondWijd, grond);

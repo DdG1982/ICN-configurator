@@ -14,8 +14,8 @@
   "provincie": "Drenthe",
   "status": "zakelijk",
   "buitenWerkgebied": false,
-  "panelen": 60,
-  "kwh": 23798
+  "panelen": 84,
+  "kwh": 33602
  },
  {
   "slug": "wethouder-deodatusplantsoen-27x-9301-bs-roden",
@@ -23,8 +23,8 @@
   "provincie": "Drenthe",
   "status": "bijgebouw",
   "buitenWerkgebied": false,
-  "panelen": 0,
-  "kwh": 0
+  "panelen": 1,
+  "kwh": 312
  },
  {
   "slug": "raadhuisstraat-1-9301-aa-roden",
@@ -32,8 +32,8 @@
   "provincie": "Drenthe",
   "status": "zakelijk",
   "buitenWerkgebied": false,
-  "panelen": 138,
-  "kwh": 55413
+  "panelen": 209,
+  "kwh": 83159
  },
  {
   "slug": "heerestraat-92-9301-ah-roden",
@@ -41,8 +41,8 @@
   "provincie": "Drenthe",
   "status": "zakelijk",
   "buitenWerkgebied": false,
-  "panelen": 302,
-  "kwh": 104013
+  "panelen": 587,
+  "kwh": 199797
  },
  {
   "slug": "leeuwerikstraat-5-9481-en-vries",
@@ -50,8 +50,8 @@
   "provincie": "Drenthe",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 5,
-  "kwh": 1866
+  "panelen": 6,
+  "kwh": 2296
  },
  {
   "slug": "zuidveldigerweg-1-9334-tl-peest",
@@ -59,8 +59,8 @@
   "provincie": "Drenthe",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 50,
-  "kwh": 17100
+  "panelen": 56,
+  "kwh": 18903
  },
  {
   "slug": "hoofdweg-31-9761-ea-eelde",
@@ -68,8 +68,8 @@
   "provincie": "Drenthe",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 80,
-  "kwh": 29346
+  "panelen": 108,
+  "kwh": 40028
  },
  {
   "slug": "arwerd-1-9746-cm-groningen",
@@ -77,8 +77,8 @@
   "provincie": "Groningen",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 27,
-  "kwh": 9531
+  "panelen": 29,
+  "kwh": 10237
  },
  {
   "slug": "nienoord-1-9351-ac-leek",
@@ -93,10 +93,10 @@
   "slug": "raadhuisweg-7-9251-gh-burgum",
   "label": "Raadhuisweg 7, 9251 GH Burgum",
   "provincie": "Fryslân",
-  "status": "zakelijk",
+  "status": "monument",
   "buitenWerkgebied": false,
-  "panelen": 658,
-  "kwh": 237986
+  "panelen": 0,
+  "kwh": 0
  },
  {
   "slug": "ruisvoornlaan-4-1432-ph-aalsmeer",
@@ -104,8 +104,8 @@
   "provincie": "Noord-Holland",
   "status": "woning",
   "buitenWerkgebied": true,
-  "panelen": 6,
-  "kwh": 2374
+  "panelen": 8,
+  "kwh": 3171
  },
  {
   "slug": "prinseneiland-517-1013-ec-amsterdam",
@@ -122,7 +122,7 @@
   "provincie": "Noord-Holland",
   "status": "woning",
   "buitenWerkgebied": true,
-  "panelen": 5,
-  "kwh": 1424
+  "panelen": 6,
+  "kwh": 1694
  }
 ]

@@ -47,7 +47,8 @@ export interface DakModel {
   pand: { id: string; bouwjaar: number; gebruiksdoel: string; eenheden: number } | null;
   buitenWerkgebied: boolean;
   bronnen: string[];
-  luchtfoto: { dichtbij: { bestand: string; half: number }; wijd: { bestand: string; half: number } };
+  /** wijd.midden: middelpunt van de wijde foto (x, z) als die niet op de oorsprong ligt (live: het adrespunt). */
+  luchtfoto: { dichtbij: { bestand: string; half: number }; wijd: { bestand: string; half: number; midden?: [number, number] } };
   kwaliteit?: { '3dbagGoed': boolean; puntenwolkJaar: number; dakType: string };
   woning?: Mesh;
   buren?: Mesh;
@@ -55,6 +56,8 @@ export interface DakModel {
   dakvlakken?: Dakvlak[];
   plekken?: Plek[];
   footprint?: [number, number][];
+  /** Live: wat er niet gelukt is (bijv. AHN niet bereikbaar), om eerlijk te tonen. */
+  waarschuwingen?: string[];
 }
 
 export interface IndexItem {

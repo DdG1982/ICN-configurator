@@ -15,10 +15,13 @@
     "@fontsource-variable/fraunces": "^5.1.0",
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource/poppins": "^5.3.0",
+    "earcut": "^3.0.1",
+    "geotiff": "^2.1.3",
     "three": "0.170.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260702.1",
+    "@types/earcut": "^3.0.0",
     "@types/three": "0.170.0",
     "playwright": "1.56.1",
     "typescript": "5.6.3",

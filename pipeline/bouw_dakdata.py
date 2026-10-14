@@ -1,4 +1,8 @@
 """
+VERVANGEN (14-10-2026) door prototype/scripts/bouw-voorbeelden.ts, dat dezelfde code gebruikt als het live opzoeken.
+Deze Python-versie blijft staan als referentie. Bekende fout hierin: bij grote, licht scheve platte daken lag
+het rekenpunt soms onder de eigen dakdriehoek, waardoor schaduw veel te hoog uitviel (Heerestraat 92: 0,42 i.p.v. ~0,9).
+
 Tier B-dakdata voor de demo-adressen: PDOK + BAG + 3DBAG + AHN + PVGIS -> statische bestanden.
 
 Per adres in prototype/config/showcase.json:

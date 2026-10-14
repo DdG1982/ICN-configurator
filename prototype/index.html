@@ -9,7 +9,7 @@
 </head>
 <body data-richting="natuur">
   <div class="demo-balk" role="note">
-    <p><strong>Ontwerpvoorbeeld</strong> <span class="lang">met echte dakdata voor 14 voorbeeldadressen. Prijzen zijn placeholders.</span><span class="kort">· vaste data, placeholderprijzen</span></p>
+    <p><strong>Ontwerpvoorbeeld</strong> <span class="lang">voor elk adres in Nederland, met open data. Prijzen zijn placeholders.</span><span class="kort">· placeholderprijzen</span></p>
     <div class="richting-keuze" role="group" aria-label="Visuele richting">
       <button type="button" data-richting-knop="natuur" aria-pressed="true">Licht · ICN</button>
       <button type="button" data-richting-knop="goudenuur" aria-pressed="false">Donker · Goudenuur</button>
@@ -37,14 +37,14 @@
           <label for="adres-veld">Je adres</label>
           <div class="adres-rij">
             <div class="combo">
-              <input id="adres-veld" name="adres" type="text" inputmode="search" placeholder="Kies een voorbeeldadres"
+              <input id="adres-veld" name="adres" type="text" inputmode="search" placeholder="Straat en huisnummer, plaats"
                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="adres-lijst" />
               <ul id="adres-lijst" role="listbox" hidden></ul>
             </div>
             <button type="submit" class="knop knop-hoofd">Bekijk mijn dak</button>
           </div>
           <p class="veld-fout" id="adres-fout" role="alert" hidden></p>
-          <p class="klein">In dit ontwerpvoorbeeld werken 14 voorbeeldadressen met echte dakdata. Klik in het veld voor de lijst.</p>
+          <p class="klein">Werkt voor elk adres in Nederland. We rekenen met open data van het Kadaster, de 3D-kaart van de TU Delft, het AHN en PVGIS.</p>
         </form>
 
         <button type="button" class="link-knop" id="voorbeeld-knop">Of bekijk eerst een voorbeeldwoning <span aria-hidden="true">→</span></button>
@@ -110,6 +110,29 @@
         <div class="podium-fallback" id="fallback" hidden>
           <p>Je apparaat toont geen 3D-beeld. Je indicatie en alle aannames staan gewoon in de kaarten.</p>
         </div>
+        <div class="laden" id="laden" hidden>
+          <img class="laden-foto" id="laden-foto" alt="" decoding="async" />
+          <span class="laden-pin" aria-hidden="true"><span></span></span>
+          <div class="laden-kaart" role="status" aria-live="polite">
+            <p class="laden-titel" id="laden-titel">We meten je dak</p>
+            <p class="laden-adres" id="laden-adres"></p>
+            <ol class="laden-stappen" id="laden-stappen">
+              <li data-stap="adres"><span class="vink" aria-hidden="true"></span>Adres gevonden<small>PDOK</small></li>
+              <li data-stap="pand"><span class="vink" aria-hidden="true"></span>Gebouw en bouwjaar<small>BAG</small></li>
+              <li data-stap="3d"><span class="vink" aria-hidden="true"></span>Dak en buren in 3D<small>3DBAG</small></li>
+              <li data-stap="hoogte"><span class="vink" aria-hidden="true"></span>Bomen en hoogtes<small>AHN</small></li>
+              <li data-stap="opbrengst"><span class="vink" aria-hidden="true"></span>Zonopbrengst per dakvlak<small>PVGIS</small></li>
+              <li data-stap="schaduw"><span class="vink" aria-hidden="true"></span>Schaduw, het hele jaar door</li>
+            </ol>
+            <div class="laden-fout" id="laden-fout" hidden>
+              <p id="laden-fout-tekst"></p>
+              <div class="laden-knoppen">
+                <button type="button" class="knop knop-hoofd" id="laden-opnieuw">Probeer opnieuw</button>
+                <button type="button" class="link-knop" data-terug>Ander adres</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="vlucht-label" id="vlucht-label" aria-live="polite"></div>
         <button type="button" class="knop knop-glas sla-over" id="sla-over" hidden>Overslaan</button>
         <div class="scan-status" id="scan-status" hidden aria-live="polite">
@@ -127,6 +150,7 @@
           <p class="adres-regel" id="adres-regel">Voorbeeldwoning</p>
           <div class="badges" id="badges"></div>
           <p class="melding-status" id="melding-status" hidden></p>
+          <p class="melding-status" id="melding-waarschuwing" hidden></p>
           <p class="melding-buiten" id="melding-buiten" hidden>Dit adres ligt buiten het werkgebied van ICN (Groningen, Drenthe, Friesland, Overijssel en Flevoland). De indicatie werkt, maar ICN installeert hier niet.</p>
         </div>
 
@@ -254,7 +278,7 @@
         </div>
 
         <footer class="bronnen">
-          <p><strong>Indicatie, definitief na schouw.</strong> Dakvorm en buren: 3DBAG (TU Delft/3DGI, CC BY 4.0). Adres en pand: BAG via PDOK. Luchtfoto: PDOK (CC BY 4.0). Bomen: AHN (Rijkswaterstaat). Opbrengst: PVGIS (Europese Commissie). Bomen, schoorstenen, dakramen en dakkapellen kunnen afwijken van de werkelijkheid; de schouw is bepalend.</p>
+          <p><strong>Indicatie, definitief na schouw.</strong> Dakvorm en buren: 3DBAG (TU Delft/3DGI, CC BY 4.0). Adres en pand: BAG via PDOK. Luchtfoto: PDOK (CC BY 4.0). Bomen: AHN (Rijkswaterstaat). Opbrengst: PVGIS (Europese Commissie). Rijksmonumenten: RCE. Gemeentelijke monumenten en beschermde dorpsgezichten herkennen we nog niet. Bomen, schoorstenen, dakramen en dakkapellen kunnen afwijken van de werkelijkheid; de schouw is bepalend.</p>
         </footer>
       </aside>
     </section>
@@ -263,7 +287,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <div class="cta-balk" id="cta-balk" hidden>
-    <div><strong id="cta-balk-getal">–</strong><span>kWh per jaar</span></div>
+    <div><strong id="cta-balk-getal">–</strong><span id="cta-balk-eenheid">kWh per jaar</span></div>
     <a class="knop knop-hoofd" href="#cta">Plan gratis schouw</a>
   </div>
 

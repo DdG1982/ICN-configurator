@@ -20,4 +20,13 @@
 - **Gevonden en opgelost (14-10-2026): 3DBAG-transform per pagina.** 3DBAG levert resultaten in pagina's met elk een eigen coördinatentransform. De pijplijn en de spike gebruikten die van de eerste pagina, waardoor gebouwen van latere pagina's ongeveer 10 m verschoven. Beide zijn hersteld en opnieuw gedraaid. De conclusies van de 3DBAG-spike (helling, oppervlak, juist pand via BAG) blijven gelijk.
 - **Bomen uit AHN:** AHN-hoogtes min maaiveld, hoger dan 2,5 m en buiten gebouwen, worden geclusterd tot bomen. Kleine bomen en struiken worden soms gemist, en bomenrijen worden opgeknipt in bomen van 3 m straal. De opnamedatum van AHN is niet gecontroleerd.
 - **Bestaande panelen en riet** ziet de pijplijn niet. Daarom stellen we de bezoeker twee vragen. Op de luchtfoto zijn bestaande panelen vaak wel te zien (bijvoorbeeld Eelde en Noordhoek).
-- **Live adressen:** nog niet; zie besluiten.
+- **(Opgelost 14-10-2026) Live adressen:** elk adres in Nederland werkt nu. Zie docs/live-adressen.md.
+- **Rijksmonumenten via RCE (live):** we kijken of er een RCE-monumentpunt in het pand ligt. Getest: Nienoord (Leek), Brink 1 (Dwingeloo) en Raadhuisweg 7 (Burgum, gemeentehuis uit 1935).
+  - Burgum stond in de lijst als "openbaar" en is nu ook "monument". De RCE-punten 512547 en 512548 liggen precies op het adrespunt. De registerpagina kon ik vanuit deze omgeving niet openen, dus dit is nog niet met de hand gecontroleerd.
+  - **Gemeentelijke monumenten en beschermde stads- en dorpsgezichten herkennen we niet.** Er is geen landelijke open bron voor. Dit staat in de bronnenregel.
+  - De laag kan ook archeologische rijksmonumenten bevatten. Daar geldt de vergunningplicht voor grondwerk, niet voor panelen.
+- **Oude Python-schaduw had een fout** bij grote, licht scheve platte daken: het rekenpunt lag onder de eigen dakdriehoek. Heerestraat 92 kwam daardoor uit op een schaduwfactor van 0,42 terwijl het ~0,9 is. Alle voorbeelden zijn opnieuw berekend met de nieuwe TS-code.
+- **Paneelraster begon strak tegen de rand.** Een goot die 5 cm scheef loopt gaf daardoor nul panelen; zat ook in de Python-versie. Opgelost: het raster probeert verschuivingen en elke rij zoekt zelf de beste startplek. Bijna alle voorbeelden krijgen daardoor meer plekken (bijvoorbeeld Peest 91 → 111).
+- **Oost/west telt nu als geschikt** (azimut 85–275°, was 95–265°). Pure oost- en westdaken leveren ca. 80% van zuid en worden in Nederland veel gelegd. **Danny/ICN: klopt dat met jullie praktijk?**
+- **PVGIS-invoer wordt afgerond** op 5° helling en oriëntatie en 0,01° plaats, zodat de cache vaak raakt. Dat scheelt hooguit ca. 1% opbrengst, ruim binnen de bandbreedte van 8%.
+- **Niet getest op de echte Cloudflare-omgeving:** de PVGIS-functie (`/api/pvgis`) is lokaal getest via de Vite-variant. Op Pages draait hij pas na deploy, en *.pages.dev is vanuit hier niet bereikbaar. **Danny: graag één live adres proberen na deploy.**

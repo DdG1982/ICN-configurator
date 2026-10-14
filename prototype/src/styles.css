@@ -466,3 +466,68 @@ body[data-richting='goudenuur'] .badge-let-op { color: #f6c46a; }
   border: 1px solid var(--lijn-sterk); box-shadow: var(--schaduw); color: var(--tekst);
 }
 @media (min-width: 901px) { .toast { bottom: 32px; left: calc((100% - var(--paneel-b)) / 2); } }
+
+/* ---------- Live: laden van een adres ---------- */
+body.laadt .paneel { visibility: hidden; }
+body.laadt .cta-balk { display: none; }
+.laden { position: absolute; inset: 0; z-index: 6; overflow: hidden; background: var(--bg); transition: opacity .6s var(--ease); }
+.laden.weg { opacity: 0; pointer-events: none; }
+.laden-foto {
+  position: absolute; left: 50%; top: 50%; width: max(100%, 100vh); height: auto; aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(1); opacity: 0; transition: opacity 1s var(--ease);
+  filter: saturate(1.08) contrast(1.02);
+}
+.laden-foto.geladen { opacity: 1; animation: laden-zoom 14s cubic-bezier(.3, .1, .2, 1) forwards; }
+@keyframes laden-zoom { to { transform: translate(-50%, -50%) scale(3.4); } }
+.laden::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(70% 60% at 50% 50%, transparent 30%, color-mix(in srgb, var(--bg) 55%, transparent));
+}
+.laden-pin { position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; z-index: 1; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #fff, 0 6px 18px rgba(0, 0, 0, .3); }
+.laden-pin span { position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); animation: pin-puls 1.8s ease-out infinite; }
+@keyframes pin-puls { from { transform: scale(1); opacity: .9; } to { transform: scale(5); opacity: 0; } }
+.laden-kaart {
+  position: absolute; z-index: 2; left: 24px; bottom: 24px; width: min(380px, calc(100% - 32px));
+  padding: 20px 20px 16px; border-radius: var(--r-l);
+  background: var(--glas-sterk); border: 1px solid var(--glas-rand);
+  backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, var(--schaduw);
+}
+.laden-titel { font-family: var(--kop-font); font-weight: var(--kop-gewicht); letter-spacing: var(--kop-spatie); font-size: 20px; margin: 0; }
+.laden-adres { color: var(--tekst-2); font-size: 15px; margin: 2px 0 14px; min-height: 1.4em; }
+.laden-stappen { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.laden-stappen li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; font-size: 15px; min-height: 32px; color: var(--tekst-3); transition: color .3s; }
+.laden-stappen li small { font-size: 12px; letter-spacing: .04em; color: var(--tekst-3); opacity: .8; }
+.laden-stappen .vink { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--lijn-sterk); position: relative; transition: background .3s, border-color .3s; }
+.laden-stappen li.bezig { color: var(--tekst); }
+.laden-stappen li.bezig .vink { border-color: color-mix(in srgb, var(--accent) 30%, transparent); border-top-color: var(--accent); animation: draai .8s linear infinite; }
+.laden-stappen li.klaar { color: var(--tekst); }
+.laden-stappen li.klaar .vink { background: var(--accent); border-color: var(--accent); }
+.laden-stappen li.klaar .vink::after {
+  content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px;
+  border: solid var(--op-accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.laden-stappen li.overgeslagen { text-decoration: line-through; opacity: .6; }
+@keyframes draai { to { transform: rotate(360deg); } }
+.laden-fout { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--lijn); }
+.laden-fout p { margin: 0 0 12px; color: var(--tekst); font-size: 15px; }
+.laden-knoppen { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+@media (max-width: 900px) {
+  .laden-kaart { left: 16px; right: 16px; bottom: 16px; width: auto; padding: 16px; }
+  .laden-stappen li { min-height: 28px; font-size: 14px; }
+  .laden-adres { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .laden-foto.geladen { animation: none; transform: translate(-50%, -50%) scale(2); }
+  .laden-pin span, .laden-stappen li.bezig .vink { animation: none; }
+}
+
+/* Suggesties: voorbeeldwoningen herkenbaar, live adressen gewoon. */
+#adres-lijst li .tag { font-size: 12px; font-weight: 600; letter-spacing: .03em; color: var(--accent-tekst); background: color-mix(in srgb, var(--accent) 14%, transparent); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+#adres-lijst li .rechts { display: flex; gap: 8px; align-items: center; }
+#adres-lijst .kopje { cursor: default; min-height: 0; padding: 8px 14px 4px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tekst-3); }
+#adres-lijst .kopje:hover { background: none; }
+@media (max-width: 900px) {
+  /* Tijdens het laden is het paneel leeg: het beeld krijgt dan het hele scherm. */
+  body.laadt .podium { height: calc(100svh - var(--balk-h) - var(--kop-h)); }
+}

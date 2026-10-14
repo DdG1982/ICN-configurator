@@ -66,4 +66,11 @@ Er staan 15 rijen, omdat Danny 10 adressen leverde en Claude 5 openbare of zakel
   - Account `51ee524f8b832c49940a28578d5dab52`, Pages-project `icn-zonnepanelen-demo`, adres `https://icn-zonnepanelen-demo.pages.dev`.
   - Het token (alleen Pages en Workers, geldig t/m 31-12-2026) staat als network secret in de Claude-omgeving, niet in de repo.
   - De toegangscode staat als Pages-secret `TOEGANGSCODE`. Danny kent de code; hij staat niet in de repo.
-- **Live zoeken op elk adres:** komt later via een Cloudflare Worker. Daarvoor moet het rekenwerk (schaduw, bomen) eerst naar de browser van de bezoeker of naar een betaald Workers-plan. Tot die tijd werkt de demo met de 14 vooraf berekende voorbeeldadressen.
+- **Live zoeken op elk adres:** komt later via een Cloudflare Worker. Daarvoor moet het rekenwerk (schaduw, bomen) eerst naar de browser van de bezoeker of naar een betaald Workers-plan. Tot die tijd werkt de demo met de 14 vooraf berekende voorbeeldadressen. *(Achterhaald, zie hieronder.)*
+
+## 14-10-2026: live adressen (Danny: "ja begin maar maak het mooi")
+
+- **Rekenen in de browser van de bezoeker**, in een Web Worker. Geen betaald Workers-plan nodig. De enige servercode is een kleine Pages Function voor PVGIS (geen CORS) met 30 dagen cache.
+- **Schaduw via de AHN-hoogtekaart** (0,5 m) in plaats van driehoeken plus boombollen. Die kaart bevat gebouwen, bomen en schoorstenen zoals ze gemeten zijn.
+- **Voorbeeldadressen rekenen met dezelfde code** (`prototype/scripts/bouw-voorbeelden.ts`). De Python-pijplijn blijft alleen als referentie.
+- **Adres in de link staat in de #-hash** (`#adres=…`), niet in de query. Zo is een link te delen, maar komt het adres niet in de paginaweergaven van analytics.
