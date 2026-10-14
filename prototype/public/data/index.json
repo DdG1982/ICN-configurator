@@ -1,5 +1,59 @@
 [
  {
+  "slug": "dwazziewegen-20-9301-zr-roden",
+  "label": "Dwazziewegen 20, 9301 ZR Roden",
+  "provincie": "Drenthe",
+  "status": "niet-in-3dbag",
+  "buitenWerkgebied": false,
+  "panelen": 0,
+  "kwh": 0
+ },
+ {
+  "slug": "noordhoek-5-9301-zg-roden",
+  "label": "Noordhoek 5, 9301 ZG Roden",
+  "provincie": "Drenthe",
+  "status": "zakelijk",
+  "buitenWerkgebied": false,
+  "panelen": 60,
+  "kwh": 23798
+ },
+ {
+  "slug": "wethouder-deodatusplantsoen-27x-9301-bs-roden",
+  "label": "Wethouder Deodatusplantsoen 27X, 9301 BS Roden",
+  "provincie": "Drenthe",
+  "status": "bijgebouw",
+  "buitenWerkgebied": false,
+  "panelen": 0,
+  "kwh": 0
+ },
+ {
+  "slug": "raadhuisstraat-1-9301-aa-roden",
+  "label": "Raadhuisstraat 1, 9301 AA Roden",
+  "provincie": "Drenthe",
+  "status": "zakelijk",
+  "buitenWerkgebied": false,
+  "panelen": 138,
+  "kwh": 55413
+ },
+ {
+  "slug": "heerestraat-92-9301-ah-roden",
+  "label": "Heerestraat 92, 9301 AH Roden",
+  "provincie": "Drenthe",
+  "status": "woning",
+  "buitenWerkgebied": false,
+  "panelen": 302,
+  "kwh": 104013
+ },
+ {
+  "slug": "leeuwerikstraat-5-9481-en-vries",
+  "label": "Leeuwerikstraat 5, 9481 EN Vries",
+  "provincie": "Drenthe",
+  "status": "woning",
+  "buitenWerkgebied": false,
+  "panelen": 4,
+  "kwh": 1563
+ },
+ {
   "slug": "zuidveldigerweg-1-9334-tl-peest",
   "label": "Zuidveldigerweg 1, 9334 TL Peest",
   "provincie": "Drenthe",
@@ -7,5 +61,68 @@
   "buitenWerkgebied": false,
   "panelen": 50,
   "kwh": 17100
+ },
+ {
+  "slug": "hoofdweg-31-9761-ea-eelde",
+  "label": "Hoofdweg 31, 9761 EA Eelde",
+  "provincie": "Drenthe",
+  "status": "woning",
+  "buitenWerkgebied": false,
+  "panelen": 80,
+  "kwh": 29346
+ },
+ {
+  "slug": "arwerd-1-9746-cm-groningen",
+  "label": "Arwerd 1, 9746 CM Groningen",
+  "provincie": "Groningen",
+  "status": "woning",
+  "buitenWerkgebied": false,
+  "panelen": 26,
+  "kwh": 9175
+ },
+ {
+  "slug": "nienoord-1-9351-ac-leek",
+  "label": "Nienoord 1, 9351 AC Leek",
+  "provincie": "Groningen",
+  "status": "monument",
+  "buitenWerkgebied": false,
+  "panelen": 0,
+  "kwh": 0
+ },
+ {
+  "slug": "raadhuisweg-7-9251-gh-burgum",
+  "label": "Raadhuisweg 7, 9251 GH Burgum",
+  "provincie": "Fryslân",
+  "status": "zakelijk",
+  "buitenWerkgebied": false,
+  "panelen": 658,
+  "kwh": 237986
+ },
+ {
+  "slug": "ruisvoornlaan-4-1432-ph-aalsmeer",
+  "label": "Ruisvoornlaan 4, 1432 PH Aalsmeer",
+  "provincie": "Noord-Holland",
+  "status": "woning",
+  "buitenWerkgebied": true,
+  "panelen": 6,
+  "kwh": 2349
+ },
+ {
+  "slug": "prinseneiland-517-1013-ec-amsterdam",
+  "label": "Prinseneiland 517, 1013 EC Amsterdam",
+  "provincie": "Noord-Holland",
+  "status": "appartement",
+  "buitenWerkgebied": true,
+  "panelen": 0,
+  "kwh": 0
+ },
+ {
+  "slug": "amstelbeststraat-12a-1096-gd-amsterdam",
+  "label": "Amstelbeststraat 12A, 1096 GD Amsterdam",
+  "provincie": "Noord-Holland",
+  "status": "woning",
+  "buitenWerkgebied": true,
+  "panelen": 7,
+  "kwh": 1908
  }
 ]
