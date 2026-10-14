@@ -4,12 +4,12 @@
  * Schaduw: anders dan de Python-pijplijn (driehoeken + boombollen) volgen we hier de zon over de AHN-hoogtekaart
  * van 0,5 m. Die bevat gebouwen, bomen en schoorstenen zoals ze gemeten zijn.
  */
-import type { DakModel, DakStatus, Dakvlak, Mesh, Plek } from '../core/dak-model';
+import type { DakModel, DakStatus, Dakvlak, Mesh, Plek, Woningtype } from '../core/dak-model';
 import {
   adresOpzoeken, ahn, bagPand, BronFout, isRijksmonument, luchtfotoUrl, panden3dbag,
   type CityFeature, type Pvgis, type Transform,
 } from './bronnen';
-import { basisVlak, dot, naarModel, newell, open, plekkenOpVlak, puntInVeelhoek, sub, trianguleer, zonstanden, type PaneelMaat, type V2, type V3 } from './geo';
+import { afstandTotRand, basisVlak, dot, naarModel, newell, open, plekkenOpVlak, puntInVeelhoek, sub, trianguleer, zonstanden, type PaneelMaat, type V2, type V3 } from './geo';
 import { bomenUitAhn, schaduwfactor, type Raster } from './hoogte';
 
 /** Voortgang: elke stap wordt gemeld zodra hij klaar is, in deze volgorde. */
@@ -94,6 +94,21 @@ export function bepaalStatus(gebruiksdoel: string, eenheden: number, monument: b
   return 'woning';
 }
 
+const oppVoet = (r: V2[]) => Math.abs(r.reduce((s, p, i) => { const q = r[(i + 1) % r.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0)) / 2;
+const raakt = (a: V2[], b: V2[]) => a.some(([x, y]) => afstandTotRand(x, y, b) < 0.5) || b.some(([x, y]) => afstandTotRand(x, y, a) < 0.5);
+
+/**
+ * Woningtype uit de buren: hoeveel panden van minstens 30 m2 delen een muur (binnen 0,5 m) met de woning?
+ * 0 = vrijstaand, 1 = hoekwoning of twee-onder-een-kap, 2+ = tussenwoning. Een aangebouwde garage van een
+ * buurman kan zo een vrijstaand huis tot hoekwoning maken; het is een schatting voor het verbruik, meer niet.
+ */
+export function bepaalWoningtype(status: DakStatus, eigen: V2[][], buren: V2[][][]): Woningtype | undefined {
+  if (status === 'appartement') return 'appartement';
+  if (status !== 'woning' && status !== 'monument') return undefined;
+  const n = buren.filter((rs) => rs.some((b) => oppVoet(b) >= 30 && eigen.some((e) => raakt(e, b)))).length;
+  return n === 0 ? 'vrijstaand' : n === 1 ? 'hoekwoning' : 'tussenwoning';
+}
+
 export async function bouwModel(adresId: string, o: BouwOpties): Promise<DakModel> {
   const meld = o.voortgang ?? (() => {});
   const adres = await adresOpzoeken(adresId);
@@ -144,16 +159,21 @@ export async function bouwModel(adresId: string, o: BouwOpties): Promise<DakMode
   const woningVlakken = lod22(doel.f, Vw);
   model.woning = maakMesh(woningVlakken, oz, false);
   const buren: Mesh = { pos: [], type: [] };
-  const gebouwVoetafdruk: V2[][] = footprints(doel.f, Vw);
+  const eigenVoet = footprints(doel.f, Vw);
+  const gebouwVoetafdruk: V2[][] = [...eigenVoet];
+  const burenVoet: V2[][][] = [];
   for (const { f, tr } of rond) {
     if (f === doel.f) continue;
     const V = hoekpunten(f, tr, ox, oy);
     const m = maakMesh(lod22(f, V), oz, true);
     for (const x of m.pos) buren.pos.push(x);
     for (const x of m.type) buren.type.push(x);
-    gebouwVoetafdruk.push(...footprints(f, V));
+    const voet = footprints(f, V);
+    gebouwVoetafdruk.push(...voet);
+    burenVoet.push(voet);
   }
   model.buren = buren;
+  model.woningtype = bepaalWoningtype(model.status, eigenVoet, burenVoet);
 
   if (dsm && dtm) {
     model.bomen = bomenUitAhn(dsm, dtm, gebouwVoetafdruk, 45).map((b) => ({ x: r2(b.x), z: r2(b.z), h: r2(b.h), r: r2(b.r) }));

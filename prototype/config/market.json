@@ -18,5 +18,17 @@
   },
   "opbrengstMarge": 0.08,
   "prijsstijgingPerJaar": 0.0,
-  "degradatiePerJaar": 0.005
+  "degradatiePerJaar": 0.005,
+  "verbruik": {
+    "_toelichting": "PLACEHOLDERS. perPersonen: oorspronkelijke tabel van het prototype, bron onbekend (3 personen = 3.300 kWh, het gemiddelde dat Milieu Centraal volgens anderen noemt). woningtypeFactor: verhouding uit ANWB-cijfers voor 4 personen, bouwjaar 1992-2006 (appartement 2.810, tussenwoning 3.210, twee-onder-een-kap 3.590, vrijstaand 5.080 kWh), via een zoekmachine gelezen en niet zelf gecontroleerd; tussenwoning = 1. Hoekwoning krijgt de factor van twee-onder-een-kap. extraKwhGasloos: aanname voor een warmtepomp in nieuwbouw zonder gasaansluiting (verplicht voor vergunningen vanaf 1 juli 2018, dus oplevering vanaf ca. 2020); geen bron, door ICN te bevestigen.",
+    "perPersonen": [1800, 2700, 3300, 3900, 4400],
+    "woningtypeFactor": {
+      "appartement": 0.88,
+      "tussenwoning": 1.0,
+      "hoekwoning": 1.12,
+      "vrijstaand": 1.58
+    },
+    "gasloosVanafBouwjaar": 2020,
+    "extraKwhGasloos": 2500
+  }
 }

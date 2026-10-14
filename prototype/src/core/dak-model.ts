@@ -5,6 +5,9 @@
  */
 export type DakStatus = 'woning' | 'zakelijk' | 'bijgebouw' | 'appartement' | 'monument' | 'niet-in-3dbag';
 
+/** Afgeleid uit aangrenzende panden in 3DBAG (en de BAG voor appartementen). */
+export type Woningtype = 'vrijstaand' | 'hoekwoning' | 'tussenwoning' | 'appartement';
+
 export interface Mesh {
   /** Driehoeken: 9 getallen per driehoek. */
   pos: number[];
@@ -45,6 +48,8 @@ export interface DakModel {
   status: DakStatus;
   adres: { label: string; bag: string; provincie: string; lat: number; lon: number; soort?: string };
   pand: { id: string; bouwjaar: number; gebruiksdoel: string; eenheden: number } | null;
+  /** Ontbreekt bij oudere voorbeeldmodellen en bij niet-woningen; dan rekent het verbruik zonder woningtype. */
+  woningtype?: Woningtype;
   buitenWerkgebied: boolean;
   bronnen: string[];
   /** wijd.midden: middelpunt van de wijde foto (x, z) als die niet op de oorsprong ligt (live: het adrespunt). */

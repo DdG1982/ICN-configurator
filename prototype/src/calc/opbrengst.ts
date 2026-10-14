@@ -2,6 +2,8 @@
  * Rekenmodel voor de indicatie. Zuivere functies, geen DOM.
  * Alle invoer komt uit config/market.json en config/pricing.json (placeholders).
  */
+import type { Woningtype } from '../core/dak-model';
+
 export interface Band { low: number; high: number }
 
 export interface MarktAannames {
@@ -50,16 +52,52 @@ export function investeringBand(wp: number, prijsPerWp: Band): Band {
   return { low: wp * prijsPerWp.low, high: wp * prijsPerWp.high };
 }
 
-/** Terugverdientijd in jaren: snel = lage investering / hoge besparing, traag = andersom. */
-export function terugverdientijd(investering: Band, besparing: Band): Band {
-  const jaren = (i: number, b: number) => (b > 0 ? i / b : Infinity);
-  return { low: jaren(investering.low, besparing.high), high: jaren(investering.high, besparing.low) };
+/** Veroudering van de panelen en verandering van de stroomprijs, per jaar (config/market.json). */
+export interface Meerjarig { degradatiePerJaar: number; prijsstijgingPerJaar: number }
+
+/** Hoe ver we vooruit rekenen; daarna geldt de investering als niet terug te verdienen. */
+export const MAX_JAREN = 50;
+
+/**
+ * Jaren tot de opgetelde besparing de investering dekt. Jaar n (vanaf 0) bespaart
+ * jaar1 x (1 - degradatie)^n x (1 + prijsstijging)^n. Het laatste jaar telt naar rato mee.
+ */
+export function jarenTotTerug(investering: number, besparingJaar1: number, m: Meerjarig): number {
+  if (besparingJaar1 <= 0) return Infinity;
+  let rest = investering;
+  for (let j = 0; j < MAX_JAREN; j++) {
+    const b = besparingJaar1 * (1 - m.degradatiePerJaar) ** j * (1 + m.prijsstijgingPerJaar) ** j;
+    if (b <= 0) return Infinity;
+    if (b >= rest) return j + rest / b;
+    rest -= b;
+  }
+  return Infinity;
 }
 
-/** Grove schatting jaarverbruik uit huishoudgrootte (placeholder, later met BAG-woningtype). */
-export function geschatVerbruik(personen: number): number {
-  const tabel = [0, 1800, 2700, 3300, 3900, 4400];
-  return tabel[Math.min(Math.max(Math.round(personen), 1), 5)];
+/** Terugverdientijd in jaren: snel = lage investering / hoge besparing, traag = andersom. */
+export function terugverdientijd(investering: Band, besparing: Band, m: Meerjarig = { degradatiePerJaar: 0, prijsstijgingPerJaar: 0 }): Band {
+  return { low: jarenTotTerug(investering.low, besparing.high, m), high: jarenTotTerug(investering.high, besparing.low, m) };
+}
+
+
+export interface VerbruikAannames {
+  /** Jaarverbruik voor 1, 2, 3, 4 en 5+ personen (kWh). */
+  perPersonen: number[];
+  /** Vermenigvuldiging per woningtype; onbekend = 1. */
+  woningtypeFactor: Record<Woningtype, number>;
+  /** Vanaf dit bouwjaar gaan we uit van een woning zonder gas, dus met een warmtepomp. */
+  gasloosVanafBouwjaar: number;
+  extraKwhGasloos: number;
+}
+
+export interface VerbruikSchatting { kwh: number; basis: number; factor: number; extraGasloos: number }
+
+/** Grove schatting jaarverbruik uit huishoudgrootte, woningtype en bouwjaar (placeholders in config/market.json). */
+export function geschatVerbruik(personen: number, v: VerbruikAannames, woning: { type?: Woningtype; bouwjaar?: number } = {}): VerbruikSchatting {
+  const basis = v.perPersonen[Math.min(Math.max(Math.round(personen), 1), v.perPersonen.length) - 1];
+  const factor = woning.type ? v.woningtypeFactor[woning.type] : 1;
+  const extraGasloos = woning.bouwjaar && woning.bouwjaar >= v.gasloosVanafBouwjaar ? v.extraKwhGasloos : 0;
+  return { kwh: Math.round((basis * factor + extraGasloos) / 100) * 100, basis, factor, extraGasloos };
 }
 
 /** Afronden voor weergave: geen schijnnauwkeurigheid. */
