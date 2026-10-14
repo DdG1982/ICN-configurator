@@ -50,8 +50,8 @@
   "provincie": "Drenthe",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 4,
-  "kwh": 1563
+  "panelen": 5,
+  "kwh": 1866
  },
  {
   "slug": "zuidveldigerweg-1-9334-tl-peest",
@@ -77,8 +77,8 @@
   "provincie": "Groningen",
   "status": "woning",
   "buitenWerkgebied": false,
-  "panelen": 26,
-  "kwh": 9175
+  "panelen": 27,
+  "kwh": 9531
  },
  {
   "slug": "nienoord-1-9351-ac-leek",
@@ -105,7 +105,7 @@
   "status": "woning",
   "buitenWerkgebied": true,
   "panelen": 6,
-  "kwh": 2349
+  "kwh": 2374
  },
  {
   "slug": "prinseneiland-517-1013-ec-amsterdam",
@@ -122,7 +122,7 @@
   "provincie": "Noord-Holland",
   "status": "woning",
   "buitenWerkgebied": true,
-  "panelen": 7,
-  "kwh": 1908
+  "panelen": 5,
+  "kwh": 1424
  }
 ]

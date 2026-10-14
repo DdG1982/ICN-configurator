@@ -39,15 +39,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 918,
     "panelen_indicatie_totaal": 50,
     "kwp_indicatie": 21.5,
-    "afbeelding": "dwazziewegen-20-9301-zr-roden.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000040828",
-      "bouwjaar": 2024,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "industriefunctie",
-      "aantal_verblijfsobjecten": 12
-    },
-    "bag_en_3dbag_zelfde_pand": false
+    "afbeelding": "dwazziewegen-20-9301-zr-roden.jpg"
   },
   {
     "adres": "Noordhoek 5, 9301 ZG Roden",
@@ -97,15 +89,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 924,
     "panelen_indicatie_totaal": 76,
     "kwp_indicatie": 32.7,
-    "afbeelding": "noordhoek-5-9301-zg-roden.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000014990",
-      "bouwjaar": 1991,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "industriefunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "noordhoek-5-9301-zg-roden.jpg"
   },
   {
     "adres": "Wethouder Deodatusplantsoen 27X, 9301 BS Roden",
@@ -146,15 +130,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 918,
     "panelen_indicatie_totaal": 5,
     "kwp_indicatie": 2.1,
-    "afbeelding": "wethouder-deodatusplantsoen-27x-9301-bs-roden.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000005870",
-      "bouwjaar": 1964,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "overige gebruiksfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "wethouder-deodatusplantsoen-27x-9301-bs-roden.jpg"
   },
   {
     "adres": "Raadhuisstraat 1, 9301 AA Roden",
@@ -240,15 +216,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 990,
     "panelen_indicatie_totaal": 255,
     "kwp_indicatie": 109.7,
-    "afbeelding": "raadhuisstraat-1-9301-aa-roden.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000009942",
-      "bouwjaar": 1983,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "kantoorfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "raadhuisstraat-1-9301-aa-roden.jpg"
   },
   {
     "adres": "Heerestraat 92, 9301 AH Roden",
@@ -316,15 +284,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 918,
     "panelen_indicatie_totaal": 491,
     "kwp_indicatie": 211.1,
-    "afbeelding": "heerestraat-92-9301-ah-roden.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000004117",
-      "bouwjaar": 1980,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "winkelfunctie,woonfunctie",
-      "aantal_verblijfsobjecten": 2
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "heerestraat-92-9301-ah-roden.jpg"
   },
   {
     "adres": "Leeuwerikstraat 5, 9481 EN Vries",
@@ -383,15 +343,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 919,
     "panelen_indicatie_totaal": 18,
     "kwp_indicatie": 7.7,
-    "afbeelding": "leeuwerikstraat-5-9481-en-vries.jpg",
-    "bag_pand": {
-      "identificatie": "1730100000007966",
-      "bouwjaar": 1970,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "leeuwerikstraat-5-9481-en-vries.jpg"
   },
   {
     "adres": "Zuidveldigerweg 1, 9334 TL Peest",
@@ -459,15 +411,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 805,
     "panelen_indicatie_totaal": 61,
     "kwp_indicatie": 26.2,
-    "afbeelding": "zuidveldigerweg-1-9334-tl-peest.jpg",
-    "bag_pand": {
-      "identificatie": "1699100000022056",
-      "bouwjaar": 1932,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "zuidveldigerweg-1-9334-tl-peest.jpg"
   },
   {
     "adres": "Hoofdweg 31, 9761 EA Eelde",
@@ -580,15 +524,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 902,
     "panelen_indicatie_totaal": 159,
     "kwp_indicatie": 68.4,
-    "afbeelding": "hoofdweg-31-9761-ea-eelde.jpg",
-    "bag_pand": {
-      "identificatie": "1730100000022752",
-      "bouwjaar": 1915,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "hoofdweg-31-9761-ea-eelde.jpg"
   },
   {
     "adres": "Arwerd 1, 9746 CM Groningen",
@@ -629,15 +565,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 917,
     "panelen_indicatie_totaal": 38,
     "kwp_indicatie": 16.3,
-    "afbeelding": "arwerd-1-9746-cm-groningen.jpg",
-    "bag_pand": {
-      "identificatie": "0014100010953727",
-      "bouwjaar": 2006,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "arwerd-1-9746-cm-groningen.jpg"
   },
   {
     "adres": "Nienoord 1, 9351 AC Leek",
@@ -750,15 +678,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 920,
     "panelen_indicatie_totaal": 85,
     "kwp_indicatie": 36.5,
-    "afbeelding": "nienoord-1-9351-ac-leek.jpg",
-    "bag_pand": {
-      "identificatie": "0022100000000023",
-      "bouwjaar": 1678,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "bijeenkomstfunctie",
-      "aantal_verblijfsobjecten": 2
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "nienoord-1-9351-ac-leek.jpg"
   },
   {
     "adres": "Raadhuisweg 7, 9251 GH Burgum",
@@ -862,15 +782,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 934,
     "panelen_indicatie_totaal": 819,
     "kwp_indicatie": 352.2,
-    "afbeelding": "raadhuisweg-7-9251-gh-burgum.jpg",
-    "bag_pand": {
-      "identificatie": "0737100000019318",
-      "bouwjaar": 1935,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "kantoorfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "raadhuisweg-7-9251-gh-burgum.jpg"
   },
   {
     "adres": "Ruisvoornlaan 4, 1432 PH Aalsmeer",
@@ -938,15 +850,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 926,
     "panelen_indicatie_totaal": 19,
     "kwp_indicatie": 8.2,
-    "afbeelding": "ruisvoornlaan-4-1432-ph-aalsmeer.jpg",
-    "bag_pand": {
-      "identificatie": "0358100020154337",
-      "bouwjaar": 2008,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 1
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "ruisvoornlaan-4-1432-ph-aalsmeer.jpg"
   },
   {
     "adres": "Prinseneiland 517, 1013 EC Amsterdam",
@@ -1041,15 +945,7 @@
     "pvgis_kwh_per_kwp_beste_vlak": 948,
     "panelen_indicatie_totaal": 101,
     "kwp_indicatie": 43.4,
-    "afbeelding": "prinseneiland-517-1013-ec-amsterdam.jpg",
-    "bag_pand": {
-      "identificatie": "0363100012176824",
-      "bouwjaar": 1905,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 14
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "prinseneiland-517-1013-ec-amsterdam.jpg"
   },
   {
     "adres": "Amstelbeststraat 12A, 1096 GD Amsterdam",
@@ -1090,14 +986,6 @@
     "pvgis_kwh_per_kwp_beste_vlak": 959,
     "panelen_indicatie_totaal": 24,
     "kwp_indicatie": 10.3,
-    "afbeelding": "amstelbeststraat-12a-1096-gd-amsterdam.jpg",
-    "bag_pand": {
-      "identificatie": "0363100012243815",
-      "bouwjaar": 2014,
-      "status": "Pand in gebruik",
-      "gebruiksdoel": "woonfunctie",
-      "aantal_verblijfsobjecten": 2
-    },
-    "bag_en_3dbag_zelfde_pand": true
+    "afbeelding": "amstelbeststraat-12a-1096-gd-amsterdam.jpg"
   }
 ]
