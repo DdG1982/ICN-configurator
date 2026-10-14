@@ -1,0 +1,7 @@
+numpy
+scipy
+shapely
+mapbox-earcut
+tifffile
+imagecodecs
+Pillow

@@ -1,0 +1,991 @@
+[
+  {
+    "adres": "Dwazziewegen 20, 9301 ZR Roden",
+    "bag_weergave": "Dwazziewegen 20, 9301ZR Roden",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000018926",
+    "rd": [
+      225438.371,
+      573863.413
+    ],
+    "lat": 53.1468708,
+    "lon": 6.43999555,
+    "let_op": "adrespunt ligt buiten de footprint; dichtstbijzijnde pand gekozen (39.8 m)",
+    "pand": "NL.IMBAG.Pand.1699100000004790",
+    "bouwjaar": 1974,
+    "dak_type": "multiple horizontal",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 180.51,
+    "opp_dak_schuin": 0.0,
+    "opp_grond": 179.86,
+    "h_nok": null,
+    "h_maaiveld": 1.6080000400543213,
+    "n_buren_binnen_40m": 0,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.1,
+        "azimut": 294,
+        "richting": "plat",
+        "opp": 179.9,
+        "geschikt": true,
+        "panelen_indicatie": 50
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 918,
+    "panelen_indicatie_totaal": 50,
+    "kwp_indicatie": 21.5,
+    "afbeelding": "dwazziewegen-20-9301-zr-roden.jpg"
+  },
+  {
+    "adres": "Noordhoek 5, 9301 ZG Roden",
+    "bag_weergave": "Noordhoek 5, 9301ZG Roden",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000014176",
+    "rd": [
+      225063.0,
+      573942.0
+    ],
+    "lat": 53.14762602,
+    "lon": 6.43440314,
+    "pand": "NL.IMBAG.Pand.1699100000014990",
+    "bouwjaar": 1991,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 0.0,
+    "opp_dak_schuin": 409.1,
+    "opp_grond": 357.17,
+    "h_nok": 11.697454452514648,
+    "h_maaiveld": 3.1760001182556152,
+    "n_buren_binnen_40m": 10,
+    "dakvlakken": [
+      {
+        "plat": false,
+        "helling": 29.2,
+        "azimut": 226,
+        "richting": "ZW",
+        "opp": 213.0,
+        "geschikt": true,
+        "panelen_indicatie": 76
+      },
+      {
+        "plat": false,
+        "helling": 29.2,
+        "azimut": 46,
+        "richting": "NO",
+        "opp": 196.1,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 924,
+    "panelen_indicatie_totaal": 76,
+    "kwp_indicatie": 32.7,
+    "afbeelding": "noordhoek-5-9301-zg-roden.jpg"
+  },
+  {
+    "adres": "Wethouder Deodatusplantsoen 27X, 9301 BS Roden",
+    "bag_weergave": "Wethouder Deodatusplantsoen 27X-27, Roden",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000011993",
+    "rd": [
+      224304.486,
+      573151.892
+    ],
+    "lat": 53.14062576,
+    "lon": 6.4228981,
+    "pand": "NL.IMBAG.Pand.1699100000005870",
+    "bouwjaar": 1964,
+    "dak_type": "horizontal",
+    "kwaliteit": false,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "_HIGHEST_YET_INSUFFICIENT_COVERAGE",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 18.17,
+    "opp_dak_schuin": 0.0,
+    "opp_grond": 18.17,
+    "h_nok": null,
+    "h_maaiveld": 5.093999862670898,
+    "n_buren_binnen_40m": 51,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.2,
+        "azimut": 358,
+        "richting": "plat",
+        "opp": 18.2,
+        "geschikt": true,
+        "panelen_indicatie": 5
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 918,
+    "panelen_indicatie_totaal": 5,
+    "kwp_indicatie": 2.1,
+    "afbeelding": "wethouder-deodatusplantsoen-27x-9301-bs-roden.jpg"
+  },
+  {
+    "adres": "Raadhuisstraat 1, 9301 AA Roden",
+    "bag_weergave": "Raadhuisstraat 1, 9301AA Roden",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000017306",
+    "rd": [
+      225026.117,
+      572748.584
+    ],
+    "lat": 53.13690854,
+    "lon": 6.43359297,
+    "pand": "NL.IMBAG.Pand.1699100000009942",
+    "bouwjaar": 1983,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 237.03,
+    "opp_dak_schuin": 2086.12,
+    "opp_grond": 1923.8,
+    "h_nok": 13.754876136779785,
+    "h_maaiveld": 3.0880000591278076,
+    "n_buren_binnen_40m": 1,
+    "dakvlakken": [
+      {
+        "plat": false,
+        "helling": 36.5,
+        "azimut": 1,
+        "richting": "N",
+        "opp": 829.4,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 36.1,
+        "azimut": 187,
+        "richting": "Z",
+        "opp": 513.0,
+        "geschikt": true,
+        "panelen_indicatie": 183
+      },
+      {
+        "plat": false,
+        "helling": 36.4,
+        "azimut": 277,
+        "richting": "W",
+        "opp": 439.6,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 36.7,
+        "azimut": 97,
+        "richting": "O",
+        "opp": 303.6,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": true,
+        "helling": 0.2,
+        "azimut": 307,
+        "richting": "plat",
+        "opp": 255.6,
+        "geschikt": true,
+        "panelen_indicatie": 72
+      },
+      {
+        "plat": false,
+        "helling": 27.9,
+        "azimut": 277,
+        "richting": "W",
+        "opp": 14.0,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 990,
+    "panelen_indicatie_totaal": 255,
+    "kwp_indicatie": 109.7,
+    "afbeelding": "raadhuisstraat-1-9301-aa-roden.jpg"
+  },
+  {
+    "adres": "Heerestraat 92, 9301 AH Roden",
+    "bag_weergave": "Heerestraat 92, 9301AH Roden",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000018529",
+    "rd": [
+      224710.121,
+      572826.599
+    ],
+    "lat": 53.13765061,
+    "lon": 6.42888871,
+    "pand": "NL.IMBAG.Pand.1699100000004117",
+    "bouwjaar": 1980,
+    "dak_type": "slanted",
+    "kwaliteit": false,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 1337.0,
+    "opp_dak_schuin": 814.86,
+    "opp_grond": 1964.25,
+    "h_nok": 16.63279914855957,
+    "h_maaiveld": 4.216000080108643,
+    "n_buren_binnen_40m": 5,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.8,
+        "azimut": 177,
+        "richting": "plat",
+        "opp": 1746.5,
+        "geschikt": true,
+        "panelen_indicatie": 491
+      },
+      {
+        "plat": false,
+        "helling": 30.4,
+        "azimut": 81,
+        "richting": "O",
+        "opp": 127.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 30.1,
+        "azimut": 261,
+        "richting": "W",
+        "opp": 124.1,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 66.8,
+        "azimut": 171,
+        "richting": "Z",
+        "opp": 40.3,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 918,
+    "panelen_indicatie_totaal": 491,
+    "kwp_indicatie": 211.1,
+    "afbeelding": "heerestraat-92-9301-ah-roden.jpg"
+  },
+  {
+    "adres": "Leeuwerikstraat 5, 9481 EN Vries",
+    "bag_weergave": "Leeuwerikstraat 5, 9481EN Vries",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1730010000006019",
+    "rd": [
+      234608.0,
+      565926.0
+    ],
+    "lat": 53.07427688,
+    "lon": 6.5750652,
+    "pand": "NL.IMBAG.Pand.1730100000007966",
+    "bouwjaar": 1970,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 32.3,
+    "opp_dak_schuin": 49.7,
+    "opp_grond": 75.31,
+    "h_nok": 16.36760711669922,
+    "h_maaiveld": 9.067000389099121,
+    "n_buren_binnen_40m": 38,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.4,
+        "azimut": 45,
+        "richting": "plat",
+        "opp": 32.3,
+        "geschikt": true,
+        "panelen_indicatie": 9
+      },
+      {
+        "plat": false,
+        "helling": 29.8,
+        "azimut": 143,
+        "richting": "ZO",
+        "opp": 27.4,
+        "geschikt": true,
+        "panelen_indicatie": 9
+      },
+      {
+        "plat": false,
+        "helling": 30.4,
+        "azimut": 323,
+        "richting": "NW",
+        "opp": 22.3,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 919,
+    "panelen_indicatie_totaal": 18,
+    "kwp_indicatie": 7.7,
+    "afbeelding": "leeuwerikstraat-5-9481-en-vries.jpg"
+  },
+  {
+    "adres": "Zuidveldigerweg 1, 9334 TL Peest",
+    "bag_weergave": "Zuidveldigerweg 1, 9334TL Peest",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1699010000000589",
+    "rd": [
+      229459.0,
+      563979.0
+    ],
+    "lat": 53.05752151,
+    "lon": 6.49780216,
+    "pand": "NL.IMBAG.Pand.1699100000022056",
+    "bouwjaar": 1932,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2019,
+    "puntenwolk_bron": "ahn3",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 0.0,
+    "opp_dak_schuin": 344.68,
+    "opp_grond": 248.0,
+    "h_nok": 17.866716384887695,
+    "h_maaiveld": 8.866000175476074,
+    "n_buren_binnen_40m": 2,
+    "dakvlakken": [
+      {
+        "plat": false,
+        "helling": 43.6,
+        "azimut": 258,
+        "richting": "W",
+        "opp": 165.4,
+        "geschikt": true,
+        "panelen_indicatie": 59
+      },
+      {
+        "plat": false,
+        "helling": 44.1,
+        "azimut": 78,
+        "richting": "O",
+        "opp": 164.6,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 55.7,
+        "azimut": 348,
+        "richting": "N",
+        "opp": 11.4,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 56.5,
+        "azimut": 168,
+        "richting": "Z",
+        "opp": 6.7,
+        "geschikt": true,
+        "panelen_indicatie": 2
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 805,
+    "panelen_indicatie_totaal": 61,
+    "kwp_indicatie": 26.2,
+    "afbeelding": "zuidveldigerweg-1-9334-tl-peest.jpg"
+  },
+  {
+    "adres": "Hoofdweg 31, 9761 EA Eelde",
+    "bag_weergave": "Hoofdweg 31, 9761EA Eelde",
+    "provincie": "Drenthe",
+    "verblijfsobject": "1730010000000482",
+    "rd": [
+      233980.0,
+      571984.0
+    ],
+    "lat": 53.1287965,
+    "lon": 6.56717609,
+    "pand": "NL.IMBAG.Pand.1730100000022752",
+    "bouwjaar": 1915,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 45.56,
+    "opp_dak_schuin": 762.43,
+    "opp_grond": 590.26,
+    "h_nok": 12.965719223022461,
+    "h_maaiveld": 3.2230000495910645,
+    "n_buren_binnen_40m": 6,
+    "dakvlakken": [
+      {
+        "plat": false,
+        "helling": 43.2,
+        "azimut": 232,
+        "richting": "ZW",
+        "opp": 299.6,
+        "geschikt": true,
+        "panelen_indicatie": 107
+      },
+      {
+        "plat": false,
+        "helling": 44.8,
+        "azimut": 52,
+        "richting": "NO",
+        "opp": 281.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": true,
+        "helling": 1.4,
+        "azimut": 141,
+        "richting": "plat",
+        "opp": 59.0,
+        "geschikt": true,
+        "panelen_indicatie": 16
+      },
+      {
+        "plat": false,
+        "helling": 43.8,
+        "azimut": 141,
+        "richting": "ZO",
+        "opp": 57.2,
+        "geschikt": true,
+        "panelen_indicatie": 20
+      },
+      {
+        "plat": false,
+        "helling": 52.8,
+        "azimut": 53,
+        "richting": "NO",
+        "opp": 42.8,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 44.4,
+        "azimut": 322,
+        "richting": "NW",
+        "opp": 39.9,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 53.6,
+        "azimut": 232,
+        "richting": "ZW",
+        "opp": 34.0,
+        "geschikt": true,
+        "panelen_indicatie": 12
+      },
+      {
+        "plat": false,
+        "helling": 50.5,
+        "azimut": 142,
+        "richting": "ZO",
+        "opp": 8.8,
+        "geschikt": true,
+        "panelen_indicatie": 3
+      },
+      {
+        "plat": false,
+        "helling": 33.0,
+        "azimut": 231,
+        "richting": "ZW",
+        "opp": 4.1,
+        "geschikt": true,
+        "panelen_indicatie": 1
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 902,
+    "panelen_indicatie_totaal": 159,
+    "kwp_indicatie": 68.4,
+    "afbeelding": "hoofdweg-31-9761-ea-eelde.jpg"
+  },
+  {
+    "adres": "Arwerd 1, 9746 CM Groningen",
+    "bag_weergave": "Arwerd 1, 9746CM Groningen",
+    "provincie": "Groningen",
+    "verblijfsobject": "0014010011081366",
+    "rd": [
+      230415.293,
+      584513.556
+    ],
+    "lat": 53.24187724,
+    "lon": 6.51686426,
+    "pand": "NL.IMBAG.Pand.0014100010953727",
+    "bouwjaar": 2006,
+    "dak_type": "multiple horizontal",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 125.92,
+    "opp_dak_schuin": 0.0,
+    "opp_grond": 138.37,
+    "h_nok": null,
+    "h_maaiveld": 0.7580000162124634,
+    "n_buren_binnen_40m": 39,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.5,
+        "azimut": 255,
+        "richting": "plat",
+        "opp": 138.4,
+        "geschikt": true,
+        "panelen_indicatie": 38
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 917,
+    "panelen_indicatie_totaal": 38,
+    "kwp_indicatie": 16.3,
+    "afbeelding": "arwerd-1-9746-cm-groningen.jpg"
+  },
+  {
+    "adres": "Nienoord 1, 9351 AC Leek",
+    "bag_weergave": "Nienoord 1, 9351AC Leek",
+    "provincie": "Groningen",
+    "verblijfsobject": "0022010000006946",
+    "rd": [
+      222344.0,
+      576169.0
+    ],
+    "lat": 53.16798283,
+    "lon": 6.39423499,
+    "pand": "NL.IMBAG.Pand.0022100000000023",
+    "bouwjaar": 1678,
+    "dak_type": "slanted",
+    "kwaliteit": false,
+    "puntenwolk_datum": 2022,
+    "puntenwolk_bron": "ahn4",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 335.58,
+    "opp_dak_schuin": 106.8,
+    "opp_grond": 352.18,
+    "h_nok": 13.889143943786621,
+    "h_maaiveld": 0.8889999985694885,
+    "n_buren_binnen_40m": 2,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.2,
+        "azimut": 68,
+        "richting": "plat",
+        "opp": 302.7,
+        "geschikt": true,
+        "panelen_indicatie": 85
+      },
+      {
+        "plat": false,
+        "helling": 62.9,
+        "azimut": 180,
+        "richting": "Z",
+        "opp": 27.1,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 69.2,
+        "azimut": 136,
+        "richting": "ZO",
+        "opp": 19.0,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 60.9,
+        "azimut": 270,
+        "richting": "W",
+        "opp": 16.7,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 66.6,
+        "azimut": 90,
+        "richting": "O",
+        "opp": 15.8,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 70.4,
+        "azimut": 234,
+        "richting": "ZW",
+        "opp": 14.9,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 71.7,
+        "azimut": 163,
+        "richting": "Z",
+        "opp": 7.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 21.2,
+        "azimut": 16,
+        "richting": "N",
+        "opp": 3.3,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 18.2,
+        "azimut": 344,
+        "richting": "N",
+        "opp": 3.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 920,
+    "panelen_indicatie_totaal": 85,
+    "kwp_indicatie": 36.5,
+    "afbeelding": "nienoord-1-9351-ac-leek.jpg"
+  },
+  {
+    "adres": "Raadhuisweg 7, 9251 GH Burgum",
+    "bag_weergave": "Raadhuisweg 7, 9251GH Burgum",
+    "provincie": "Fryslân",
+    "verblijfsobject": "0737010000013607",
+    "rd": [
+      195296.0,
+      578179.0
+    ],
+    "lat": 53.18875814,
+    "lon": 5.99005347,
+    "pand": "NL.IMBAG.Pand.0737100000019318",
+    "bouwjaar": 1935,
+    "dak_type": "slanted",
+    "kwaliteit": false,
+    "puntenwolk_datum": 2023,
+    "puntenwolk_bron": "ahn5",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 2984.3,
+    "opp_dak_schuin": 1016.21,
+    "opp_grond": 3860.31,
+    "h_nok": 15.563456535339355,
+    "h_maaiveld": 0.8410000205039978,
+    "n_buren_binnen_40m": 2,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.1,
+        "azimut": 53,
+        "richting": "plat",
+        "opp": 2597.4,
+        "geschikt": true,
+        "panelen_indicatie": 731
+      },
+      {
+        "plat": false,
+        "helling": 37.5,
+        "azimut": 176,
+        "richting": "Z",
+        "opp": 241.8,
+        "geschikt": true,
+        "panelen_indicatie": 86
+      },
+      {
+        "plat": false,
+        "helling": 37.1,
+        "azimut": 356,
+        "richting": "N",
+        "opp": 222.7,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 36.7,
+        "azimut": 266,
+        "richting": "W",
+        "opp": 222.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 36.8,
+        "azimut": 86,
+        "richting": "O",
+        "opp": 174.9,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 15.5,
+        "azimut": 144,
+        "richting": "ZO",
+        "opp": 5.2,
+        "geschikt": true,
+        "panelen_indicatie": 1
+      },
+      {
+        "plat": false,
+        "helling": 30.8,
+        "azimut": 356,
+        "richting": "N",
+        "opp": 4.8,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 30.6,
+        "azimut": 176,
+        "richting": "Z",
+        "opp": 4.3,
+        "geschikt": true,
+        "panelen_indicatie": 1
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 934,
+    "panelen_indicatie_totaal": 819,
+    "kwp_indicatie": 352.2,
+    "afbeelding": "raadhuisweg-7-9251-gh-burgum.jpg"
+  },
+  {
+    "adres": "Ruisvoornlaan 4, 1432 PH Aalsmeer",
+    "bag_weergave": "Ruisvoornlaan 4, 1432PH Aalsmeer",
+    "provincie": "Noord-Holland",
+    "verblijfsobject": "0358010018995973",
+    "rd": [
+      115274.919,
+      476789.323
+    ],
+    "lat": 52.27767579,
+    "lon": 4.80511514,
+    "pand": "NL.IMBAG.Pand.0358100020154337",
+    "bouwjaar": 2008,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2023,
+    "puntenwolk_bron": "ahn5",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 0.0,
+    "opp_dak_schuin": 101.06,
+    "opp_grond": 74.43,
+    "h_nok": 6.782315254211426,
+    "h_maaiveld": -3.625,
+    "n_buren_binnen_40m": 40,
+    "dakvlakken": [
+      {
+        "plat": false,
+        "helling": 47.3,
+        "azimut": 240,
+        "richting": "ZW",
+        "opp": 38.5,
+        "geschikt": true,
+        "panelen_indicatie": 13
+      },
+      {
+        "plat": false,
+        "helling": 46.8,
+        "azimut": 60,
+        "richting": "NO",
+        "opp": 37.3,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 12.7,
+        "azimut": 241,
+        "richting": "ZW",
+        "opp": 13.5,
+        "geschikt": true,
+        "panelen_indicatie": 4
+      },
+      {
+        "plat": true,
+        "helling": 7.8,
+        "azimut": 245,
+        "richting": "plat",
+        "opp": 9.7,
+        "geschikt": true,
+        "panelen_indicatie": 2
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 926,
+    "panelen_indicatie_totaal": 19,
+    "kwp_indicatie": 8.2,
+    "afbeelding": "ruisvoornlaan-4-1432-ph-aalsmeer.jpg"
+  },
+  {
+    "adres": "Prinseneiland 517, 1013 EC Amsterdam",
+    "bag_weergave": "Prinseneiland 517, 1013EC Amsterdam",
+    "provincie": "Noord-Holland",
+    "verblijfsobject": "0363010000556856",
+    "rd": [
+      120989.0,
+      488727.0
+    ],
+    "lat": 52.38534655,
+    "lon": 4.88763445,
+    "pand": "NL.IMBAG.Pand.0363100012176824",
+    "bouwjaar": 1905,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2014,
+    "puntenwolk_bron": "ahn3",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 212.53,
+    "opp_dak_schuin": 260.56,
+    "opp_grond": 349.82,
+    "h_nok": 15.501355171203613,
+    "h_maaiveld": 1.656000018119812,
+    "n_buren_binnen_40m": 27,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 0.5,
+        "azimut": 298,
+        "richting": "plat",
+        "opp": 211.2,
+        "geschikt": true,
+        "panelen_indicatie": 59
+      },
+      {
+        "plat": false,
+        "helling": 59.8,
+        "azimut": 185,
+        "richting": "Z",
+        "opp": 119.5,
+        "geschikt": true,
+        "panelen_indicatie": 42
+      },
+      {
+        "plat": false,
+        "helling": 59.3,
+        "azimut": 4,
+        "richting": "N",
+        "opp": 118.4,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 34.0,
+        "azimut": 13,
+        "richting": "N",
+        "opp": 8.8,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 21.9,
+        "azimut": 7,
+        "richting": "N",
+        "opp": 4.5,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 15.1,
+        "azimut": 293,
+        "richting": "NW",
+        "opp": 4.2,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      },
+      {
+        "plat": false,
+        "helling": 71.7,
+        "azimut": 97,
+        "richting": "O",
+        "opp": 3.5,
+        "geschikt": false,
+        "panelen_indicatie": 0
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 948,
+    "panelen_indicatie_totaal": 101,
+    "kwp_indicatie": 43.4,
+    "afbeelding": "prinseneiland-517-1013-ec-amsterdam.jpg"
+  },
+  {
+    "adres": "Amstelbeststraat 12A, 1096 GD Amsterdam",
+    "bag_weergave": "Amstelbeststraat 12A, 1096GD Amsterdam",
+    "provincie": "Noord-Holland",
+    "verblijfsobject": "0363010012087742",
+    "rd": [
+      123094.856,
+      483748.785
+    ],
+    "lat": 52.3407321,
+    "lon": 4.91903757,
+    "pand": "NL.IMBAG.Pand.0363100012243815",
+    "bouwjaar": 2014,
+    "dak_type": "slanted",
+    "kwaliteit": true,
+    "puntenwolk_datum": 2023,
+    "puntenwolk_bron": "ahn5",
+    "pw_selectie_reden": "PREFERRED_AND_LATEST",
+    "mutatie_ahn4_ahn5": false,
+    "opp_dak_plat": 75.0,
+    "opp_dak_schuin": 14.57,
+    "opp_grond": 89.44,
+    "h_nok": null,
+    "h_maaiveld": 0.5830000042915344,
+    "n_buren_binnen_40m": 22,
+    "dakvlakken": [
+      {
+        "plat": true,
+        "helling": 1.1,
+        "azimut": 354,
+        "richting": "plat",
+        "opp": 86.7,
+        "geschikt": true,
+        "panelen_indicatie": 24
+      }
+    ],
+    "pvgis_kwh_per_kwp_beste_vlak": 959,
+    "panelen_indicatie_totaal": 24,
+    "kwp_indicatie": 10.3,
+    "afbeelding": "amstelbeststraat-12a-1096-gd-amsterdam.jpg"
+  }
+]

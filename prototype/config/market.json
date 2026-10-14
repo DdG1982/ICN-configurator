@@ -1,0 +1,22 @@
+{
+  "_toelichting": "PLACEHOLDERS. Marktgemiddelden voor het ontwerpprototype, geen ICN-cijfers en geen advies. Bandbreedte: low = voorzichtig, high = gunstig.",
+  "stroomprijsPerKwh": {
+    "low": 0.24,
+    "high": 0.32
+  },
+  "terugleververgoedingPerKwh": {
+    "low": 0.04,
+    "high": 0.07
+  },
+  "terugleverkostenPerKwh": {
+    "low": 0.07,
+    "high": 0.02
+  },
+  "zelfconsumptie": {
+    "zonderBatterij": 0.3,
+    "metBatterij": 0.6
+  },
+  "opbrengstMarge": 0.08,
+  "prijsstijgingPerJaar": 0.0,
+  "degradatiePerJaar": 0.005
+}

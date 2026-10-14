@@ -1,0 +1,32 @@
+# Open punten
+
+- **Voorbeeldadressen buiten het werkgebied staan in de demo** (Aalsmeer en Amsterdam), op besluit van Danny. Het risico: ICN of een bezoeker ziet een resultaat voor een plek waar ICN niet installeert. Opgelost: de interface toont een melding "buiten werkgebied ICN" (besluit Danny).
+- **Welk Roden-adres is het ICN-pand:** Dwazziewegen 20 of Noordhoek 5?
+- **Dakgegevens zijn niet gecontroleerd.** PDOK, 3DBAG en de ICN-site waren vanuit de ontwikkelomgeving niet bereikbaar (de proxy gaf 403). De daktypes van alle adressen moeten in Fase 1 nog worden vastgesteld.
+- **Ontbrekende varianten in de adreslijst:** er zit geen adres in Overijssel tussen en geen nieuwbouw van na 2020. Danny levert deze twee adressen nog aan.
+- **Monument (Nienoord 1, Leek):** op een rijksmonument zijn zonnepanelen meestal vergunningplichtig of niet toegestaan. De demo moet dat netjes tonen.
+- **(Opgelost 14-10-2026) Netwerktoegang van de ontwikkelomgeving:** `installatiecomfortnederland.nl`, `api.pdok.nl`, `service.pdok.nl`, `api.3dbag.nl`, `re.jrc.ec.europa.eu` en later `solar.googleapis.com` worden geblokkeerd. Zonder deze toegang kunnen Fase 1 en de huisstijl-extractie niet echt getest worden.
+- **Beheerderstoegang tot de ICN-WordPress-site** voor de embed-test in Fase 2b ontbreekt nog.
+- **(Opgelost) Huisstijl:** kleuren, lettertype en logo komen uit de live site (zie docs/huisstijl.md).
+- **Het prototype staat nog niet op Cloudflare Pages.** Deze omgeving heeft geen Cloudflare-token en geen netwerk naar Cloudflare. Danny kan het zelf deployen met `wrangler pages deploy prototype/dist`, of ik doe het in een omgeving waar dat wel kan. Zet er daarna een toegangscode voor.
+- **Prestaties niet gemeten** op een echte telefoon (4G, fps). De schermafbeeldingen zijn met software-rendering gemaakt.
+- **Goudenuur in 3D** is minder warm dan de interface. Danny moet beoordelen of dat genoeg is.
+- **Adrescontrole in PDOK/BAG (14-10-2026):**
+  - **Julianaplein 13, Roden bestaat niet** en is verwijderd. Dat adres kwam van een onbetrouwbare overzichtssite.
+  - Dwazziewegen 20 (het ICN-pand) heeft ook 20A t/m 20D, dus het is een verzamelpand met meerdere eenheden.
+  - Zuidveldigerweg 1 heeft ook een 1A.
+  - Wethouder Deodatusplantsoen 27X heet in de BAG "27X-27".
+  - De andere 13 adressen bestaan zoals opgegeven.
+- **Gevonden en opgelost (14-10-2026): 3DBAG-transform per pagina.** 3DBAG levert resultaten in pagina's met elk een eigen coördinatentransform. De pijplijn en de spike gebruikten die van de eerste pagina, waardoor gebouwen van latere pagina's ongeveer 10 m verschoven. Beide zijn hersteld en opnieuw gedraaid. De conclusies van de 3DBAG-spike (helling, oppervlak, juist pand via BAG) blijven gelijk.
+- **Bomen uit AHN:** AHN-hoogtes min maaiveld, hoger dan 2,5 m en buiten gebouwen, worden geclusterd tot bomen. Kleine bomen en struiken worden soms gemist, en bomenrijen worden opgeknipt in bomen van 3 m straal. De opnamedatum van AHN is niet gecontroleerd.
+- **Bestaande panelen en riet** ziet de pijplijn niet. Daarom stellen we de bezoeker twee vragen. Op de luchtfoto zijn bestaande panelen vaak wel te zien (bijvoorbeeld Eelde en Noordhoek).
+- **(Opgelost 14-10-2026) Live adressen:** elk adres in Nederland werkt nu. Zie docs/live-adressen.md.
+- **Rijksmonumenten via RCE (live):** we kijken of er een RCE-monumentpunt in het pand ligt. Getest: Nienoord (Leek), Brink 1 (Dwingeloo) en Raadhuisweg 7 (Burgum, gemeentehuis uit 1935).
+  - Burgum stond in de lijst als "openbaar" en is nu ook "monument". De RCE-punten 512547 en 512548 liggen precies op het adrespunt. De registerpagina kon ik vanuit deze omgeving niet openen, dus dit is nog niet met de hand gecontroleerd.
+  - **Gemeentelijke monumenten en beschermde stads- en dorpsgezichten herkennen we niet.** Er is geen landelijke open bron voor. Dit staat in de bronnenregel.
+  - De laag kan ook archeologische rijksmonumenten bevatten. Daar geldt de vergunningplicht voor grondwerk, niet voor panelen.
+- **Oude Python-schaduw had een fout** bij grote, licht scheve platte daken: het rekenpunt lag onder de eigen dakdriehoek. Heerestraat 92 kwam daardoor uit op een schaduwfactor van 0,42 terwijl het ~0,9 is. Alle voorbeelden zijn opnieuw berekend met de nieuwe TS-code.
+- **Paneelraster begon strak tegen de rand.** Een goot die 5 cm scheef loopt gaf daardoor nul panelen; zat ook in de Python-versie. Opgelost: het raster probeert verschuivingen en elke rij zoekt zelf de beste startplek. Bijna alle voorbeelden krijgen daardoor meer plekken (bijvoorbeeld Peest 91 → 111).
+- **Oost/west telt nu als geschikt** (azimut 85–275°, was 95–265°). Pure oost- en westdaken leveren ca. 80% van zuid en worden in Nederland veel gelegd. **Danny/ICN: klopt dat met jullie praktijk?**
+- **PVGIS-invoer wordt afgerond** op 5° helling en oriëntatie en 0,01° plaats, zodat de cache vaak raakt. Dat scheelt hooguit ca. 1% opbrengst, ruim binnen de bandbreedte van 8%.
+- **Niet getest op de echte Cloudflare-omgeving:** de PVGIS-functie (`/api/pvgis`) is lokaal getest via de Vite-variant. Op Pages draait hij pas na deploy, en *.pages.dev is vanuit hier niet bereikbaar. **Danny: graag één live adres proberen na deploy.**

@@ -1,0 +1,83 @@
+{
+  "_toelichting": "Voorbeeldadressen (besluit Danny 14-10-2026, docs/besluiten.md). In het prototype tonen alle adressen dezelfde illustratieve woning. Gecontroleerd in PDOK/BAG op 14-10-2026; Julianaplein 13 bestaat niet en is verwijderd.",
+  "werkgebiedProvincies": [
+    "Groningen",
+    "Drenthe",
+    "Friesland",
+    "Fryslân",
+    "Overijssel",
+    "Flevoland"
+  ],
+  "adressen": [
+    {
+      "label": "Dwazziewegen 20, 9301 ZR Roden",
+      "provincie": "Drenthe",
+      "soort": "ICN"
+    },
+    {
+      "label": "Noordhoek 5, 9301 ZG Roden",
+      "provincie": "Drenthe",
+      "soort": "bedrijfspand"
+    },
+    {
+      "label": "Wethouder Deodatusplantsoen 27X, 9301 BS Roden",
+      "provincie": "Drenthe",
+      "soort": "woning"
+    },
+    {
+      "label": "Raadhuisstraat 1, 9301 AA Roden",
+      "provincie": "Drenthe",
+      "soort": "openbaar"
+    },
+    {
+      "label": "Heerestraat 92, 9301 AH Roden",
+      "provincie": "Drenthe",
+      "soort": "bedrijfspand"
+    },
+    {
+      "label": "Leeuwerikstraat 5, 9481 EN Vries",
+      "provincie": "Drenthe",
+      "soort": "woning"
+    },
+    {
+      "label": "Zuidveldigerweg 1, 9334 TL Peest",
+      "provincie": "Drenthe",
+      "soort": "woning"
+    },
+    {
+      "label": "Hoofdweg 31, 9761 EA Eelde",
+      "provincie": "Drenthe",
+      "soort": "woning"
+    },
+    {
+      "label": "Arwerd 1, 9746 CM Groningen",
+      "provincie": "Groningen",
+      "soort": "woning"
+    },
+    {
+      "label": "Nienoord 1, 9351 AC Leek",
+      "provincie": "Groningen",
+      "soort": "monument"
+    },
+    {
+      "label": "Raadhuisweg 7, 9251 GH Burgum",
+      "provincie": "Fryslân",
+      "soort": "openbaar"
+    },
+    {
+      "label": "Ruisvoornlaan 4, 1432 PH Aalsmeer",
+      "provincie": "Noord-Holland",
+      "soort": "woning"
+    },
+    {
+      "label": "Prinseneiland 517, 1013 EC Amsterdam",
+      "provincie": "Noord-Holland",
+      "soort": "appartement"
+    },
+    {
+      "label": "Amstelbeststraat 12A, 1096 GD Amsterdam",
+      "provincie": "Noord-Holland",
+      "soort": "bedrijfspand"
+    }
+  ]
+}

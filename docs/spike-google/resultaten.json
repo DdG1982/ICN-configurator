@@ -1,0 +1,886 @@
+[
+  {
+    "adres": "Dwazziewegen 20, 9301 ZR Roden",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 46.5,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 150.3,
+    "max_panelen": 52,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 979,
+    "n_dakvlakken": 2,
+    "dakvlakken": [
+      {
+        "helling": 3.0,
+        "azimut": 3,
+        "opp": 121.8,
+        "zonuren_mediaan": 955
+      },
+      {
+        "helling": 2.1,
+        "azimut": 300,
+        "opp": 28.5,
+        "zonuren_mediaan": 940
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 19857,
+    "n_configs": 49,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000004790",
+      "dak_type": "multiple horizontal",
+      "opp_dak_plat": 180.51,
+      "opp_dak_schuin": 0.0,
+      "panelen_indicatie_totaal": 50,
+      "pvgis_kwh_per_kwp_beste_vlak": 918
+    }
+  },
+  {
+    "adres": "Noordhoek 5, 9301 ZG Roden",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 1.3,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 592.9,
+    "max_panelen": 226,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1018,
+    "n_dakvlakken": 5,
+    "dakvlakken": [
+      {
+        "helling": 33.2,
+        "azimut": 221,
+        "opp": 265.6,
+        "zonuren_mediaan": 1006
+      },
+      {
+        "helling": 31.9,
+        "azimut": 49,
+        "opp": 226.8,
+        "zonuren_mediaan": 799
+      },
+      {
+        "helling": 6.2,
+        "azimut": 47,
+        "opp": 42.3,
+        "zonuren_mediaan": 888
+      },
+      {
+        "helling": 2.0,
+        "azimut": 338,
+        "opp": 36.2,
+        "zonuren_mediaan": 922
+      },
+      {
+        "helling": 1.8,
+        "azimut": 213,
+        "opp": 22.1,
+        "zonuren_mediaan": 955
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 82652,
+    "n_configs": 159,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000014990",
+      "dak_type": "slanted",
+      "opp_dak_plat": 0.0,
+      "opp_dak_schuin": 409.1,
+      "panelen_indicatie_totaal": 76,
+      "pvgis_kwh_per_kwp_beste_vlak": 924
+    }
+  },
+  {
+    "adres": "Wethouder Deodatusplantsoen 27X, 9301 BS Roden",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 11.9,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 159.1,
+    "max_panelen": 47,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1005,
+    "n_dakvlakken": 2,
+    "dakvlakken": [
+      {
+        "helling": 4.5,
+        "azimut": 288,
+        "opp": 131.5,
+        "zonuren_mediaan": 943
+      },
+      {
+        "helling": 2.0,
+        "azimut": 13,
+        "opp": 27.7,
+        "zonuren_mediaan": 939
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 17701,
+    "n_configs": 44,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000005870",
+      "dak_type": "horizontal",
+      "opp_dak_plat": 18.17,
+      "opp_dak_schuin": 0.0,
+      "panelen_indicatie_totaal": 5,
+      "pvgis_kwh_per_kwp_beste_vlak": 918
+    }
+  },
+  {
+    "adres": "Raadhuisstraat 1, 9301 AA Roden",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 1.9,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 2161.0,
+    "max_panelen": 883,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1084,
+    "n_dakvlakken": 17,
+    "dakvlakken": [
+      {
+        "helling": 41.6,
+        "azimut": 3,
+        "opp": 283.8,
+        "zonuren_mediaan": 580
+      },
+      {
+        "helling": 40.1,
+        "azimut": 275,
+        "opp": 270.6,
+        "zonuren_mediaan": 781
+      },
+      {
+        "helling": 34.0,
+        "azimut": 273,
+        "opp": 184.9,
+        "zonuren_mediaan": 842
+      },
+      {
+        "helling": 30.0,
+        "azimut": 189,
+        "opp": 178.6,
+        "zonuren_mediaan": 1057
+      },
+      {
+        "helling": 40.4,
+        "azimut": 354,
+        "opp": 178.3,
+        "zonuren_mediaan": 584
+      },
+      {
+        "helling": 41.4,
+        "azimut": 96,
+        "opp": 172.1,
+        "zonuren_mediaan": 895
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 278047,
+    "n_configs": 283,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000009942",
+      "dak_type": "slanted",
+      "opp_dak_plat": 237.03,
+      "opp_dak_schuin": 2086.12,
+      "panelen_indicatie_totaal": 255,
+      "pvgis_kwh_per_kwp_beste_vlak": 990
+    }
+  },
+  {
+    "adres": "Heerestraat 92, 9301 AH Roden",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 21.4,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 1852.1,
+    "max_panelen": 740,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 997,
+    "n_dakvlakken": 9,
+    "dakvlakken": [
+      {
+        "helling": 1.0,
+        "azimut": 215,
+        "opp": 748.2,
+        "zonuren_mediaan": 934
+      },
+      {
+        "helling": 6.3,
+        "azimut": 346,
+        "opp": 491.3,
+        "zonuren_mediaan": 933
+      },
+      {
+        "helling": 1.9,
+        "azimut": 186,
+        "opp": 257.5,
+        "zonuren_mediaan": 952
+      },
+      {
+        "helling": 23.7,
+        "azimut": 257,
+        "opp": 108.3,
+        "zonuren_mediaan": 942
+      },
+      {
+        "helling": 21.0,
+        "azimut": 84,
+        "opp": 106.9,
+        "zonuren_mediaan": 958
+      },
+      {
+        "helling": 3.7,
+        "azimut": 123,
+        "opp": 71.9,
+        "zonuren_mediaan": 994
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 275748,
+    "n_configs": 266,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000004117",
+      "dak_type": "slanted",
+      "opp_dak_plat": 1337.0,
+      "opp_dak_schuin": 814.86,
+      "panelen_indicatie_totaal": 491,
+      "pvgis_kwh_per_kwp_beste_vlak": 918
+    }
+  },
+  {
+    "adres": "Leeuwerikstraat 5, 9481 EN Vries",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 3.2,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 226.3,
+    "max_panelen": 72,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1089,
+    "n_dakvlakken": 7,
+    "dakvlakken": [
+      {
+        "helling": 41.1,
+        "azimut": 140,
+        "opp": 66.0,
+        "zonuren_mediaan": 1080
+      },
+      {
+        "helling": 36.4,
+        "azimut": 321,
+        "opp": 52.4,
+        "zonuren_mediaan": 691
+      },
+      {
+        "helling": 2.9,
+        "azimut": 80,
+        "opp": 29.5,
+        "zonuren_mediaan": 976
+      },
+      {
+        "helling": 5.7,
+        "azimut": 121,
+        "opp": 26.1,
+        "zonuren_mediaan": 986
+      },
+      {
+        "helling": 5.6,
+        "azimut": 130,
+        "opp": 21.4,
+        "zonuren_mediaan": 1002
+      },
+      {
+        "helling": 2.1,
+        "azimut": 79,
+        "opp": 19.6,
+        "zonuren_mediaan": 950
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 27133,
+    "n_configs": 69,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1730100000007966",
+      "dak_type": "slanted",
+      "opp_dak_plat": 32.3,
+      "opp_dak_schuin": 49.7,
+      "panelen_indicatie_totaal": 18,
+      "pvgis_kwh_per_kwp_beste_vlak": 919
+    }
+  },
+  {
+    "adres": "Zuidveldigerweg 1, 9334 TL Peest",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 1.6,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 337.2,
+    "max_panelen": 136,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 887,
+    "n_dakvlakken": 3,
+    "dakvlakken": [
+      {
+        "helling": 45.3,
+        "azimut": 258,
+        "opp": 166.9,
+        "zonuren_mediaan": 842
+      },
+      {
+        "helling": 47.7,
+        "azimut": 77,
+        "opp": 94.4,
+        "zonuren_mediaan": 838
+      },
+      {
+        "helling": 48.5,
+        "azimut": 75,
+        "opp": 75.9,
+        "zonuren_mediaan": 824
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 45437,
+    "n_configs": 117,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1699100000022056",
+      "dak_type": "slanted",
+      "opp_dak_plat": 0.0,
+      "opp_dak_schuin": 344.68,
+      "panelen_indicatie_totaal": 61,
+      "pvgis_kwh_per_kwp_beste_vlak": 805
+    }
+  },
+  {
+    "adres": "Hoofdweg 31, 9761 EA Eelde",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 8.4,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 795.9,
+    "max_panelen": 281,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1013,
+    "n_dakvlakken": 11,
+    "dakvlakken": [
+      {
+        "helling": 45.1,
+        "azimut": 230,
+        "opp": 268.0,
+        "zonuren_mediaan": 925
+      },
+      {
+        "helling": 46.2,
+        "azimut": 49,
+        "opp": 199.3,
+        "zonuren_mediaan": 692
+      },
+      {
+        "helling": 28.7,
+        "azimut": 233,
+        "opp": 82.4,
+        "zonuren_mediaan": 877
+      },
+      {
+        "helling": 56.8,
+        "azimut": 49,
+        "opp": 50.4,
+        "zonuren_mediaan": 637
+      },
+      {
+        "helling": 41.0,
+        "azimut": 138,
+        "opp": 45.7,
+        "zonuren_mediaan": 954
+      },
+      {
+        "helling": 2.2,
+        "azimut": 152,
+        "opp": 37.8,
+        "zonuren_mediaan": 1003
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 92396,
+    "n_configs": 177,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.1730100000022752",
+      "dak_type": "slanted",
+      "opp_dak_plat": 45.56,
+      "opp_dak_schuin": 762.43,
+      "panelen_indicatie_totaal": 159,
+      "pvgis_kwh_per_kwp_beste_vlak": 902
+    }
+  },
+  {
+    "adres": "Arwerd 1, 9746 CM Groningen",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "HIGH",
+    "opnamedatum": "2023-9-4",
+    "verwerkt": "2026-9-8",
+    "afstand_tot_adrespunt_m": 3.8,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 91.5,
+    "max_panelen": 28,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1026,
+    "n_dakvlakken": 2,
+    "dakvlakken": [
+      {
+        "helling": 3.2,
+        "azimut": 78,
+        "opp": 45.8,
+        "zonuren_mediaan": 826
+      },
+      {
+        "helling": 3.3,
+        "azimut": 70,
+        "opp": 45.8,
+        "zonuren_mediaan": 973
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 10191,
+    "n_configs": 25,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0014100010953727",
+      "dak_type": "multiple horizontal",
+      "opp_dak_plat": 125.92,
+      "opp_dak_schuin": 0.0,
+      "panelen_indicatie_totaal": 38,
+      "pvgis_kwh_per_kwp_beste_vlak": 917
+    }
+  },
+  {
+    "adres": "Nienoord 1, 9351 AC Leek",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2022-3-19",
+    "verwerkt": "2026-9-7",
+    "afstand_tot_adrespunt_m": 14.7,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 430.6,
+    "max_panelen": 162,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1044,
+    "n_dakvlakken": 3,
+    "dakvlakken": [
+      {
+        "helling": 4.5,
+        "azimut": 247,
+        "opp": 364.3,
+        "zonuren_mediaan": 935
+      },
+      {
+        "helling": 36.9,
+        "azimut": 123,
+        "opp": 40.9,
+        "zonuren_mediaan": 926
+      },
+      {
+        "helling": 30.2,
+        "azimut": 345,
+        "opp": 25.4,
+        "zonuren_mediaan": 518
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 57545,
+    "n_configs": 130,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0022100000000023",
+      "dak_type": "slanted",
+      "opp_dak_plat": 335.58,
+      "opp_dak_schuin": 106.8,
+      "panelen_indicatie_totaal": 85,
+      "pvgis_kwh_per_kwp_beste_vlak": 920
+    }
+  },
+  {
+    "adres": "Raadhuisweg 7, 9251 GH Burgum",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 404
+      },
+      {
+        "requiredQuality": "LOW",
+        "http": 404
+      }
+    ],
+    "fout": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Requested entity was not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0737100000019318",
+      "dak_type": "slanted",
+      "opp_dak_plat": 2984.3,
+      "opp_dak_schuin": 1016.21,
+      "panelen_indicatie_totaal": 819,
+      "pvgis_kwh_per_kwp_beste_vlak": 934
+    }
+  },
+  {
+    "adres": "Ruisvoornlaan 4, 1432 PH Aalsmeer",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "MEDIUM",
+    "opnamedatum": "2021-6-6",
+    "verwerkt": "2026-9-8",
+    "afstand_tot_adrespunt_m": 3.1,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 128.3,
+    "max_panelen": 45,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1076,
+    "n_dakvlakken": 4,
+    "dakvlakken": [
+      {
+        "helling": 54.0,
+        "azimut": 63,
+        "opp": 53.2,
+        "zonuren_mediaan": 752
+      },
+      {
+        "helling": 45.1,
+        "azimut": 240,
+        "opp": 42.1,
+        "zonuren_mediaan": 964
+      },
+      {
+        "helling": 38.0,
+        "azimut": 238,
+        "opp": 20.6,
+        "zonuren_mediaan": 1005
+      },
+      {
+        "helling": 30.6,
+        "azimut": 237,
+        "opp": 12.3,
+        "zonuren_mediaan": 1035
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 15941,
+    "n_configs": 42,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0358100020154337",
+      "dak_type": "slanted",
+      "opp_dak_plat": 0.0,
+      "opp_dak_schuin": 101.06,
+      "panelen_indicatie_totaal": 19,
+      "pvgis_kwh_per_kwp_beste_vlak": 926
+    }
+  },
+  {
+    "adres": "Prinseneiland 517, 1013 EC Amsterdam",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "HIGH",
+    "opnamedatum": "2022-8-24",
+    "verwerkt": "2026-9-9",
+    "afstand_tot_adrespunt_m": 11.4,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 287.2,
+    "max_panelen": 58,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 1028,
+    "n_dakvlakken": 13,
+    "dakvlakken": [
+      {
+        "helling": 1.4,
+        "azimut": 341,
+        "opp": 59.2,
+        "zonuren_mediaan": 987
+      },
+      {
+        "helling": 56.2,
+        "azimut": 3,
+        "opp": 55.9,
+        "zonuren_mediaan": 458
+      },
+      {
+        "helling": 60.9,
+        "azimut": 1,
+        "opp": 43.9,
+        "zonuren_mediaan": 424
+      },
+      {
+        "helling": 56.3,
+        "azimut": 184,
+        "opp": 27.3,
+        "zonuren_mediaan": 719
+      },
+      {
+        "helling": 1.2,
+        "azimut": 182,
+        "opp": 23.0,
+        "zonuren_mediaan": 966
+      },
+      {
+        "helling": 3.3,
+        "azimut": 248,
+        "opp": 15.1,
+        "zonuren_mediaan": 574
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 17393,
+    "n_configs": 55,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0363100012176824",
+      "dak_type": "slanted",
+      "opp_dak_plat": 212.53,
+      "opp_dak_schuin": 260.56,
+      "panelen_indicatie_totaal": 101,
+      "pvgis_kwh_per_kwp_beste_vlak": 948
+    }
+  },
+  {
+    "adres": "Amstelbeststraat 12A, 1096 GD Amsterdam",
+    "pogingen": [
+      {
+        "requiredQuality": "MEDIUM",
+        "http": 200
+      }
+    ],
+    "kwaliteit": "HIGH",
+    "opnamedatum": "2022-8-24",
+    "verwerkt": "2026-9-9",
+    "afstand_tot_adrespunt_m": 11.1,
+    "velden_aanwezig": [
+      "administrativeArea",
+      "postalCode",
+      "regionCode"
+    ],
+    "dak_m2_google": 208.5,
+    "max_panelen": 39,
+    "paneel_wp_google": 400,
+    "paneelmaat_google": [
+      1.045,
+      1.879
+    ],
+    "max_zonuren_per_jaar": 999,
+    "n_dakvlakken": 17,
+    "dakvlakken": [
+      {
+        "helling": 7.2,
+        "azimut": 219,
+        "opp": 28.4,
+        "zonuren_mediaan": 918
+      },
+      {
+        "helling": 2.9,
+        "azimut": 201,
+        "opp": 21.5,
+        "zonuren_mediaan": 891
+      },
+      {
+        "helling": 3.7,
+        "azimut": 122,
+        "opp": 17.3,
+        "zonuren_mediaan": 734
+      },
+      {
+        "helling": 3.6,
+        "azimut": 35,
+        "opp": 16.1,
+        "zonuren_mediaan": 800
+      },
+      {
+        "helling": 2.4,
+        "azimut": 195,
+        "opp": 14.6,
+        "zonuren_mediaan": 803
+      },
+      {
+        "helling": 20.7,
+        "azimut": 35,
+        "opp": 14.2,
+        "zonuren_mediaan": 671
+      }
+    ],
+    "max_config_kwh_dc_per_jaar": 13023,
+    "n_configs": 36,
+    "gevonden_met": "MEDIUM",
+    "3dbag": {
+      "pand": "NL.IMBAG.Pand.0363100012243815",
+      "dak_type": "slanted",
+      "opp_dak_plat": 75.0,
+      "opp_dak_schuin": 14.57,
+      "panelen_indicatie_totaal": 24,
+      "pvgis_kwh_per_kwp_beste_vlak": 959
+    }
+  }
+]
