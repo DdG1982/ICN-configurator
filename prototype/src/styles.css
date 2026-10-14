@@ -41,7 +41,7 @@ body[data-richting='goudenuur'] {
   --kop-spatie: -0.01em;
 }
 
-/* C · ICN Natuur: licht en ecologisch, met de ICN-kleuren (groen #3AB64A, navy #0B1C6A, blauw #4795CA)
+/* C · ICN Natuur: licht en ecologisch, met de ICN-kleuren uit de Elementor-CSS (groen #39B54A, navy #0B1B69, blauw #4795CA)
    en Poppins zoals op installatiecomfortnederland.nl. */
 body[data-richting='natuur'] {
   color-scheme: light;
@@ -54,13 +54,13 @@ body[data-richting='natuur'] {
   --tekst: #111a3a;
   --tekst-2: #45506b;
   --tekst-3: #5d6880;
-  --accent: #3ab64a;
+  --accent: #39b54a;
   --accent-2: #4cc35b;
   --accent-tekst: #1f7a32;
   --knop-1: #36ad46;
   --knop-2: #2b9a3b;
   --op-accent: #ffffff;
-  --navy: #0b1c6a;
+  --navy: #0b1b69;
   --blauw: #4795ca;
   --zon: #f4b740;
   --paneel-1: #24407a; --paneel-2: #0b1c6a;
@@ -441,3 +441,9 @@ body[data-richting='natuur'] .groot-getal { color: var(--navy); }
   .glas, body[data-richting='natuur'] .paneel > .kaart { background: var(--vlak); }
 }
 body[data-richting='natuur'] .resultaat::before { background: radial-gradient(circle, rgba(58, 182, 74, 0.18), transparent 70%); }
+
+/* Echt ICN-logo in de lichte richting; tekstmerk blijft in Goudenuur (logo heeft zwarte tekst). */
+.merk-logo { display: none; height: 34px; width: auto; }
+body[data-richting='natuur'] .merk-logo { display: block; }
+body[data-richting='natuur'] .merk-teken, body[data-richting='natuur'] .merk-naam { display: none; }
+@media (max-width: 900px) { .merk-logo { height: 28px; } }

@@ -1,13 +1,18 @@
-# Huisstijl ICN (voorlopig)
+# Huisstijl ICN
 
-Bron: Danny's screenshot van installatiecomfortnederland.nl (14-10-2026). De pixelkleuren zijn uit de afbeelding gemeten, niet uit de CSS. Controleer ze in de CSS zodra de site bereikbaar is.
+Bron: de live Elementor-CSS van installatiecomfortnederland.nl (globale kleuren en typografie), opgehaald op 14-10-2026, plus Danny's screenshot van de homepage.
 
-| Rol | Waarde | Waar gezien |
+| Rol | Waarde | Elementor-variabele |
 |---|---|---|
-| Groen (knoppen, actief menu) | #3AB64A | knop "Offerte Ontvangen" |
-| Navy | #0B1C6A | hero-vlak links |
-| Blauw ("Comfort", logo) | #4795CA | logo |
-| Logogroen | #26A66D | druppel in het logo |
-| Lettertype | Poppins (koppen 700 of 800, tekst 400) | hele site |
+| Primair groen (knoppen) | #39B54A | --e-global-color-primary |
+| Secundair groen | #21AE34 | --e-global-color-secondary |
+| Navy | #0B1B69 | --e-global-color-4da9a17 |
+| Tekstgrijs | #666666 | --e-global-color-text |
+| Bijna zwart | #201F1F | --e-global-color-accent |
+| Blauw ("Comfort", logo) | #4795CA | gemeten uit het logo |
+| Lettertype | Poppins (primair, secundair, tekst, accent) | --e-global-typography-* |
+| Tweede lettertype | Exo 2 (enkele elementen) | |
 
-In de configurator is de knop iets donkerder groen (#2B9A3B tot #36AD46), zodat witte tekst voldoet aan het WCAG-contrast. Linkgroen is #1F7A32.
+Het logo is `wp-content/uploads/2024/10/cropped-logo-kleur-text-zwart.png`. Een verkleinde kopie staat in `prototype/public/icn-logo.png`. Het logo heeft zwarte tekst en wordt daarom alleen in de lichte richting gebruikt.
+
+In de configurator is de knop iets donkerder groen (#2B9A3B tot #36AD46). Witte tekst op #39B54A of #21AE34 haalt het WCAG-contrast niet. Linkgroen is #1F7A32.
