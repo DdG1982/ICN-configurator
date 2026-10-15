@@ -1,8 +1,8 @@
 # Open punten
 
 - **Voorbeeldadressen buiten het werkgebied staan in de demo** (Aalsmeer en Amsterdam), op besluit van Danny. Het risico: ICN of een bezoeker ziet een resultaat voor een plek waar ICN niet installeert. Opgelost: de interface toont een melding "buiten werkgebied ICN" (besluit Danny).
-- **Welk Roden-adres is het ICN-pand:** Dwazziewegen 20 of Noordhoek 5?
-- **Dakgegevens zijn niet gecontroleerd.** PDOK, 3DBAG en de ICN-site waren vanuit de ontwikkelomgeving niet bereikbaar (de proxy gaf 403). De daktypes van alle adressen moeten in Fase 1 nog worden vastgesteld.
+- **(Opgelost 14-10-2026) ICN-pand:** Dwazziewegen 20, 9301 ZR Roden (`docs/besluiten.md`).
+- **(Opgelost 14-10-2026) Dakgegevens gecontroleerd:** na het herstel van de netwerktoegang zijn alle voorbeeldadressen met 3DBAG en luchtfoto vergeleken (`docs/spike-3dbag.md`).
 - **Ontbrekende varianten in de adreslijst:** er zit geen adres in Overijssel tussen en geen nieuwbouw van na 2020. Danny levert deze twee adressen nog aan.
 - **Monument (Nienoord 1, Leek):** op een rijksmonument zijn zonnepanelen meestal vergunningplichtig of niet toegestaan. De demo moet dat netjes tonen.
 - **(Opgelost 14-10-2026) Netwerktoegang van de ontwikkelomgeving:** `installatiecomfortnederland.nl`, `api.pdok.nl`, `service.pdok.nl`, `api.3dbag.nl`, `re.jrc.ec.europa.eu` en later `solar.googleapis.com` worden geblokkeerd. Zonder deze toegang kunnen Fase 1 en de huisstijl-extractie niet echt getest worden.
@@ -34,3 +34,4 @@
 - **Verbruik uit woningtype en bouwjaar (15-10-2026):** zoals besloten, met placeholderfactoren in `config/market.json` (bronnen en beperkingen staan daar). Woningtype komt uit aangrenzende 3DBAG-panden; nagekeken op 5 adressen. Voorbeeldwoningen opnieuw gebouwd; alleen `woningtype` is erbij gekomen, verder geen verschillen.
 - **Terugverdientijd met degradatie (15-10-2026):** `degradatiePerJaar` en `prijsstijgingPerJaar` uit `config/market.json` tellen nu mee. Met 0,5% degradatie wordt een terugverdientijd van 10 jaar ongeveer 10,3 jaar.
 - **Botbescherming voorbereid (15-10-2026):** `_routes.json` plus Turnstile met een eigen pas van 30 minuten voor `/api/pvgis` en `/api/lead`. Staat uit tot Danny `VITE_TURNSTILE_SITEKEY` (build) en `TURNSTILE_SECRET` (Pages-secret) samen zet. Echte Turnstile-controle niet getest (geblokkeerd in de ontwikkelomgeving). Nog nodig voor de embed: CORS op `/api/*` en tellen per pas of IP. Zie docs/databronnen-en-instellingen.md, sectie 7.
+- **Vragen aan ICN (15-10-2026):** gebundeld en mailklaar in `docs/vragen-icn.md` (22 vragen). Nieuw gevonden: de configurator zegt bij riet al "Op riet plaatsen we geen panelen, vanwege brandveiligheid". Dat is niet door ICN bevestigd (vraag 10).

@@ -1,5 +1,11 @@
 # BRIEF: 2050-zonnepanelen-configurator voor Installatie Comfort Nederland (abc solar)
 
+> **Status 15-10-2026: dit is de oorspronkelijke opdracht van 14-10-2026 en wordt niet bijgewerkt.** Een deel is achterhaald. Fase 0 en Fase 1 zijn afgerond, Google Solar staat uit (Tier B), en er draait een live demo op elk adres in Nederland. De vragen in sectie 3 waren voor Danny en zijn beantwoord. **Stuur ze niet naar ICN.** De actuele stand staat in:
+> - `docs/besluiten.md`: wat besloten is, met datum
+> - `docs/open-punten.md`: wat nog open staat
+> - `docs/databronnen-en-instellingen.md`: databronnen, vaste waarden en instellingen
+> - `docs/vragen-icn.md`: de actuele, mailklare vragen aan ICN
+
 Lees dit hele bestand. Werk daarna volgens de fases onderaan. Begin NIET met bouwen voordat Fase 0 klaar is. De Google-integratie komt pas na het besluit van Danny in Fase 1. De bron-onafhankelijke basis en de 2050-laag (sectie 4b) mogen eerder gebouwd worden.
 
 **Harde eis 1:** de configurator moet er niet merkbaar minder "2050" uitzien als Google ontbreekt of tegenvalt. Google is een nauwkeurigheidsupgrade, geen voorwaarde voor de visuele ervaring. Zie sectie 4b.

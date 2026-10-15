@@ -177,6 +177,8 @@ Dit zijn modelkeuzes. ICN hoeft hier niets mee, maar ze bepalen wel de uitkomst.
 
 ## 6. Vragenlijst voor ICN (samengevat)
 
+> Vervangen door de volledige, mailklare lijst in `docs/vragen-icn.md` (15-10-2026). Deze lijst blijft alleen staan als samenvatting.
+
 1. Prijslijst: prijs per Wp of per systeemgrootte, inclusief installatie.
 2. Standaardpaneel: merk, vermogen (Wp) en afmetingen.
 3. Montage: randmarge, ruimte tussen panelen, staand en/of liggend, opstelling op plat dak (oost/west of zuid, hoek, rijafstand).
