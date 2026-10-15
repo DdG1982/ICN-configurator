@@ -191,3 +191,40 @@ Dit zijn modelkeuzes. ICN hoeft hier niets mee, maar ze bepalen wel de uitkomst.
 12. Werkgebied: klopt de provinciegrens, of liever een straal rond Roden?
 13. Verbruiksschatting: kloppen de getallen per huishouden, de factoren per woningtype en de toeslag van 2.500 kWh voor nieuwbouw zonder gas?
 14. Degradatie: welk jaarlijks opbrengstverlies garandeert de fabrikant van jullie paneel?
+
+---
+
+## 7. Botbescherming en Cloudflare-routes (voorbereid 15-10-2026)
+
+### `_routes.json` (`prototype/public/_routes.json`)
+
+- Alles gaat via de Functions (toegangscode, `/api/*`), **behalve** `/assets/*` (gebundelde code en lettertypen), het logo en `robots.txt`. Die komen rechtstreeks van Pages: gratis, en ze tellen niet mee voor de Functions-limiet van 100.000 per dag.
+- `/data/*` blijft bewust achter de toegangscode, want daar staan de voorbeeldadressen en luchtfoto's.
+- Volgens de Cloudflare-docs wint `exclude` van `include`. Die docs zijn alleen via een zoekmachine gelezen; de pagina's zelf waren vanuit de ontwikkelomgeving niet bereikbaar. **Na de eerste deploy controleren** (Pages → Functions → zie het aantal aanroepen per bezoek).
+
+### Turnstile + pas (`prototype/server/pas.ts`, `functions/api/pas.ts`, `src/core/bescherming.ts`)
+
+Hoe het werkt:
+1. Bij de eerste live berekening of lead lost de bezoeker Turnstile op. Meestal ziet de bezoeker niets; soms verschijnt rechtsonder een vinkje.
+2. `/api/pas` controleert het token bij Cloudflare en geeft een eigen pas terug, 30 minuten geldig.
+3. `/api/pvgis` en `/api/lead` weigeren elk verzoek zonder geldige pas (401). De pas gaat mee als header `x-icn-pas`, niet als cookie, zodat hij later ook in de embed op de ICN-site werkt.
+
+Aanzetten (**beide nodig**, anders werkt het niet of staat het open):
+1. Cloudflare-dashboard → Turnstile → widget toevoegen. Domeinen: de `*.pages.dev`-naam van de demo, later ook het ICN-domein. Widgettype: *Invisible* of *Managed*.
+2. Build-variabele `VITE_TURNSTILE_SITEKEY` = de sitekey (openbaar, mag in de build).
+3. Pages-secret `TURNSTILE_SECRET` = de geheime sleutel.
+
+Gedrag zonder instellingen:
+- Zonder sitekey in de build: de browser vraagt geen pas.
+- Zonder secret op de server: alles staat open.
+- **Alleen het secret zonder sitekey**: elke live berekening mislukt (401). Zet ze dus samen aan.
+
+Getest:
+- Unit tests voor de pas, de Turnstile-controle en het opnieuw proberen na een 401.
+- In de browser: zonder sitekey werkt alles als voorheen. Met sitekey maar zonder bereikbare Turnstile verschijnt een nette foutmelding met "opnieuw".
+- **Niet getest:** een echte Turnstile-controle. `challenges.cloudflare.com` was vanuit de ontwikkelomgeving geblokkeerd. Na deploy testen met de officiële testsleutels (sitekey `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA`, altijd goed) en daarna met de echte.
+
+Beperkingen:
+- Een pas wordt niet geteld. Wie Turnstile één keer oplost, kan 30 minuten onbeperkt vragen. Voor echte rate limiting is opslag nodig (KV of Durable Objects) of een rate-limit-regel in de Cloudflare WAF. Die regel werkt alleen op een eigen domein dat via Cloudflare loopt, niet op `*.pages.dev`. Of de gratis WAF-regel hiervoor volstaat, is niet gecontroleerd.
+- Voor de embed op een ander domein zijn nog CORS-headers nodig op `/api/*` (inclusief toestemming voor de header `x-icn-pas`). Die zijn er nog niet.
+- Turnstile laadt een script van Cloudflare. Dat moet in de privacyverklaring van ICN staan; dit is niet juridisch gecontroleerd.

@@ -4,9 +4,11 @@
  * Het CRM is nog onbekend; elke ontvanger die een JSON-POST aanneemt werkt (Make, Zapier, n8n, eigen script).
  * Antwoord 202 = doorgestuurd. Bij een fout bewaart de browser de lead en probeert het later opnieuw;
  * het lead-id is vast, zodat de ontvanger dubbele leveringen kan herkennen.
- * Valt achter de toegangscode van _middleware.ts.
+ * Valt achter de toegangscode van _middleware.ts, en vraagt een pas als TURNSTILE_SECRET is ingesteld (server/pas.ts).
  */
-interface Env { LEAD_WEBHOOK_URL?: string; LEAD_WEBHOOK_TOKEN?: string }
+import { vereisPas } from '../../server/pas';
+
+interface Env { LEAD_WEBHOOK_URL?: string; LEAD_WEBHOOK_TOKEN?: string; TURNSTILE_SECRET?: string }
 
 const MAX_BYTES = 32 * 1024;
 
@@ -25,6 +27,8 @@ function geldig(l: Record<string, unknown>): string | null {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (ctx) => {
+  const geweigerd = await vereisPas(ctx.request, ctx.env.TURNSTILE_SECRET);
+  if (geweigerd) return geweigerd;
   const doel = ctx.env.LEAD_WEBHOOK_URL;
   if (!doel) return antwoord({ fout: 'Er is nog geen ontvanger voor leads ingesteld (LEAD_WEBHOOK_URL).' }, 503);
 

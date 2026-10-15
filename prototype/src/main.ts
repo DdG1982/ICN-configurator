@@ -18,6 +18,7 @@ import { maakEnergiestroom } from './ui/energiestroom';
 import type { SceneApi, Thema } from './ui/scene3d';
 import { suggesties, type Suggestie } from './live/bronnen';
 import { maakWachtrij, naarApi, nieuwLeadId, utmUit, type Lead } from './core/lead';
+import { ControleFout, haalPas, pasKopjes, vergeetPas } from './core/bescherming';
 
 /* ---------- Hulpjes ---------- */
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
@@ -327,7 +328,10 @@ $('#aannames-reset').addEventListener('click', () => { staat.eigen = null; staat
 /* ---------- Leadformulier ---------- */
 /** Versie van de toestemmingstekst; ophogen zodra ICN de tekst wijzigt of goedkeurt. */
 const TOESTEMMING_VERSIE = 'concept-2026-10-14';
-const wachtrij = maakWachtrij(opslag, naarApi(new URL('/api/lead', location.href).href));
+const wachtrij = maakWachtrij(opslag, naarApi(new URL('/api/lead', location.href).href, async (opnieuw) => {
+  if (opnieuw) vergeetPas();
+  return pasKopjes(await haalPas().catch(() => null));
+}));
 // Leads die bij een eerder bezoek niet aankwamen, opnieuw proberen.
 void wachtrij.verwerk();
 addEventListener('online', () => { void wachtrij.verwerk(); });
@@ -455,6 +459,7 @@ function ladenFout(bron: string, bericht: string, opnieuw: () => void) {
     '3DBAG': 'De 3D-kaart van Nederland (3DBAG) reageert nu niet. Probeer het zo opnieuw.',
     'PDOK Locatieserver': 'Het adressenregister reageert nu niet. Probeer het zo opnieuw.',
     tijd: 'Het ophalen van de kaartdata duurt te lang. Probeer het opnieuw.',
+    controle: 'We konden niet controleren of je een mens bent (beveiliging tegen misbruik). Probeer het opnieuw, of zet een adblocker voor deze pagina uit.',
   };
   $('#laden-titel').textContent = 'Dat lukte niet';
   $('#laden-fout-tekst').textContent = bron === 'adres' || (bron === 'BAG' && /geen gebouw/.test(bericht)) ? bericht : teksten[bron] ?? 'Er ging iets mis bij het ophalen van de kaartdata. Probeer het opnieuw.';
@@ -489,8 +494,11 @@ async function start(keuze: Keuze) {
     ladenReset(keuze.label);
     const t0 = performance.now();
     try {
-      const { bouwLive } = await import('./live/live');
-      model = await bouwLive(keuze.id, ladenStap);
+      const [{ bouwLive }, pas] = await Promise.all([
+        import('./live/live'),
+        haalPas().catch((e) => { throw e instanceof ControleFout ? Object.assign(e, { bron: 'controle' }) : e; }),
+      ]);
+      model = await bouwLive(keuze.id, ladenStap, pasKopjes(pas));
     } catch (e) {
       const f = e as { bron?: string; message?: string };
       ladenFout(f.bron ?? 'onbekend', f.message ?? '', () => start(keuze));

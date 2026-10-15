@@ -531,3 +531,7 @@ body.laadt .cta-balk { display: none; }
   /* Tijdens het laden is het paneel leeg: het beeld krijgt dan het hele scherm. */
   body.laadt .podium { height: calc(100svh - var(--balk-h) - var(--kop-h)); }
 }
+
+/* Botbescherming (Turnstile): onzichtbaar, behalve als Cloudflare de bezoeker iets wil laten aanklikken. */
+.turnstile-vak { position: fixed; right: 16px; bottom: 16px; z-index: 1000; display: none; }
+.turnstile-vak.zichtbaar { display: block; }

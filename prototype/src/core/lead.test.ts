@@ -39,3 +39,21 @@ describe('leadwachtrij', () => {
     expect(utmUit('?utm_source=fb&adres=x&utm_campaign=najaar')).toEqual({ utm_source: 'fb', utm_campaign: 'najaar' });
   });
 });
+
+describe('naarApi', () => {
+  it('vraagt na een 401 één keer een nieuwe pas', async () => {
+    const { naarApi } = await import('./lead');
+    const statussen = [401, 202];
+    const gezien: string[] = [];
+    const oud = globalThis.fetch;
+    globalThis.fetch = (async (_u: string, init: RequestInit) => {
+      gezien.push((init.headers as Record<string, string>)['x-icn-pas']);
+      return new Response('{}', { status: statussen.shift() });
+    }) as typeof fetch;
+    try {
+      const ok = await naarApi('https://x/api/lead', async (opnieuw) => ({ 'x-icn-pas': opnieuw ? 'nieuw' : 'oud' }))(lead('lead-0004'));
+      expect(ok).toBe(true);
+      expect(gezien).toEqual(['oud', 'nieuw']);
+    } finally { globalThis.fetch = oud; }
+  });
+});

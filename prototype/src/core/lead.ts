@@ -33,11 +33,18 @@ export function utmUit(zoek: string): Record<string, string> {
   return uit;
 }
 
-export const naarApi = (url: string): Versturen => async (lead) => {
-  try {
-    const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(lead), keepalive: true });
-    return r.ok;
-  } catch { return false; }
+/**
+ * kopjes: extra headers per poging (de pas van de botbescherming). Bij een 401 vragen we één keer een
+ * nieuwe pas (opnieuw = true) en proberen het nog eens.
+ */
+export const naarApi = (url: string, kopjes: (opnieuw: boolean) => Promise<Record<string, string>> = async () => ({})): Versturen => async (lead) => {
+  for (const opnieuw of [false, true]) {
+    try {
+      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json', ...(await kopjes(opnieuw)) }, body: JSON.stringify(lead), keepalive: true });
+      if (r.status !== 401) return r.ok;
+    } catch { return false; }
+  }
+  return false;
 };
 
 export function maakWachtrij(opslag: Opslag, verstuur: Versturen) {

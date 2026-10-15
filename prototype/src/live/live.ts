@@ -14,12 +14,13 @@ export class LiveFout extends Error {
 
 const onthouden = new Map<string, DakModel>();
 
-export function bouwLive(adresId: string, voortgang: (stap: Stap, info: Record<string, unknown>) => void): Promise<DakModel> {
+export function bouwLive(adresId: string, voortgang: (stap: Stap, info: Record<string, unknown>) => void, pvgisKopjes: Record<string, string> = {}): Promise<DakModel> {
   const klaar = onthouden.get(adresId);
   if (klaar) return Promise.resolve(klaar);
   const vraag: WerkVraag = {
     adresId,
     pvgisUrl: new URL('/api/pvgis', location.href).href,
+    pvgisKopjes,
     werkgebied: showcase.werkgebiedProvincies,
     maat: { breedte: pricing.paneelMaat.breedte, hoogte: pricing.paneelMaat.hoogte, rand: 0.4, tussen: 0.02 },
     wp: pricing.paneelWp,
@@ -28,7 +29,7 @@ export function bouwLive(adresId: string, voortgang: (stap: Stap, info: Record<s
     return import('./bouw').then(async ({ bouwModel }) => {
       const { pvgisViaProxy } = await import('./bronnen');
       try {
-        const m = await bouwModel(adresId, { ...vraag, pvgis: pvgisViaProxy(vraag.pvgisUrl), voortgang: (s, i) => voortgang(s, i ?? {}) });
+        const m = await bouwModel(adresId, { ...vraag, pvgis: pvgisViaProxy(vraag.pvgisUrl, vraag.pvgisKopjes), voortgang: (s, i) => voortgang(s, i ?? {}) });
         onthouden.set(adresId, m);
         return m;
       } catch (e) {

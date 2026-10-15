@@ -18,11 +18,11 @@ export class BronFout extends Error {
   constructor(public bron: string, bericht: string) { super(bericht); }
 }
 
-async function haal(url: string, bron: string, pogingen = 3): Promise<Response> {
+async function haal(url: string, bron: string, pogingen = 3, kopjes?: Record<string, string>): Promise<Response> {
   let laatste: unknown;
   for (let p = 0; p < pogingen; p++) {
     try {
-      const r = await fetch(url);
+      const r = await fetch(url, kopjes ? { headers: kopjes } : undefined);
       if (r.ok) return r;
       laatste = new Error(`HTTP ${r.status}`);
       if (r.status >= 400 && r.status < 500 && r.status !== 429) break;
@@ -31,7 +31,7 @@ async function haal(url: string, bron: string, pogingen = 3): Promise<Response> 
   }
   throw new BronFout(bron, `${bron} niet bereikbaar (${laatste instanceof Error ? laatste.message : String(laatste)})`);
 }
-const json = async <T>(url: string, bron: string) => (await haal(url, bron)).json() as Promise<T>;
+const json = async <T>(url: string, bron: string, kopjes?: Record<string, string>) => (await haal(url, bron, 3, kopjes)).json() as Promise<T>;
 const punt = (wkt: string) => (wkt.match(/[-\d.]+/g) ?? []).map(Number);
 
 /* ---------------------------------------------------------------- PDOK Locatieserver */
@@ -157,8 +157,9 @@ export function maakPvgis(vraag: (sleutel: string) => Promise<number>, tegelijk 
   };
 }
 
-/** Via onze eigen functie (browser): /api/pvgis geeft { ey } terug. */
-export const pvgisViaProxy = (basis: string) => maakPvgis((k) => json<{ ey: number }>(`${basis}?${k}`, 'PVGIS').then((d) => d.ey));
+/** Via onze eigen functie (browser): /api/pvgis geeft { ey } terug. kopjes: de pas van de botbescherming. */
+export const pvgisViaProxy = (basis: string, kopjes?: Record<string, string>) =>
+  maakPvgis((k) => json<{ ey: number }>(`${basis}?${k}`, 'PVGIS', kopjes).then((d) => d.ey));
 
 /** Rechtstreeks (Node-scripts, Cloudflare-functie). */
 export const PVGIS_URL = 'https://re.jrc.ec.europa.eu/api/v5_3/PVcalc';

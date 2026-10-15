@@ -2,8 +2,11 @@
  * Doorgeefluik naar PVGIS 5.3 (EC JRC). PVGIS stuurt geen CORS-headers, dus de browser kan het niet zelf vragen.
  * Alleen de jaaropbrengst per kWp (E_y) gaat terug. Antwoorden blijven 30 dagen in de Cloudflare-cache;
  * de invoer is al afgerond (0,01 graad, 5 graden), dus buren delen dezelfde antwoorden.
- * Valt achter de toegangscode van _middleware.ts.
+ * Valt achter de toegangscode van _middleware.ts, en vraagt een pas als TURNSTILE_SECRET is ingesteld (server/pas.ts).
  */
+import { vereisPas } from '../../server/pas';
+
+interface Env { TURNSTILE_SECRET?: string }
 const PVGIS = 'https://re.jrc.ec.europa.eu/api/v5_3/PVcalc';
 const DERTIG_DAGEN = 60 * 60 * 24 * 30;
 
@@ -16,7 +19,9 @@ function getal(v: string | null, min: number, max: number): number | null {
 const antwoord = (data: unknown, status = 200, cache = 'no-store') =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json', 'cache-control': cache } });
 
-export const onRequestGet: PagesFunction = async (ctx) => {
+export const onRequestGet: PagesFunction<Env> = async (ctx) => {
+  const geweigerd = await vereisPas(ctx.request, ctx.env.TURNSTILE_SECRET);
+  if (geweigerd) return geweigerd;
   const q = new URL(ctx.request.url).searchParams;
   // Alleen Nederland (ruim) en zinnige dakhoeken.
   const lat = getal(q.get('lat'), 50.5, 53.8), lon = getal(q.get('lon'), 3.1, 7.4);
