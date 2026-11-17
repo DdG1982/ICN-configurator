@@ -1,14 +1,14 @@
 /// <reference lib="webworker" />
 /** Web Worker: bouwt het live dakmodel op de achtergrond, zodat de pagina soepel blijft tijdens het rekenen. */
-import { bouwModel, type BouwOpties } from './bouw';
+import { bouwModel, type BouwBron, type BouwOpties } from './bouw';
 import { BronFout, pvgisViaProxy } from './bronnen';
 
-export interface WerkVraag { adresId: string; pvgisUrl: string; werkgebied: string[]; maat: BouwOpties['maat']; wp: number }
+export interface WerkVraag { bron: BouwBron; pvgisUrl: string; werkgebied: string[]; maat: BouwOpties['maat']; wp: number }
 
 self.onmessage = async (e: MessageEvent<WerkVraag>) => {
   const v = e.data;
   try {
-    const model = await bouwModel(v.adresId, {
+    const model = await bouwModel(v.bron, {
       pvgis: pvgisViaProxy(v.pvgisUrl), werkgebied: v.werkgebied, maat: v.maat, wp: v.wp,
       voortgang: (stap, info) => self.postMessage({ soort: 'stap', stap, info }),
     });

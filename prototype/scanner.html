@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dakscanner · intern</title>
+  <meta name="description" content="Interne tool: zoekt in een gebied naar daken waarop al zonnepanelen lijken te liggen, op basis van de PDOK-luchtfoto." />
+</head>
+<body>
+  <header class="sc-kop">
+    <a class="sc-merk" href="./"><img src="./icn-logo.png" alt="Installatie Comfort Nederland" width="640" height="84" /></a>
+    <span class="sc-titel">Dakscanner <small>intern · bestaande zonnepanelen zoeken</small></span>
+  </header>
+
+  <main class="sc">
+    <aside class="sc-paneel">
+      <section class="sc-blok" aria-labelledby="gebied-kop">
+        <h2 id="gebied-kop">1. Kies een gebied</h2>
+        <div class="sc-tabs" role="group" aria-label="Soort gebied">
+          <button type="button" data-tab="plaats" aria-pressed="true">Plaats en straal</button>
+          <button type="button" data-tab="teken" aria-pressed="false">Teken op de kaart</button>
+        </div>
+        <div data-paneel="plaats">
+          <label for="plaats-veld">Plaats of adres</label>
+          <div class="sc-combo">
+            <input id="plaats-veld" type="text" autocomplete="off" placeholder="Bijvoorbeeld: Peest" />
+            <ul id="plaats-lijst" role="listbox" hidden></ul>
+          </div>
+          <label for="straal">Straal</label>
+          <select id="straal">
+            <option value="500">500 m</option>
+            <option value="1000" selected>1 km</option>
+            <option value="1500">1,5 km</option>
+            <option value="2000">2 km</option>
+            <option value="3000">3 km</option>
+          </select>
+          <p class="sc-klein">Of klik op de kaart om het middelpunt te verplaatsen.</p>
+        </div>
+        <div data-paneel="teken" hidden>
+          <button type="button" class="sc-knop" id="teken-knop">Rechthoek tekenen</button>
+          <p class="sc-klein">Klik op de knop en sleep daarna een rechthoek op de kaart. Hooguit 30 km².</p>
+        </div>
+        <label for="min-opp">Kleinste grondvlak (m²)</label>
+        <input id="min-opp" type="number" min="50" max="5000" step="10" value="150" />
+        <label class="sc-vink"><input type="checkbox" id="rond-overslaan" checked /> Ronde bouwwerken (silo's, mestsilo's) overslaan</label>
+        <p class="sc-klein">Woningen tellen mee als ze minstens zo groot zijn. Panden zonder woonfunctie (schuren, stallen, bedrijfshallen) worden eerst beoordeeld.</p>
+        <button type="button" class="sc-knop sc-knop-hoofd" id="zoek-knop" disabled>Gebouwen zoeken</button>
+        <p class="sc-melding" id="gebied-melding" role="status" hidden></p>
+      </section>
+
+      <section class="sc-blok" id="raming" hidden aria-labelledby="raming-kop">
+        <h2 id="raming-kop">2. Controleer en start</h2>
+        <dl class="sc-cijfers" id="raming-cijfers"></dl>
+        <label for="limiet">Alleen de eerste … gebouwen (leeg = allemaal)</label>
+        <input id="limiet" type="number" min="1" step="1" placeholder="allemaal" />
+        <p class="sc-klein" id="raming-uitleg"></p>
+        <button type="button" class="sc-knop sc-knop-hoofd" id="start-knop">Start scan</button>
+      </section>
+
+      <section class="sc-blok" id="voortgang" hidden aria-labelledby="voortgang-kop">
+        <h2 id="voortgang-kop">Scan</h2>
+        <progress id="voortgang-balk" max="1" value="0"></progress>
+        <p id="voortgang-tekst" role="status"></p>
+        <div class="sc-rij">
+          <button type="button" class="sc-knop" id="stop-knop">Stoppen</button>
+          <button type="button" class="sc-knop" id="hervat-knop" hidden>Hervatten</button>
+        </div>
+        <p class="sc-melding" id="scan-melding" role="alert" hidden></p>
+      </section>
+
+      <section class="sc-blok" aria-labelledby="scans-kop">
+        <h2 id="scans-kop">Bewaarde scans</h2>
+        <ul class="sc-scans" id="scans"></ul>
+        <p class="sc-klein" id="opslag-info"></p>
+      </section>
+    </aside>
+
+    <section class="sc-kaart-vak" aria-label="Kaart">
+      <div id="kaart"></div>
+      <ul class="sc-legenda" aria-label="Legenda">
+        <li><i class="k-waarschijnlijk"></i>waarschijnlijk</li>
+        <li><i class="k-twijfel"></i>twijfel</li>
+        <li><i class="k-niet-gevonden"></i>niet gevonden</li>
+        <li><i class="k-wacht"></i>nog niet bekeken</li>
+      </ul>
+    </section>
+
+    <section class="sc-resultaten" aria-labelledby="resultaten-kop">
+      <div class="sc-resultaten-kop">
+        <h2 id="resultaten-kop">Vondsten</h2>
+        <select id="weergave-scan" aria-label="Welke scan"></select>
+      </div>
+      <p class="sc-uitleg">Het oordeel komt van een AI-model dat één luchtfoto bekijkt. Het is geen zekerheid en geen telling: bevestig of wijs af na eigen controle. Het type pand komt uit de BAG; of een gebouw agrarisch is, staat daar niet in.</p>
+      <div class="sc-filters" role="group" aria-label="Filter op oordeel" id="filters"></div>
+      <div class="sc-rij">
+        <button type="button" class="sc-knop" id="csv-knop">CSV exporteren</button>
+        <button type="button" class="sc-knop" id="zip-knop">ZIP met CSV en luchtfoto's</button>
+      </div>
+      <ul class="sc-lijst" id="lijst"></ul>
+      <button type="button" class="sc-knop" id="meer-knop" hidden>Meer tonen</button>
+    </section>
+  </main>
+  <script type="module" src="/src/scanner/main.ts"></script>
+</body>
+</html>

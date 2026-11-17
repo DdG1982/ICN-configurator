@@ -74,3 +74,12 @@ Er staan 15 rijen, omdat Danny 10 adressen leverde en Claude 5 openbare of zakel
 - **Schaduw via de AHN-hoogtekaart** (0,5 m) in plaats van driehoeken plus boombollen. Die kaart bevat gebouwen, bomen en schoorstenen zoals ze gemeten zijn.
 - **Voorbeeldadressen rekenen met dezelfde code** (`prototype/scripts/bouw-voorbeelden.ts`). De Python-pijplijn blijft alleen als referentie.
 - **Adres in de link staat in de #-hash** (`#adres=…`), niet in de query. Zo is een link te delen, maar komt het adres niet in de paginaweergaven van analytics.
+
+## 17-11-2026: dakscanner (branch `feature/dakscanner`)
+
+- **Doel:** een interne tool die in een gebied zoekt naar daken waarop al zonnepanelen lijken te liggen. Opbrengstberekening valt erbuiten. Zie docs/dakscanner.md.
+- **Detectie (Danny: "Ja"):** Claude Haiku 5.5 (vision), via een Cloudflare-functie. De sleutel staat als Pages-secret `ANTHROPIC_API_KEY`. Het model staat op één plek, zodat wisselen eenvoudig is.
+- **Grondvlak ≥ 150 m², grote woningen tellen mee** (Danny). Panden zonder woonfunctie komen eerst aan de beurt.
+- **Opslag:** in de browser (IndexedDB). Danny vroeg of het om MB's of GB's ging. Antwoord: ongeveer 70 MB per 1.000 gescande panden. Ik heb voor browseropslag gekozen, met een aparte opslaglaag, zodat Cloudflare D1/R2 later kan.
+- **Testgebied:** agrarisch, Peest (Drenthe), straal 1 km (Danny: "een agrarisch gebied").
+- **PDOK-link:** een directe link naar de PDOK-luchtfoto (WMS) en geen link naar de PDOK-viewer, omdat het formaat daarvan niet te controleren was.

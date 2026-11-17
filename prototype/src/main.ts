@@ -62,7 +62,7 @@ document.querySelectorAll('[data-terug]').forEach((el) => el.addEventListener('c
 
 /* ---------- Adresveld: voorbeeldwoningen + elk adres in Nederland (PDOK) ---------- */
 const BASIS = './data';
-type Keuze = { soort: 'voorbeeld'; item: IndexItem } | { soort: 'live'; id: string; label: string };
+type Keuze = { soort: 'voorbeeld'; item: IndexItem } | { soort: 'live'; id: string; label: string } | { soort: 'pand'; id: string; x: number; y: number; label: string };
 let adressen: IndexItem[] = [];
 const indexKlaar = fetch(`${BASIS}/index.json`).then((r) => r.json()).then((d: IndexItem[]) => { adressen = d; return d; }).catch(() => []);
 const veld = $<HTMLInputElement>('#adres-veld');
@@ -430,12 +430,15 @@ async function start(keuze: Keuze) {
     basis = `${BASIS}/${keuze.item.slug}`;
     model = await (await fetch(`${basis}/model.json`)).json() as DakModel;
   } else {
-    zetUrl('adres', keuze.id);
+    if (keuze.soort === 'pand') {
+      // Link vanuit de dakscanner: pand-id plus coördinaat, zodat ook een schuur zonder adres te openen is.
+      history.replaceState(null, '', `${location.pathname}${location.search}#pand=${encodeURIComponent(keuze.id)}&x=${keuze.x}&y=${keuze.y}`);
+    } else zetUrl('adres', keuze.id);
     ladenReset(keuze.label);
     const t0 = performance.now();
     try {
       const { bouwLive } = await import('./live/live');
-      model = await bouwLive(keuze.id, ladenStap);
+      model = await bouwLive(keuze.soort === 'pand' ? { pandId: keuze.id, x: keuze.x, y: keuze.y } : keuze.id, ladenStap);
     } catch (e) {
       const f = e as { bron?: string; message?: string };
       ladenFout(f.bron ?? 'onbekend', f.message ?? '', () => start(keuze));
@@ -595,6 +598,9 @@ function klaar() {
 /* ---------- Direct openen via de link (#adres=… of #voorbeeld=…) ---------- */
 const vanLink = hashParams();
 if (vanLink.get('adres')) start({ soort: 'live', id: vanLink.get('adres')!, label: '' });
+else if (vanLink.get('pand') && Number.isFinite(Number(vanLink.get('x'))) && Number.isFinite(Number(vanLink.get('y')))) {
+  start({ soort: 'pand', id: vanLink.get('pand')!, x: Number(vanLink.get('x')), y: Number(vanLink.get('y')), label: '' });
+}
 else if (vanLink.get('voorbeeld')) indexKlaar.then(() => {
   const item = adressen.find((a) => a.slug === vanLink.get('voorbeeld'));
   if (item) start({ soort: 'voorbeeld', item });

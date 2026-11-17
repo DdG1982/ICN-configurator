@@ -1,0 +1,103 @@
+:root {
+  --bg: #f3f7f1;
+  --vlak: #ffffff;
+  --lijn: rgba(11, 28, 106, 0.12);
+  --tekst: #111a3a;
+  --tekst-2: #45506b;
+  --accent: #2b9a3b;
+  --accent-donker: #1f7a2c;
+  --navy: #0b1c6a;
+  --fout: #b42318;
+  --r: 12px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--tekst); font: 15px/1.5 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+h2 { font-size: 16px; margin: 0 0 10px; }
+small { color: var(--tekst-2); }
+
+.sc-kop { display: flex; align-items: center; gap: 16px; padding: 10px 16px; background: var(--vlak); border-bottom: 1px solid var(--lijn); }
+.sc-merk img { height: 26px; width: auto; display: block; }
+.sc-titel { font-weight: 700; }
+.sc-titel small { font-weight: 400; margin-left: 6px; }
+
+.sc { display: grid; grid-template-columns: 360px 1fr; grid-template-rows: minmax(360px, 55vh) auto; gap: 12px; padding: 12px; }
+.sc-paneel { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: 12px; }
+.sc-kaart-vak { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--lijn); min-height: 360px; }
+#kaart { position: absolute; inset: 0; }
+.sc-resultaten { background: var(--vlak); border: 1px solid var(--lijn); border-radius: var(--r); padding: 14px; min-width: 0; }
+
+.sc-blok { background: var(--vlak); border: 1px solid var(--lijn); border-radius: var(--r); padding: 14px; }
+.sc-blok label { display: block; font-weight: 600; margin: 10px 0 4px; font-size: 14px; }
+.sc-blok input, .sc-blok select, .sc-resultaten select { width: 100%; min-height: 40px; border: 1px solid rgba(11, 28, 106, 0.22); border-radius: 8px; padding: 0 10px; font: inherit; background: #fff; color: inherit; }
+.sc-klein, .sc-uitleg { font-size: 13px; color: var(--tekst-2); margin: 6px 0; }
+.sc-melding { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: #eef3ff; font-size: 14px; }
+
+.sc-knop { min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid rgba(11, 28, 106, 0.22); background: #fff; color: var(--tekst); font: inherit; font-weight: 600; cursor: pointer; }
+.sc-knop:hover { border-color: var(--navy); }
+.sc-knop:disabled { opacity: .5; cursor: default; }
+.sc-knop-hoofd { width: 100%; margin-top: 12px; background: var(--accent); border-color: var(--accent); color: #fff; }
+.sc-knop-hoofd:hover { background: var(--accent-donker); }
+.sc-klein-knop { min-height: 32px; padding: 0 10px; font-size: 13px; }
+.sc-knop[aria-pressed='true'] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.sc-link { background: none; border: 0; padding: 0; font: inherit; color: var(--navy); text-decoration: underline; cursor: pointer; text-align: left; }
+.sc-rij { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+
+.sc-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 10px; }
+.sc-tabs button { flex: 1; min-height: 34px; border: 0; border-radius: 7px; background: none; font: inherit; font-size: 14px; cursor: pointer; color: var(--tekst-2); }
+.sc-tabs button[aria-pressed='true'] { background: #fff; color: var(--tekst); font-weight: 600; box-shadow: 0 1px 3px rgba(11, 28, 106, .12); }
+
+.sc-combo { position: relative; }
+.sc-combo ul { position: absolute; z-index: 1000; left: 0; right: 0; top: 100%; margin: 4px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid var(--lijn); border-radius: 8px; box-shadow: 0 10px 30px rgba(11, 28, 106, .15); }
+.sc-combo li { padding: 8px; border-radius: 6px; cursor: pointer; }
+.sc-combo li:hover { background: var(--bg); }
+
+.sc-cijfers { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 0; font-size: 14px; }
+.sc-cijfers dt { color: var(--tekst-2); }
+.sc-cijfers dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.sc-cijfers .sc-sub { grid-column: 1 / -1; text-align: left; font-size: 12px; color: var(--tekst-2); }
+progress { width: 100%; height: 10px; accent-color: var(--accent); }
+
+.sc-scans { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.sc-scans li { display: grid; gap: 2px; justify-items: start; }
+
+.sc-legenda { position: absolute; z-index: 500; left: 10px; bottom: 22px; margin: 0; padding: 6px 10px; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 12px; background: rgba(255, 255, 255, .92); border-radius: 8px; font-size: 12px; }
+.sc-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; border: 1px solid var(--navy); vertical-align: -1px; }
+.k-waarschijnlijk { background: #2b9a3b; } .k-twijfel { background: #e39b12; } .k-niet-gevonden { background: #8a94a6; } .k-wacht { background: #fff; }
+
+.sc-resultaten-kop { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.sc-resultaten-kop h2 { margin: 0; }
+.sc-resultaten-kop select { max-width: 420px; }
+.sc-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.sc-filters button { min-height: 34px; border-radius: 999px; border: 1px solid var(--lijn); background: #fff; padding: 0 12px; font: inherit; font-size: 14px; cursor: pointer; }
+.sc-filters button span { color: var(--tekst-2); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.sc-filters button[aria-pressed='true'] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.sc-filters button[aria-pressed='true'] span { color: #cfd6f5; }
+
+.sc-lijst { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 10px; }
+.sc-vondst { display: grid; grid-template-columns: 160px 1fr; gap: 12px; padding: 10px; border: 1px solid var(--lijn); border-radius: var(--r); background: #fff; transition: box-shadow .3s; cursor: pointer; }
+.sc-vondst.sc-flits { box-shadow: 0 0 0 3px var(--accent); }
+.sc-vondst p { margin: 0 0 4px; font-size: 14px; overflow-wrap: anywhere; }
+.sc-beeld { display: block; width: 160px; height: 160px; border-radius: 8px; overflow: hidden; background: #dde3da; }
+.sc-beeld img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sc-info { min-width: 0; }
+.sc-label { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--k, #8a94a6) 16%, #fff); color: color-mix(in srgb, var(--k, #8a94a6) 70%, #000); border: 1px solid color-mix(in srgb, var(--k, #8a94a6) 40%, #fff); }
+.sc-label-bevestigd { --k: #0b1c6a; }
+.sc-label-afgewezen { --k: #b42318; }
+.sc-toel { font-style: italic; color: var(--tekst-2); }
+.sc-zacht { color: var(--tekst-2); font-size: 13px; }
+.sc-links { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.sc-links a { color: var(--navy); font-weight: 600; }
+.sc-leeg { color: var(--tekst-2); padding: 12px 0; }
+
+@media (max-width: 900px) {
+  .sc { grid-template-columns: 1fr; grid-template-rows: auto; padding: 8px; }
+  .sc-paneel { grid-row: auto; }
+  .sc-kaart-vak { height: 60vh; }
+  .sc-vondst { grid-template-columns: 110px 1fr; }
+  .sc-beeld { width: 110px; height: 110px; }
+}
+
+.sc-blok label.sc-vink { display: flex; gap: 8px; align-items: center; font-weight: 400; }
+.sc-blok .sc-vink input { width: auto; min-height: 0; }

@@ -1,6 +1,8 @@
 import { execFile } from 'node:child_process';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { defineConfig, type Plugin } from 'vite';
+import Anthropic from '@anthropic-ai/sdk';
+import { beoordeel, geldigBeeld } from './src/scanner/claude-kern';
 
 /**
  * Lokaal testen: /api/pvgis doet hier wat functions/api/pvgis.ts op Cloudflare doet.
@@ -30,9 +32,46 @@ function pvgisLokaal(): Plugin {
   };
 }
 
+/**
+ * Lokaal testen van de dakscanner: /api/classificeer doet hier wat functions/api/classificeer.ts op Cloudflare doet.
+ * Sleutel uit ANTHROPIC_API_KEY. Met SCANNER_PROEF=1 (alleen lokaal) komt er zonder sleutel een duidelijk gemarkeerd
+ * proefantwoord terug, om de interface te testen; dat is géén beoordeling.
+ */
+function classificeerLokaal(): Plugin {
+  const handel = (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    if (!req.url?.startsWith('/api/classificeer') || req.method !== 'POST') return next();
+    const stuur = (status: number, data: unknown) => { res.statusCode = status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(data)); };
+    let tekst = '';
+    req.on('data', (d) => { tekst += d; if (tekst.length > 2e6) req.destroy(); });
+    req.on('end', async () => {
+      let body: { beeld?: unknown; opp?: unknown; jaar?: unknown } = {};
+      try { body = JSON.parse(tekst); } catch { return stuur(400, { fout: 'ongeldig' }); }
+      if (!geldigBeeld(body.beeld)) return stuur(400, { fout: 'ongeldig' });
+      if (!process.env.ANTHROPIC_API_KEY) {
+        if (process.env.SCANNER_PROEF === '1') return stuur(200, { oordeel: 'twijfel', toelichting: 'PROEFMODUS: geen echte beoordeling.', model: 'proef', tokensIn: 0, tokensUit: 0 });
+        return stuur(503, { fout: 'geen-sleutel', bericht: 'Er is geen API-sleutel ingesteld (ANTHROPIC_API_KEY).' });
+      }
+      try {
+        stuur(200, await beoordeel(new Anthropic({ maxRetries: 3 }), body.beeld, { opp: Number(body.opp), jaar: Number(body.jaar) }));
+      } catch (e) {
+        stuur(502, { fout: 'api', bericht: e instanceof Error ? e.message : String(e) });
+      }
+    });
+  };
+  return {
+    name: 'classificeer-lokaal',
+    configureServer: (s) => { s.middlewares.use(handel); },
+    configurePreviewServer: (s) => { s.middlewares.use(handel); },
+  };
+}
+
 export default defineConfig({
   base: './',
-  plugins: [pvgisLokaal()],
-  build: { target: 'es2020', chunkSizeWarningLimit: 800 },
+  plugins: [pvgisLokaal(), classificeerLokaal()],
+  build: {
+    target: 'es2020',
+    chunkSizeWarningLimit: 800,
+    rollupOptions: { input: { main: 'index.html', scanner: 'scanner.html' } },
+  },
   worker: { format: 'es' },
 });

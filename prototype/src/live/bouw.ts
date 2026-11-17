@@ -6,9 +6,10 @@
  */
 import type { DakModel, DakStatus, Dakvlak, Mesh, Plek } from '../core/dak-model';
 import {
-  adresOpzoeken, ahn, bagPand, BronFout, isRijksmonument, luchtfotoUrl, panden3dbag,
-  type CityFeature, type Pvgis, type Transform,
+  adresOpzoeken, ahn, bagPand, bagPandOpId, BronFout, dichtstbijzijndAdres, isRijksmonument, luchtfotoUrl, panden3dbag,
+  type AdresInfo, type BagPand, type CityFeature, type Pvgis, type Transform,
 } from './bronnen';
+import { rdNaarWgs } from '../scanner/rd';
 import { basisVlak, dot, naarModel, newell, open, plekkenOpVlak, puntInVeelhoek, sub, trianguleer, zonstanden, type PaneelMaat, type V2, type V3 } from './geo';
 import { bomenUitAhn, schaduwfactor, type Raster } from './hoogte';
 
@@ -94,14 +95,33 @@ export function bepaalStatus(gebruiksdoel: string, eenheden: number, monument: b
   return 'woning';
 }
 
-export async function bouwModel(adresId: string, o: BouwOpties): Promise<DakModel> {
+/** Een adres (PDOK-id) of een pand met coördinaat (link vanuit de dakscanner, ook voor panden zonder adres). */
+export type BouwBron = string | { pandId: string; x: number; y: number };
+
+async function pandVanBron(pandId: string, x: number, y: number): Promise<{ adres: AdresInfo; bag: BagPand }> {
+  const [bag, nabij] = await Promise.all([bagPandOpId(pandId, x, y), dichtstbijzijndAdres(x, y).catch(() => null)]);
+  if (!bag) throw new BronFout('BAG', 'Dit pand staat niet (meer) in de BAG.');
+  const { lat, lon } = rdNaarWgs(x, y);
+  const label = nabij && nabij.afstand <= 150
+    ? (nabij.afstand <= 25 ? nabij.label : `Pand bij ${nabij.label}`)
+    : `BAG-pand ${pandId}`;
+  return { adres: { id: `pand-${pandId}`, label, provincie: nabij?.provincie ?? '', x, y, lat, lon, vboId: '' }, bag };
+}
+
+export async function bouwModel(bron: BouwBron, o: BouwOpties): Promise<DakModel> {
   const meld = o.voortgang ?? (() => {});
-  const adres = await adresOpzoeken(adresId);
+  let adres: AdresInfo, bag: BagPand | null;
+  if (typeof bron === 'string') {
+    adres = await adresOpzoeken(bron);
+    bag = null;
+  } else {
+    ({ adres, bag } = await pandVanBron(bron.pandId, bron.x, bron.y));
+  }
   // De wijde luchtfoto hangt alleen van het adrespunt af, zodat het laadscherm hem meteen kan tonen.
   const wijdUrl = luchtfotoUrl(adres.x, adres.y, WIJD, 1024);
   meld('adres', { label: adres.label, provincie: adres.provincie, wijd: wijdUrl });
 
-  const bag = await bagPand(adres.x, adres.y);
+  bag ??= await bagPand(adres.x, adres.y);
   if (!bag) throw new BronFout('BAG', 'Op dit adres staat volgens de BAG geen gebouw.');
   const [ox, oy] = zwaartepunt(bag.footprint);
   const luchtfoto = {

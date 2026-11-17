@@ -74,6 +74,27 @@ export async function bagPand(x: number, y: number): Promise<BagPand | null> {
   return opties.find((o) => puntInVeelhoek(x, y, o.footprint)) ?? opties[0];
 }
 
+/** Een bekend pand (BAG-id) rond een punt; voor links vanuit de dakscanner, ook als het pand geen adres heeft. */
+export async function bagPandOpId(id: string, x: number, y: number): Promise<BagPand | null> {
+  const u = `${BAG_WFS}?service=WFS&version=2.0.0&request=GetFeature&typeNames=bag:pand&outputFormat=application/json`
+    + `&srsName=EPSG:28992&bbox=${x - 80},${y - 80},${x + 80},${y + 80},EPSG:28992`;
+  const d = await json<{ features: { properties: Record<string, unknown>; geometry: { type: string; coordinates: number[][][] | number[][][][] } }[] }>(u, 'BAG');
+  const f = d.features.find((g) => String(g.properties.identificatie) === id);
+  if (!f) return null;
+  const ring = (f.geometry.type === 'MultiPolygon' ? (f.geometry.coordinates as number[][][][])[0][0] : (f.geometry.coordinates as number[][][])[0])
+    .map((p) => [p[0], p[1]] as [number, number]);
+  const p = f.properties;
+  return { id, bouwjaar: Number(p.bouwjaar), gebruiksdoel: String(p.gebruiksdoel ?? ''), eenheden: Number(p.aantal_verblijfsobjecten ?? 0), footprint: ring };
+}
+
+/** Dichtstbijzijnde adres (PDOK Locatieserver, reverse) met provincie en afstand in meters. */
+export async function dichtstbijzijndAdres(x: number, y: number): Promise<{ label: string; provincie: string; afstand: number } | null> {
+  const d = await json<{ response: { docs: { weergavenaam: string; provincienaam: string; afstand: number }[] } }>(
+    `${LOCATIE}/reverse?X=${x.toFixed(1)}&Y=${y.toFixed(1)}&type=adres&rows=1&fl=weergavenaam,provincienaam,afstand`, 'PDOK Locatieserver');
+  const doc = d.response.docs[0];
+  return doc ? { label: doc.weergavenaam, provincie: doc.provincienaam, afstand: doc.afstand } : null;
+}
+
 /**
  * Rijksmonument? Kijkt of er een monumentpunt van de RCE in het pand ligt (of hooguit 0,5 m erbuiten).
  * Krap gehouden zodat het monument van de buren in een rij niet meetelt. Gemeentelijke monumenten en
