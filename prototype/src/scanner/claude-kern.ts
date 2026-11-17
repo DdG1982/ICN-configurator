@@ -5,7 +5,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 
-import { geldigBeeld, MODEL, OORDELEN, type Beoordeling, type Oordeel } from './oordeel';
+import { geldigBeeld, MODEL, OMVANGEN, OORDELEN, ZICHTEN, type Beoordeling, type Omvang, type Oordeel, type Zicht } from './oordeel';
 
 export { geldigBeeld };
 
@@ -26,6 +26,13 @@ Kies precies één oordeel:
 - "twijfel": misschien panelen, maar het beeld is onduidelijk, deels bedekt, of niet te onderscheiden van donker dakmateriaal of lichtplaten; of het gaat om een of twee losse collectoren. Kies twijfel liever dan een stellig oordeel als je het niet zeker weet.
 - "niet-gevonden": geen aanwijzing voor panelen op dit dak.
 
+Geef daarnaast de omvang van wat je ziet, als klasse (geen telling):
+- "geen": geen panelen.
+- "enkele": een paar losse panelen of één kleine groep.
+- "blok": een of meer duidelijke blokken, maar het grootste deel van het dak is vrij.
+- "groot-deel": een groot deel van een dakvlak of van het hele dak ligt vol.
+En de zichtbaarheid: "duidelijk" als de panelen (of het ontbreken ervan) goed te zien zijn, "onduidelijk" bij schaduw, bomen, onscherpte, reflectie of twijfel over het materiaal.
+
 Geef ook een toelichting van één korte zin in het Nederlands, over wat je ziet en waar op het dak (bijvoorbeeld: "blauwe paneelrijen op het zuidwestelijke dakvlak").
 Noem geen aantallen panelen, geen vermogen, geen percentages en geen namen van bedrijven of personen.`;
 
@@ -33,9 +40,11 @@ const SCHEMA = {
   type: 'object',
   properties: {
     oordeel: { type: 'string', enum: [...OORDELEN] },
+    omvang: { type: 'string', enum: [...OMVANGEN] },
+    zichtbaarheid: { type: 'string', enum: [...ZICHTEN] },
     toelichting: { type: 'string' },
   },
-  required: ['oordeel', 'toelichting'],
+  required: ['oordeel', 'omvang', 'zichtbaarheid', 'toelichting'],
   additionalProperties: false,
 } as const;
 
@@ -63,10 +72,14 @@ export async function beoordeel(client: Anthropic, jpegBase64: string, context: 
     return { oordeel: 'twijfel', toelichting: 'Het model gaf geen oordeel over dit beeld.', model: r.model, tokensIn, tokensUit };
   }
   const tekst = r.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('');
-  let d: { oordeel?: string; toelichting?: string } = {};
+  let d: { oordeel?: string; omvang?: string; zichtbaarheid?: string; toelichting?: string } = {};
   try { d = JSON.parse(tekst); } catch { /* valt hieronder op twijfel */ }
   if (!OORDELEN.includes(d.oordeel as Oordeel)) {
     return { oordeel: 'twijfel', toelichting: 'Geen geldig antwoord van het model.', model: r.model, tokensIn, tokensUit };
   }
-  return { oordeel: d.oordeel as Oordeel, toelichting: schoonToelichting(d.toelichting ?? ''), model: r.model, tokensIn, tokensUit };
+  const oordeel = d.oordeel as Oordeel;
+  // 'niet gevonden' met een omvang is tegenstrijdig: dan geldt het oordeel.
+  const omvang: Omvang = oordeel === 'niet-gevonden' ? 'geen' : OMVANGEN.includes(d.omvang as Omvang) ? d.omvang as Omvang : 'enkele';
+  const zicht: Zicht = ZICHTEN.includes(d.zichtbaarheid as Zicht) ? d.zichtbaarheid as Zicht : 'onduidelijk';
+  return { oordeel, omvang, zicht, toelichting: schoonToelichting(d.toelichting ?? ''), model: r.model, tokensIn, tokensUit };
 }

@@ -101,3 +101,35 @@ progress { width: 100%; height: 10px; accent-color: var(--accent); }
 
 .sc-blok label.sc-vink { display: flex; gap: 8px; align-items: center; font-weight: 400; }
 .sc-blok .sc-vink input { width: auto; min-height: 0; }
+
+.sc-knop-ja { background: var(--accent); border-color: var(--accent); color: #fff; }
+.sc-knop-ja:hover { background: var(--accent-donker); }
+.sc-knop-nee { background: #fff1f0; border-color: #f0b4ae; color: var(--fout); }
+kbd { font: 600 12px/1 ui-monospace, monospace; padding: 2px 5px; border-radius: 4px; border: 1px solid currentColor; opacity: .8; margin-left: 4px; }
+
+.sc-klassen { margin: 6px 0 12px; border: 1px solid var(--lijn); border-radius: 10px; padding: 8px 12px; }
+.sc-klassen summary { cursor: pointer; font-weight: 600; }
+.sc-tabel { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+.sc-tabel th, .sc-tabel td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--lijn); vertical-align: middle; }
+.sc-tabel thead th { border-top: 0; color: var(--tekst-2); font-weight: 600; font-size: 13px; }
+.sc-tabel tbody th { font-weight: 500; }
+.sc-tabel td:last-child { white-space: nowrap; }
+.sc-tabel td:last-child .sc-knop + .sc-knop { margin-left: 4px; }
+
+.sc-snel { position: fixed; inset: 0; z-index: 2000; background: rgba(8, 14, 40, .72); display: grid; place-items: center; padding: 16px; }
+.sc-snel[hidden] { display: none; }
+.sc-snel-vak { background: #fff; border-radius: 16px; width: min(1100px, 100%); max-height: 100%; overflow: auto; padding: 16px; display: grid; gap: 12px; }
+.sc-snel-kop { display: flex; align-items: center; gap: 12px; }
+.sc-snel-kop h2 { margin: 0; }
+.sc-snel-kop .sc-knop { margin-left: auto; }
+.sc-snel-inhoud { display: grid; grid-template-columns: minmax(0, 620px) 1fr; gap: 16px; align-items: start; }
+.sc-snel-inhoud img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #dde3da; display: block; }
+.sc-snel-inhoud p { margin: 0 0 8px; overflow-wrap: anywhere; }
+.sc-snel-knoppen { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 8px; }
+.sc-snel-knoppen .sc-knop { min-height: 52px; font-size: 16px; }
+@media (max-width: 760px) {
+  .sc-snel { padding: 0; }
+  .sc-snel-vak { border-radius: 0; height: 100%; }
+  .sc-snel-inhoud { grid-template-columns: 1fr; }
+  .sc-snel-knoppen { grid-template-columns: 1fr 1fr; }
+}

@@ -38,6 +38,24 @@ Interne tool: kies een gebied, en de scanner zoekt naar daken waarop **al** zonn
   - CSV, met puntkomma als scheidingsteken en UTF-8 met BOM;
   - ZIP met de CSV en `beelden/<pand-id>_<jaar>.jpg`.
 
+## Sneller selecteren (17-11-2026, versie 2)
+
+Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest heeft niets. Er moest alleen te veel worden geklikt. Daarom:
+
+- **Omvang en zichtbaarheid:** het model geeft per dak twee extra antwoorden in vaste klassen:
+  - omvang: "enkele panelen", "een blok", "groot deel van het dak";
+  - zichtbaarheid: "duidelijk" of "onduidelijk".
+
+  Er komt geen telling en geen percentage van het model. De lijst staat op volgorde van oordeel, daarna omvang, daarna zichtbaarheid.
+- **Snel beoordelen:** één grote luchtfoto tegelijk. **B** = bevestigen, **A** = afwijzen, **→** of spatie = overslaan, **←** = vorige, **Esc** = sluiten. Na elke keuze gaat de scanner automatisch door naar het volgende dak. Je ziet alleen panden die nog niet beoordeeld zijn, de hoogste rang eerst.
+- **Trefkans per klasse:** per klasse (oordeel · omvang · zicht) toont de scanner welk deel jij zelf hebt bevestigd van wat je in die klasse hebt bekeken.
+  - Dat percentage is **gemeten**, geen schatting van het model.
+  - Het verschijnt pas vanaf 10 zelf bekeken panden. Onder de 20 staat erbij "nog weinig".
+  - Daarna kun je de rest van de klasse in één keer bevestigen of afwijzen. Je ziet dan eerst hoeveel fouten je ongeveer mag verwachten, en je kunt het ongedaan maken.
+  - Panden die je zo in één keer beoordeelt, tellen niet mee in de trefkans. In de CSV staan ze als "(in één keer, per klasse)".
+- **Opnieuw beoordelen:** vondsten uit de eerste versie hebben nog geen omvang. Die kun je opnieuw laten beoordelen met de bewaarde luchtfoto's. Er wordt niets opnieuw opgehaald; dat kost ca. $0,0002 per pand.
+- **"Niet gevonden"** hoef je niet na te lopen.
+
 ## Instellen op Cloudflare
 
 1. Zet in het Pages-project `icn-zonnepanelen-demo` het secret **`ANTHROPIC_API_KEY`**. Zonder sleutel stopt de scan meteen met een duidelijke melding.

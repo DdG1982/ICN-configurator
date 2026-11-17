@@ -3,7 +3,7 @@ import { controleerGebied, isRond, pandSoort, sorteer, vlakEnMidden, type Kandid
 import { googleMapsUrl, bekijkDakUrl, pdokLuchtfotoUrl } from './links';
 import { naarCsv } from './export';
 import type { PandRecord } from './opslag';
-import { geldigBeeld, geraamdeKostenUsd } from './oordeel';
+import { geldigBeeld, geraamdeKostenUsd, klasse, rangScore } from './oordeel';
 import { rdNaarWgs, wgsNaarRd } from './rd';
 import { isLeeg, kader } from './uitsnede';
 
@@ -99,5 +99,18 @@ describe('beoordeling', () => {
   it('raming per gebouw ligt rond een paar honderdste cent', () => {
     expect(geraamdeKostenUsd()).toBeGreaterThan(0.0001);
     expect(geraamdeKostenUsd()).toBeLessThan(0.001);
+  });
+});
+
+describe('rang en klasse', () => {
+  it('volgorde: oordeel, dan omvang, dan zichtbaarheid', () => {
+    const r = (o: Parameters<typeof rangScore>[0]) => rangScore(o);
+    expect(r({ oordeel: 'waarschijnlijk', omvang: 'groot-deel', zicht: 'duidelijk' })).toBeGreaterThan(r({ oordeel: 'waarschijnlijk', omvang: 'groot-deel', zicht: 'onduidelijk' }));
+    expect(r({ oordeel: 'waarschijnlijk', omvang: 'enkele', zicht: 'onduidelijk' })).toBeGreaterThan(r({ oordeel: 'twijfel', omvang: 'groot-deel', zicht: 'duidelijk' }));
+    expect(r({ oordeel: 'twijfel', omvang: 'blok' })).toBeGreaterThan(r({ oordeel: 'twijfel', omvang: 'enkele' }));
+  });
+  it('klasse is leesbaar en markeert oude vondsten zonder omvang', () => {
+    expect(klasse({ oordeel: 'waarschijnlijk', omvang: 'groot-deel', zicht: 'duidelijk' })).toBe('Waarschijnlijk · groot deel van het dak · duidelijk');
+    expect(klasse({ oordeel: 'twijfel' })).toMatch(/oude versie/);
   });
 });

@@ -94,6 +94,15 @@
       <p class="sc-uitleg">Het oordeel komt van een AI-model dat één luchtfoto bekijkt. Het is geen zekerheid en geen telling: bevestig of wijs af na eigen controle. Het type pand komt uit de BAG; of een gebouw agrarisch is, staat daar niet in.</p>
       <div class="sc-filters" role="group" aria-label="Filter op oordeel" id="filters"></div>
       <div class="sc-rij">
+        <button type="button" class="sc-knop sc-knop-ja" id="snel-knop">Snel beoordelen</button>
+        <button type="button" class="sc-knop" id="her-knop" hidden></button>
+      </div>
+      <p class="sc-melding" id="her-melding" role="status" hidden></p>
+      <details class="sc-klassen" open>
+        <summary>Trefkans per klasse <small>(gemeten uit jouw eigen bevestigingen en afwijzingen)</small></summary>
+        <div id="klassen"></div>
+      </details>
+      <div class="sc-rij">
         <button type="button" class="sc-knop" id="csv-knop">CSV exporteren</button>
         <button type="button" class="sc-knop" id="zip-knop">ZIP met CSV en luchtfoto's</button>
       </div>
@@ -101,6 +110,25 @@
       <button type="button" class="sc-knop" id="meer-knop" hidden>Meer tonen</button>
     </section>
   </main>
+  <div class="sc-snel" id="snel" hidden role="dialog" aria-modal="true" aria-labelledby="snel-titel">
+    <div class="sc-snel-vak">
+      <div class="sc-snel-kop">
+        <h2 id="snel-titel">Snel beoordelen</h2>
+        <span id="snel-teller" class="sc-zacht"></span>
+        <button type="button" class="sc-knop sc-klein-knop" id="snel-sluit">Sluiten (Esc)</button>
+      </div>
+      <div class="sc-snel-inhoud">
+        <img id="snel-beeld" alt="" width="768" height="768" />
+        <div id="snel-info"></div>
+      </div>
+      <div class="sc-snel-knoppen">
+        <button type="button" class="sc-knop" data-snel="vorige">← Vorige</button>
+        <button type="button" class="sc-knop sc-knop-nee" data-snel="afgewezen">Afwijzen <kbd>A</kbd></button>
+        <button type="button" class="sc-knop" data-snel="overslaan">Overslaan <kbd>→</kbd></button>
+        <button type="button" class="sc-knop sc-knop-ja" data-snel="bevestigd">Bevestigen <kbd>B</kbd></button>
+      </div>
+    </div>
+  </div>
   <script type="module" src="/src/scanner/main.ts"></script>
 </body>
 </html>

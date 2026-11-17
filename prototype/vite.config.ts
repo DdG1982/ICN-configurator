@@ -48,7 +48,7 @@ function classificeerLokaal(): Plugin {
       try { body = JSON.parse(tekst); } catch { return stuur(400, { fout: 'ongeldig' }); }
       if (!geldigBeeld(body.beeld)) return stuur(400, { fout: 'ongeldig' });
       if (!process.env.ANTHROPIC_API_KEY) {
-        if (process.env.SCANNER_PROEF === '1') return stuur(200, { oordeel: 'twijfel', toelichting: 'PROEFMODUS: geen echte beoordeling.', model: 'proef', tokensIn: 0, tokensUit: 0 });
+        if (process.env.SCANNER_PROEF === '1') return stuur(200, { oordeel: 'twijfel', omvang: 'enkele', zicht: 'onduidelijk', toelichting: 'PROEFMODUS: geen echte beoordeling.', model: 'proef', tokensIn: 0, tokensUit: 0 });
         return stuur(503, { fout: 'geen-sleutel', bericht: 'Er is geen API-sleutel ingesteld (ANTHROPIC_API_KEY).' });
       }
       try {

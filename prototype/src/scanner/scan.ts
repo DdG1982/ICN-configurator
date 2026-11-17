@@ -3,7 +3,7 @@
  * Stoppen kan altijd; hervatten slaat panden over die al klaar zijn. Panden die al in een eerdere scan beoordeeld zijn,
  * worden niet opnieuw beoordeeld (en dus niet opnieuw betaald).
  */
-import { bewaarBeeld, bewaarPand, bewaarScan, pand, scan as leesScan, type PandRecord } from './opslag';
+import { beeld as leesBeeld, bewaarBeeld, bewaarPand, bewaarScan, pand, scan as leesScan, type PandRecord } from './opslag';
 import type { Beoordeling } from './oordeel';
 import { maakUitsnede } from './uitsnede';
 
@@ -59,7 +59,7 @@ export async function voerScanUit(scanId: string, signaal: AbortSignal, melding:
         const o = await vraagOordeel(u.base64, p.opp, u.jaar, signaal);
         await bewaarBeeld(p.id, u.blob);
         Object.assign(p, {
-          status: 'klaar', oordeel: o.oordeel, toelichting: o.toelichting, model: o.model, beeldjaar: u.jaar, laag: u.laag,
+          status: 'klaar', oordeel: o.oordeel, omvang: o.omvang, zicht: o.zicht, toelichting: o.toelichting, model: o.model, beeldjaar: u.jaar, laag: u.laag,
           beeldBron: u.bron, gescand: new Date().toISOString(), fout: undefined, tokensIn: o.tokensIn, tokensUit: o.tokensUit,
         } satisfies Partial<PandRecord>);
         await bewaarPand(p);
@@ -87,5 +87,46 @@ export async function voerScanUit(scanId: string, signaal: AbortSignal, melding:
   }
   if (stop) throw stop;
   if (signaal.aborted) throw new ScanStop('gebruiker', 'Scan gestopt.');
+  return v;
+}
+
+async function naarBase64(blob: Blob): Promise<string> {
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  let s = '';
+  for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+/**
+ * Opnieuw beoordelen met de huidige instructie, op basis van de bewaarde uitsnede (niets opnieuw ophalen).
+ * Een eerdere bevestiging of afwijzing blijft staan.
+ */
+export async function herbeoordeel(ids: string[], signaal: AbortSignal, melding: (v: ScanVoortgang) => void): Promise<ScanVoortgang> {
+  const v: ScanVoortgang = { klaar: 0, totaal: ids.length, fouten: 0, tokensIn: 0, tokensUit: 0 };
+  let i = 0;
+  let stop: ScanStop | null = null;
+  const werker = async () => {
+    while (!stop && !signaal.aborted && i < ids.length) {
+      const p = await pand(ids[i++]);
+      const b = p && await leesBeeld(p.id);
+      if (!p || !b || !p.beeldjaar) { v.fouten++; continue; }
+      try {
+        const o = await vraagOordeel(await naarBase64(b), p.opp, p.beeldjaar, signaal);
+        Object.assign(p, { oordeel: o.oordeel, omvang: o.omvang, zicht: o.zicht, toelichting: o.toelichting, model: o.model,
+          tokensIn: (p.tokensIn ?? 0) + o.tokensIn, tokensUit: (p.tokensUit ?? 0) + o.tokensUit } satisfies Partial<PandRecord>);
+        await bewaarPand(p);
+        v.klaar++; v.tokensIn += o.tokensIn; v.tokensUit += o.tokensUit;
+      } catch (e) {
+        if (signaal.aborted) break;
+        if (e instanceof ScanStop) { stop = e; break; }
+        v.fouten++;
+      }
+      v.laatste = p;
+      melding({ ...v });
+    }
+  };
+  await Promise.all(Array.from({ length: TEGELIJK }, werker));
+  if (stop) throw stop;
+  if (signaal.aborted) throw new ScanStop('gebruiker', 'Gestopt.');
   return v;
 }

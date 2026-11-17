@@ -3,13 +3,14 @@ import { strToU8, zipSync } from 'fflate';
 import { SOORT_TEKST } from './gebied';
 import { links } from './links';
 import type { PandRecord } from './opslag';
+import { klasse, OMVANG_TEKST } from './oordeel';
 import { rdNaarWgs } from './rd';
 
 const OORDEEL_TEKST = { waarschijnlijk: 'waarschijnlijk zonnepanelen', twijfel: 'twijfel', 'niet-gevonden': 'niet gevonden' } as const;
 export const beeldBestand = (p: PandRecord) => `beelden/${p.id}_${p.beeldjaar ?? 'onbekend'}.jpg`;
 
 const KOLOMMEN = [
-  'pand_id', 'oordeel', 'beoordeling', 'toelichting_model', 'type_volgens_bag', 'gebruiksdoel_bag', 'grondvlak_m2', 'bouwjaar',
+  'pand_id', 'oordeel', 'omvang', 'zichtbaarheid', 'klasse', 'beoordeling', 'toelichting_model', 'type_volgens_bag', 'gebruiksdoel_bag', 'grondvlak_m2', 'bouwjaar',
   'adres', 'adres_herkomst', 'adres_afstand_m', 'rd_x', 'rd_y', 'lat', 'lon', 'beeldjaar', 'luchtfotolaag', 'beeld_bestand',
   'gescand_op', 'model', 'bekijk_dak', 'google_maps', 'pdok_luchtfoto',
 ];
@@ -24,7 +25,7 @@ export function naarCsv(panden: PandRecord[], basis: string): string {
     const l = links(basis, p);
     const { lat, lon } = rdNaarWgs(p.x, p.y);
     return [
-      p.id, p.oordeel ? OORDEEL_TEKST[p.oordeel] : p.status, p.beoordeling ?? '', p.toelichting ?? '', SOORT_TEKST[p.soort], p.gebruiksdoel, p.opp, p.bouwjaar || '',
+      p.id, p.oordeel ? OORDEEL_TEKST[p.oordeel] : p.status, p.omvang ? OMVANG_TEKST[p.omvang] : '', p.zicht ?? '', p.oordeel ? klasse(p) : '', p.beoordeling ? `${p.beoordeling}${p.beoordeeldDoor === 'klasse' ? ' (in één keer, per klasse)' : ''}` : '', p.toelichting ?? '', SOORT_TEKST[p.soort], p.gebruiksdoel, p.opp, p.bouwjaar || '',
       p.adres ?? '', { eigen: 'eigen adres van dit pand', nabij: 'dichtstbijzijnde adres (niet van dit pand)', geen: 'geen adres binnen 150 m' }[p.adresSoort],
       p.adresAfstand ?? '', p.x.toFixed(1), p.y.toFixed(1), lat.toFixed(6), lon.toFixed(6), p.beeldjaar ?? '', p.laag ?? '',
       p.beeldjaar ? beeldBestand(p) : '', p.gescand ?? '', p.model ?? '', l.bekijkDak, l.googleMaps, l.pdokLuchtfoto,

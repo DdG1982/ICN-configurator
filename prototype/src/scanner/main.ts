@@ -6,13 +6,13 @@ import L from 'leaflet';
 import { controleerGebied, NetFout, oppervlakGebied, pandenInGebied, SOORT_TEKST, type Gebied, type Kandidaat } from './gebied';
 import { download, naarCsv, naarZip } from './export';
 import { links } from './links';
-import { geraamdeKostenUsd, kostenUsd } from './oordeel';
+import { geraamdeKostenUsd, klasse, kostenUsd, OMVANG_TEKST, rangScore } from './oordeel';
 import {
   alleScans, allePanden, beeld, bewaarPand, bewaarScan, opslagGebruik, pand as leesPand, scan as leesScan,
   voegKandidatenToe, vraagBlijvendeOpslag, type PandRecord, type ScanRecord,
 } from './opslag';
 import { rdNaarWgs, wgsNaarRd } from './rd';
-import { ScanStop, voerScanUit } from './scan';
+import { herbeoordeel, ScanStop, voerScanUit } from './scan';
 
 /* ---------- hulpjes ---------- */
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s)!;
@@ -310,11 +310,14 @@ async function tekenLijst() {
   $('#filters').innerHTML = opties.filter((o) => o === 'alle' || tel[o] || o === filter).map((o) =>
     `<button type="button" data-filter="${o}" aria-pressed="${o === filter}">${o === 'alle' ? 'Alle' : OORDEEL_TEKST[o]} <span>${nl(o === 'alle' ? panden.length : tel[o] ?? 0)}</span></button>`).join('');
   const zicht = panden.filter((p) => filter === 'alle' || statusVan(p) === filter)
-    .sort((a, b) => (b.beoordeling === 'bevestigd' ? 1 : 0) - (a.beoordeling === 'bevestigd' ? 1 : 0) || b.opp - a.opp);
+    .sort((a, b) => rangScore(b) - rangScore(a) || b.opp - a.opp);
   const lijst = $('#lijst');
   const deel = zicht.slice(0, getoond);
   lijst.innerHTML = deel.length ? deel.map(kaartHtml).join('') : '<li class="sc-leeg">Geen gebouwen in deze categorie.</li>';
   $('#meer-knop').hidden = zicht.length <= getoond;
+  tekenKlassen(panden);
+  werkHerKnopBij(panden);
+  $('#snel-knop').textContent = `Snel beoordelen (${nl(snelRij(panden).length)} open)`;
   for (const p of deel) {
     if (!p.beeldjaar) continue;
     const img = lijst.querySelector<HTMLImageElement>(`#p-${p.id} img`);
@@ -337,6 +340,7 @@ function kaartHtml(p: PandRecord): string {
       <p><span class="sc-label" style="--k:${KLEUR[st]}">${OORDEEL_TEKST[st]}</span>
         ${p.beoordeling ? `<span class="sc-label sc-label-${p.beoordeling}">${p.beoordeling === 'bevestigd' ? 'Bevestigd' : 'Afgewezen'}</span>` : ''}
         ${p.model === 'proef' ? '<span class="sc-label sc-label-afgewezen">PROEF</span>' : ''}</p>
+      ${p.omvang && p.oordeel !== 'niet-gevonden' ? `<p class="sc-zacht">Omvang: <strong>${OMVANG_TEKST[p.omvang]}</strong> · ${p.zicht ?? 'onduidelijk'} zichtbaar</p>` : ''}
       ${p.toelichting ? `<p class="sc-toel">Model: “${esc(p.toelichting)}”</p>` : ''}
       ${p.fout ? `<p class="sc-toel">${esc(p.fout)}</p>` : ''}
       <p>${adres}</p>
@@ -370,9 +374,184 @@ $('#lijst').addEventListener('click', async (e) => {
   const nieuw = b.dataset.beoordeel as PandRecord['beoordeling'];
   p.beoordeling = p.beoordeling === nieuw ? undefined : nieuw;
   p.beoordeeld = p.beoordeling ? new Date().toISOString() : undefined;
+  p.beoordeeldDoor = p.beoordeling ? 'hand' : undefined;
   await bewaarPand(p);
   werkMarkerBij(p);
   tekenLijst();
+});
+
+/* ---------- trefkans per klasse en in één keer beoordelen ---------- */
+const MIN_BEOORDEELD = 10;
+const WEINIG = 20;
+let laatsteBulk: { ids: string[]; vorige: Map<string, Pick<PandRecord, 'beoordeling' | 'beoordeeld' | 'beoordeeldDoor'>>; tekst: string } | null = null;
+
+function tekenKlassen(panden: PandRecord[]) {
+  const groepen = new Map<string, PandRecord[]>();
+  for (const p of panden) {
+    if (p.status !== 'klaar' || p.oordeel === 'niet-gevonden') continue;
+    const k = klasse(p);
+    if (!groepen.has(k)) groepen.set(k, []);
+    groepen.get(k)!.push(p);
+  }
+  const rijen = [...groepen.entries()].sort((a, b) => rangScore(b[1][0]) - rangScore(a[1][0])).map(([k, ps]) => {
+    const hand = ps.filter((p) => p.beoordeeldDoor !== 'klasse' && p.beoordeling);
+    const ja = hand.filter((p) => p.beoordeling === 'bevestigd').length;
+    const open = ps.filter((p) => !p.beoordeling).length;
+    const genoeg = hand.length >= MIN_BEOORDEELD;
+    const kans = genoeg ? `<strong>${Math.round((100 * ja) / hand.length)}%</strong> <small>(${ja} van ${hand.length} bevestigd${hand.length < WEINIG ? ' · nog weinig' : ''})</small>`
+      : `<small>nog te weinig bekeken (${hand.length} van min. ${MIN_BEOORDEELD})</small>`;
+    const knoppen = genoeg && open ? `<button type="button" class="sc-knop sc-klein-knop" data-bulk="bevestigd" data-klasse="${esc(k)}">Bevestig overige ${open}</button>
+      <button type="button" class="sc-knop sc-klein-knop" data-bulk="afgewezen" data-klasse="${esc(k)}">Wijs overige ${open} af</button>` : '';
+    return `<tr><th scope="row">${esc(k)}</th><td>${nl(ps.length)}</td><td>${nl(open)}</td><td>${kans}</td><td>${knoppen}</td></tr>`;
+  });
+  $('#klassen').innerHTML = (rijen.length ? `<table class="sc-tabel"><thead><tr><th>Klasse (oordeel · omvang · zicht)</th><th>Totaal</th><th>Open</th><th>Trefkans</th><th></th></tr></thead><tbody>${rijen.join('')}</tbody></table>`
+    : '<p class="sc-zacht">Nog geen vondsten.</p>')
+    + `<p class="sc-klein">De trefkans is het deel dat jij zelf hebt bevestigd van wat je in die klasse hebt bekeken. Het is geen schatting van het model. Panden die je in één keer per klasse hebt beoordeeld, tellen niet mee. "Niet gevonden" hoef je niet na te lopen.</p>`
+    + (laatsteBulk ? `<p class="sc-rij"><button type="button" class="sc-knop sc-klein-knop" id="bulk-terug">Ongedaan maken: ${esc(laatsteBulk.tekst)}</button></p>` : '');
+}
+
+$('#klassen').addEventListener('click', async (e) => {
+  const t = e.target as HTMLElement;
+  if (t.closest('#bulk-terug') && laatsteBulk) {
+    for (const id of laatsteBulk.ids) {
+      const p = await leesPand(id);
+      if (!p) continue;
+      Object.assign(p, laatsteBulk.vorige.get(id));
+      await bewaarPand(p);
+      werkMarkerBij(p);
+    }
+    laatsteBulk = null;
+    return tekenLijst();
+  }
+  const b = t.closest<HTMLButtonElement>('[data-bulk]');
+  if (!b) return;
+  const k = b.dataset.klasse!, nieuw = b.dataset.bulk as 'bevestigd' | 'afgewezen';
+  const ps = (await pandenInWeergave()).filter((p) => p.status === 'klaar' && klasse(p) === k);
+  const open = ps.filter((p) => !p.beoordeling);
+  const hand = ps.filter((p) => p.beoordeeldDoor !== 'klasse' && p.beoordeling);
+  const ja = hand.filter((p) => p.beoordeling === 'bevestigd').length;
+  const kans = hand.length ? ja / hand.length : 0;
+  const fout = Math.round(open.length * (nieuw === 'bevestigd' ? 1 - kans : kans));
+  if (!confirm(`${nieuw === 'bevestigd' ? 'Bevestig' : 'Wijs af'}: ${open.length} panden in "${k}", zonder ze te bekijken.\n`
+    + `Gemeten in deze klasse: ${ja} van ${hand.length} bevestigd. Verwacht ongeveer ${fout} ${fout === 1 ? 'fout' : 'fouten'}.\nDit kun je ongedaan maken.`)) return;
+  const nu = new Date().toISOString();
+  const vorige = new Map<string, Pick<PandRecord, 'beoordeling' | 'beoordeeld' | 'beoordeeldDoor'>>();
+  for (const p of open) {
+    vorige.set(p.id, { beoordeling: p.beoordeling, beoordeeld: p.beoordeeld, beoordeeldDoor: p.beoordeeldDoor });
+    Object.assign(p, { beoordeling: nieuw, beoordeeld: nu, beoordeeldDoor: 'klasse' });
+    await bewaarPand(p);
+    werkMarkerBij(p);
+  }
+  laatsteBulk = { ids: open.map((p) => p.id), vorige, tekst: `${open.length} × ${nieuw} in "${k}"` };
+  tekenLijst();
+});
+
+/* ---------- opnieuw beoordelen (oude vondsten zonder omvang) ---------- */
+function werkHerKnopBij(panden: PandRecord[]) {
+  const oud = panden.filter((p) => p.status === 'klaar' && !p.omvang && p.model !== 'proef');
+  const knop = $<HTMLButtonElement>('#her-knop');
+  knop.hidden = !oud.length || !!lopend;
+  knop.textContent = `Opnieuw beoordelen met omvang (${nl(oud.length)} panden, ca. ${dollar(oud.length * geraamdeKostenUsd())})`;
+  knop.dataset.ids = oud.map((p) => p.id).join(',');
+}
+$('#her-knop').addEventListener('click', async () => {
+  const ids = ($('#her-knop').dataset.ids ?? '').split(',').filter(Boolean);
+  if (!ids.length || lopend) return;
+  if (!confirm(`${nl(ids.length)} panden opnieuw laten beoordelen met de bewaarde luchtfoto's. Geraamde kosten ca. ${dollar(ids.length * geraamdeKostenUsd())}. Je bevestigingen en afwijzingen blijven staan. Doorgaan?`)) return;
+  lopend = new AbortController();
+  $('#her-knop').hidden = true;
+  try {
+    const v = await herbeoordeel(ids, lopend.signal, (v) => {
+      meld('#her-melding', `Opnieuw beoordeeld: ${nl(v.klaar)} van ${nl(v.totaal)}${v.fouten ? ` · ${v.fouten} fout` : ''} · ${dollar(kostenUsd(v.tokensIn, v.tokensUit))} volgens API-telling`);
+      if (v.laatste) { werkMarkerBij(v.laatste); planLijst(); }
+    });
+    meld('#her-melding', `Klaar: ${nl(v.klaar)} opnieuw beoordeeld${v.fouten ? `, ${v.fouten} niet gelukt` : ''}.`);
+  } catch (e) {
+    meld('#her-melding', e instanceof ScanStop && e.reden === 'geen-sleutel' ? 'Er is geen (geldige) API-sleutel ingesteld.' : `Gestopt: ${e instanceof Error ? e.message : e}`);
+  } finally {
+    lopend = null;
+    tekenLijst();
+  }
+});
+
+/* ---------- snel beoordelen ---------- */
+let snel: { rij: PandRecord[]; i: number } | null = null;
+
+/** Wat er nog te bekijken is: de huidige filter (of waarschijnlijk + twijfel), nog niet beoordeeld, hoogste rang eerst. */
+function snelRij(panden: PandRecord[]): PandRecord[] {
+  const soorten = filter === 'waarschijnlijk' || filter === 'twijfel' || filter === 'niet-gevonden' ? [filter] : ['waarschijnlijk', 'twijfel'];
+  return panden.filter((p) => p.status === 'klaar' && soorten.includes(p.oordeel!) && !p.beoordeling)
+    .sort((a, b) => rangScore(b) - rangScore(a) || b.opp - a.opp);
+}
+
+async function toonSnel() {
+  if (!snel) return;
+  const p = snel.rij[snel.i];
+  $('#snel-teller').textContent = p ? `${snel.i + 1} van ${snel.rij.length}` : '';
+  const info = $('#snel-info'), img = $<HTMLImageElement>('#snel-beeld');
+  if (!p) {
+    img.hidden = true;
+    info.innerHTML = '<p><strong>Alles in deze selectie is bekeken.</strong></p><p class="sc-zacht">Sluit dit venster en kijk bij "Trefkans per klasse" of je de rest in één keer kunt bevestigen.</p>';
+    return;
+  }
+  img.hidden = false;
+  let url = beeldUrls.get(p.id);
+  if (!url) { const b = await beeld(p.id); if (b) { url = URL.createObjectURL(b); beeldUrls.set(p.id, url); } }
+  img.src = url ?? '';
+  img.alt = `Luchtfoto ${p.beeldjaar ?? ''} van pand ${p.id}, contour in magenta`;
+  const l = links(BASIS, p);
+  info.innerHTML = `<p><span class="sc-label" style="--k:${KLEUR[statusVan(p)]}">${OORDEEL_TEKST[statusVan(p)]}</span>
+      ${p.beoordeling ? `<span class="sc-label sc-label-${p.beoordeling}">${p.beoordeling === 'bevestigd' ? 'Bevestigd' : 'Afgewezen'}</span>` : ''}</p>
+    ${p.omvang ? `<p>Omvang: <strong>${OMVANG_TEKST[p.omvang]}</strong> · ${p.zicht ?? 'onduidelijk'} zichtbaar</p>` : ''}
+    ${p.toelichting ? `<p class="sc-toel">Model: “${esc(p.toelichting)}”</p>` : ''}
+    <p>${p.adres ? esc(p.adres) + (p.adresSoort === 'nabij' ? ` <span class="sc-zacht">(dichtstbijzijnde adres, ${p.adresAfstand} m)</span>` : '') : '<span class="sc-zacht">Geen adres</span>'}</p>
+    <p class="sc-zacht">${SOORT_TEKST[p.soort]} · ${nl(p.opp)} m² · luchtfoto ${p.beeldjaar ?? '?'}</p>
+    <p class="sc-links"><a href="${esc(l.googleMaps)}" target="_blank" rel="noopener">Google Maps</a>
+      <a href="${esc(l.pdokLuchtfoto)}" target="_blank" rel="noopener">PDOK-luchtfoto</a>
+      <a href="${esc(l.bekijkDak)}" target="_blank" rel="noopener">Bekijk dak</a></p>`;
+  // Volgende beeld alvast laden
+  const v = snel.rij[snel.i + 1];
+  if (v && !beeldUrls.has(v.id)) beeld(v.id).then((b) => { if (b) beeldUrls.set(v.id, URL.createObjectURL(b)); });
+}
+
+async function snelActie(actie: string) {
+  if (!snel) return;
+  const p = snel.rij[snel.i];
+  if (actie === 'vorige') { snel.i = Math.max(0, snel.i - 1); return toonSnel(); }
+  if (!p) return;
+  if (actie === 'bevestigd' || actie === 'afgewezen') {
+    Object.assign(p, { beoordeling: actie, beoordeeld: new Date().toISOString(), beoordeeldDoor: 'hand' });
+    await bewaarPand(p);
+    werkMarkerBij(p);
+  }
+  snel.i = Math.min(snel.rij.length, snel.i + 1);
+  toonSnel();
+}
+
+function sluitSnel() {
+  snel = null;
+  $('#snel').hidden = true;
+  document.body.style.overflow = '';
+  tekenLijst();
+}
+
+$('#snel-knop').addEventListener('click', async () => {
+  const rij = snelRij(await pandenInWeergave());
+  snel = { rij, i: 0 };
+  $('#snel').hidden = false;
+  document.body.style.overflow = 'hidden';
+  toonSnel();
+  $<HTMLButtonElement>('[data-snel="bevestigd"]').focus();
+});
+$('#snel-sluit').addEventListener('click', sluitSnel);
+document.querySelectorAll<HTMLButtonElement>('[data-snel]').forEach((b) => b.addEventListener('click', () => snelActie(b.dataset.snel!)));
+document.addEventListener('keydown', (e) => {
+  if (!snel || e.altKey || e.ctrlKey || e.metaKey) return;
+  const k = e.key.toLowerCase();
+  const actie = k === 'b' || k === 'j' ? 'bevestigd' : k === 'a' || k === 'n' ? 'afgewezen' : k === 'arrowright' || k === ' ' ? 'overslaan' : k === 'arrowleft' ? 'vorige' : k === 'escape' ? 'sluit' : '';
+  if (!actie) return;
+  e.preventDefault();
+  if (actie === 'sluit') sluitSnel(); else snelActie(actie);
 });
 
 /* ---------- export ---------- */
