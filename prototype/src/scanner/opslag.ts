@@ -4,7 +4,7 @@
  * Deze laag is bewust klein gehouden, zodat hij later kan worden vervangen door gedeelde opslag (bijv. Cloudflare D1 + R2).
  */
 import type { Gebied, Kandidaat } from './gebied';
-import type { Omvang, Oordeel, Zicht } from './oordeel';
+import type { Dekking, Omvang, Oordeel, Zicht } from './oordeel';
 
 export type PandStatus = 'wacht' | 'klaar' | 'fout';
 export type Beoordeling = 'bevestigd' | 'afgewezen';
@@ -14,6 +14,7 @@ export interface PandRecord extends Kandidaat {
   status: PandStatus;
   oordeel?: Oordeel;
   omvang?: Omvang;
+  dekking?: Dekking;
   zicht?: Zicht;
   toelichting?: string;
   model?: string;

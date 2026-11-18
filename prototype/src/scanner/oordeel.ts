@@ -14,8 +14,36 @@ export type Zicht = typeof ZICHTEN[number];
 
 export const OMVANG_TEKST: Record<Omvang, string> = { geen: 'geen panelen', enkele: 'enkele panelen', blok: 'een blok panelen', 'groot-deel': 'groot deel van het dak' };
 
+/**
+ * Welk deel van het dak (van bovenaf gezien) met panelen bedekt is, in klassen. Het model telt geen panelen:
+ * tellen van tientallen kleine rechthoeken op een luchtfoto is onbetrouwbaar. Een bedekkingsklasse is grover maar stabieler.
+ */
+export const DEKKINGEN = ['geen', 'tot-10', '10-25', '25-50', '50-75', '75-100'] as const;
+export type Dekking = typeof DEKKINGEN[number];
+const DEKKING_FRACTIE: Record<Dekking, [number, number]> = {
+  geen: [0, 0], 'tot-10': [0.005, 0.1], '10-25': [0.1, 0.25], '25-50': [0.25, 0.5], '50-75': [0.5, 0.75], '75-100': [0.75, 1],
+};
+export const DEKKING_TEKST: Record<Dekking, string> = {
+  geen: 'geen', 'tot-10': 'minder dan 10%', '10-25': '10–25%', '25-50': '25–50%', '50-75': '50–75%', '75-100': 'meer dan 75%',
+};
+
+/**
+ * Geschat aantal panelen als bandbreedte: grondvlak (BAG, m²) × bedekkingsklasse ÷ ruimte per paneel.
+ * Per paneel rekenen we 1,8 tot 2,2 m² van bovenaf gezien (paneel ca. 1,7 × 1,1 m plus voegen en tussenruimte).
+ * Grof: de bedekking is een inschatting van het model op één luchtfoto, en op een steil dak liggen meer panelen
+ * dan het bovenaanzicht doet vermoeden (bij 45° ca. 40% meer).
+ */
+export function geschatAantal(opp: number, dekking?: Dekking): { laag: number; hoog: number } | null {
+  if (!dekking) return null;
+  const [a, b] = DEKKING_FRACTIE[dekking];
+  if (!b) return { laag: 0, hoog: 0 };
+  const laag = Math.max(1, Math.floor((opp * a) / 2.2 / 5) * 5);
+  const hoog = Math.max(laag + 5, Math.ceil((opp * b) / 1.8 / 5) * 5);
+  return { laag, hoog };
+}
+
 export interface Beoordeling {
-  oordeel: Oordeel; omvang?: Omvang; zicht?: Zicht; toelichting: string; model: string; tokensIn: number; tokensUit: number;
+  oordeel: Oordeel; omvang?: Omvang; zicht?: Zicht; dekking?: Dekking; toelichting: string; model: string; tokensIn: number; tokensUit: number;
 }
 
 /** Rangscore voor de volgorde in de lijst: oordeel eerst, dan omvang, dan zichtbaarheid. Geen kans, alleen een volgorde. */

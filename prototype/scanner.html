@@ -11,6 +11,7 @@
   <header class="sc-kop">
     <a class="sc-merk" href="./"><img src="./icn-logo.png" alt="Installatie Comfort Nederland" width="640" height="84" /></a>
     <span class="sc-titel">Dakscanner <small>intern · bestaande zonnepanelen zoeken</small></span>
+    <label class="sc-schakel"><input type="checkbox" id="kosten-tonen" role="switch" /> Kosten tonen</label>
   </header>
 
   <main class="sc">
@@ -93,6 +94,11 @@
       </div>
       <p class="sc-uitleg">Het oordeel komt van een AI-model dat één luchtfoto bekijkt. Het is geen zekerheid en geen telling: bevestig of wijs af na eigen controle. Het type pand komt uit de BAG; of een gebouw agrarisch is, staat daar niet in.</p>
       <div class="sc-filters" role="group" aria-label="Filter op oordeel" id="filters"></div>
+      <div class="sc-aantal">
+        <label for="min-panelen">Minimaal geschat aantal panelen</label>
+        <input id="min-panelen" type="number" min="0" step="10" placeholder="geen minimum" />
+        <p class="sc-klein" id="min-panelen-uitleg">Grove schatting: bedekt deel van het dak (inschatting van het model) × grondvlak uit de BAG. Een pand blijft zichtbaar als de bovenkant van de bandbreedte het minimum haalt, zodat je geen twijfelgevallen mist.</p>
+      </div>
       <div class="sc-rij">
         <button type="button" class="sc-knop sc-knop-ja" id="snel-knop">Snel beoordelen</button>
         <button type="button" class="sc-knop" id="her-knop" hidden></button>

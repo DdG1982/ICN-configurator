@@ -133,3 +133,15 @@ kbd { font: 600 12px/1 ui-monospace, monospace; padding: 2px 5px; border-radius:
   .sc-snel-inhoud { grid-template-columns: 1fr; }
   .sc-snel-knoppen { grid-template-columns: 1fr 1fr; }
 }
+
+.sc-schakel { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--tekst-2); cursor: pointer; }
+.sc-schakel input { appearance: none; width: 36px; height: 20px; border-radius: 999px; background: #c9cfdc; position: relative; cursor: pointer; margin: 0; transition: background .2s; }
+.sc-schakel input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.sc-schakel input:checked { background: var(--accent); }
+.sc-schakel input:checked::after { transform: translateX(16px); }
+.sc-schakel input:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.sc-aantal { display: grid; grid-template-columns: auto 160px; gap: 4px 12px; align-items: center; margin: 4px 0 8px; }
+.sc-aantal label { font-weight: 600; font-size: 14px; }
+.sc-aantal input { min-height: 36px; border: 1px solid rgba(11, 28, 106, 0.22); border-radius: 8px; padding: 0 10px; font: inherit; }
+.sc-aantal p { grid-column: 1 / -1; margin: 0; }
+@media (max-width: 600px) { .sc-aantal { grid-template-columns: 1fr; } }

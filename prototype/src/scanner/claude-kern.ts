@@ -5,7 +5,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 
-import { geldigBeeld, MODEL, OMVANGEN, OORDELEN, ZICHTEN, type Beoordeling, type Omvang, type Oordeel, type Zicht } from './oordeel';
+import { DEKKINGEN, geldigBeeld, MODEL, OMVANGEN, OORDELEN, ZICHTEN, type Beoordeling, type Dekking, type Omvang, type Oordeel, type Zicht } from './oordeel';
 
 export { geldigBeeld };
 
@@ -31,6 +31,7 @@ Geef daarnaast de omvang van wat je ziet, als klasse (geen telling):
 - "enkele": een paar losse panelen of één kleine groep.
 - "blok": een of meer duidelijke blokken, maar het grootste deel van het dak is vrij.
 - "groot-deel": een groot deel van een dakvlak of van het hele dak ligt vol.
+Schat ook welk deel van het omlijnde dak, van bovenaf gezien, met panelen bedekt is: "geen", "tot-10" (minder dan 10%), "10-25", "25-50", "50-75" of "75-100" (procent). Tel geen panelen; kies alleen de klasse.
 En de zichtbaarheid: "duidelijk" als de panelen (of het ontbreken ervan) goed te zien zijn, "onduidelijk" bij schaduw, bomen, onscherpte, reflectie of twijfel over het materiaal.
 
 Geef ook een toelichting van één korte zin in het Nederlands, over wat je ziet en waar op het dak (bijvoorbeeld: "blauwe paneelrijen op het zuidwestelijke dakvlak").
@@ -41,10 +42,11 @@ const SCHEMA = {
   properties: {
     oordeel: { type: 'string', enum: [...OORDELEN] },
     omvang: { type: 'string', enum: [...OMVANGEN] },
+    dekking: { type: 'string', enum: [...DEKKINGEN] },
     zichtbaarheid: { type: 'string', enum: [...ZICHTEN] },
     toelichting: { type: 'string' },
   },
-  required: ['oordeel', 'omvang', 'zichtbaarheid', 'toelichting'],
+  required: ['oordeel', 'omvang', 'dekking', 'zichtbaarheid', 'toelichting'],
   additionalProperties: false,
 } as const;
 
@@ -72,7 +74,7 @@ export async function beoordeel(client: Anthropic, jpegBase64: string, context: 
     return { oordeel: 'twijfel', toelichting: 'Het model gaf geen oordeel over dit beeld.', model: r.model, tokensIn, tokensUit };
   }
   const tekst = r.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('');
-  let d: { oordeel?: string; omvang?: string; zichtbaarheid?: string; toelichting?: string } = {};
+  let d: { oordeel?: string; omvang?: string; dekking?: string; zichtbaarheid?: string; toelichting?: string } = {};
   try { d = JSON.parse(tekst); } catch { /* valt hieronder op twijfel */ }
   if (!OORDELEN.includes(d.oordeel as Oordeel)) {
     return { oordeel: 'twijfel', toelichting: 'Geen geldig antwoord van het model.', model: r.model, tokensIn, tokensUit };
@@ -80,6 +82,8 @@ export async function beoordeel(client: Anthropic, jpegBase64: string, context: 
   const oordeel = d.oordeel as Oordeel;
   // 'niet gevonden' met een omvang is tegenstrijdig: dan geldt het oordeel.
   const omvang: Omvang = oordeel === 'niet-gevonden' ? 'geen' : OMVANGEN.includes(d.omvang as Omvang) ? d.omvang as Omvang : 'enkele';
+  const dekking: Dekking = oordeel === 'niet-gevonden' ? 'geen'
+    : DEKKINGEN.includes(d.dekking as Dekking) && d.dekking !== 'geen' ? d.dekking as Dekking : 'tot-10';
   const zicht: Zicht = ZICHTEN.includes(d.zichtbaarheid as Zicht) ? d.zichtbaarheid as Zicht : 'onduidelijk';
-  return { oordeel, omvang, zicht, toelichting: schoonToelichting(d.toelichting ?? ''), model: r.model, tokensIn, tokensUit };
+  return { oordeel, omvang, dekking, zicht, toelichting: schoonToelichting(d.toelichting ?? ''), model: r.model, tokensIn, tokensUit };
 }

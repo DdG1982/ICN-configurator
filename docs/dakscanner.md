@@ -56,6 +56,26 @@ Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest
 - **Opnieuw beoordelen:** vondsten uit de eerste versie hebben nog geen omvang. Die kun je opnieuw laten beoordelen met de bewaarde luchtfoto's. Er wordt niets opnieuw opgehaald; dat kost ca. $0,0002 per pand.
 - **"Niet gevonden"** hoef je niet na te lopen.
 
+## Minimaal aantal panelen en kosten verbergen (18-11-2026, versie 3)
+
+- **Geschat aantal panelen:** het model **telt geen panelen**. Tientallen kleine rechthoeken tellen op één luchtfoto is onbetrouwbaar. In plaats daarvan kiest het een bedekkingsklasse:
+  - geen;
+  - minder dan 10%;
+  - 10–25%;
+  - 25–50%;
+  - 50–75%;
+  - meer dan 75% van het dak, van bovenaf gezien.
+
+  De scanner rekent dat om naar een bandbreedte: grondvlak (BAG) × bedekking ÷ 1,8 tot 2,2 m² per paneel, afgerond op 5. Voorbeeld: 1.000 m² met 25–50% bedekking geeft ca. 110–280 panelen.
+- **Hoe grof de schatting is:**
+  - De bedekking is een inschatting van het model. Hoe goed die is, is niet gemeten.
+  - Op een steil dak liggen meer panelen dan het bovenaanzicht doet vermoeden: bij 45° ongeveer 40% meer.
+  - Gebruik het om te sorteren en te filteren, niet als aantal.
+- **Filter "Minimaal geschat aantal panelen":** een pand blijft zichtbaar zolang de bovenkant van de bandbreedte het minimum haalt. Zo valt een twijfelgeval niet te snel weg. Panden zonder schatting (oude versie) blijven ook zichtbaar. Het filter geldt voor de lijst, de kaart, "Snel beoordelen", de trefkans en de export.
+- **Export:** de CSV heeft nu ook de kolommen `dekking_dak`, `geschat_panelen_min` en `geschat_panelen_max`.
+- **"Kosten tonen":** schakelaar rechtsboven, standaard uit en per browser onthouden. Staat hij uit, dan staan er geen bedragen op de knoppen en in de voortgang. **Bij grote opdrachten (meer dan 300 gebouwen) en bij "opnieuw beoordelen" toont de bevestigingsvraag de kosten altijd**, zodat er nooit ongemerkt een grote scan start.
+- **Bestaande vondsten:** die hebben nog geen schatting. Met "Opnieuw beoordelen voor omvang en aantal" gebeurt dat met de bewaarde luchtfoto's.
+
 ## Instellen op Cloudflare
 
 1. Zet in het Pages-project `icn-zonnepanelen-demo` het secret **`ANTHROPIC_API_KEY`**. Zonder sleutel stopt de scan meteen met een duidelijke melding.

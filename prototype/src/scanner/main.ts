@@ -6,7 +6,7 @@ import L from 'leaflet';
 import { controleerGebied, NetFout, oppervlakGebied, pandenInGebied, SOORT_TEKST, type Gebied, type Kandidaat } from './gebied';
 import { download, naarCsv, naarZip } from './export';
 import { links } from './links';
-import { geraamdeKostenUsd, klasse, kostenUsd, OMVANG_TEKST, rangScore } from './oordeel';
+import { DEKKING_TEKST, geraamdeKostenUsd, geschatAantal, klasse, kostenUsd, OMVANG_TEKST, rangScore } from './oordeel';
 import {
   alleScans, allePanden, beeld, bewaarPand, bewaarScan, opslagGebruik, pand as leesPand, scan as leesScan,
   voegKandidatenToe, vraagBlijvendeOpslag, type PandRecord, type ScanRecord,
@@ -51,6 +51,27 @@ let lopend: AbortController | null = null;
 let filter: string = 'waarschijnlijk';
 let getoond = 60;
 const markers = new Map<string, L.CircleMarker>();
+
+/* ---------- instellingen: kosten tonen (standaard uit) ---------- */
+const lees = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+const zet = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* geen opslag */ } };
+let kostenTonen = lees('dakscanner-kosten') === '1';
+$<HTMLInputElement>('#kosten-tonen').checked = kostenTonen;
+$('#kosten-tonen').addEventListener('change', () => {
+  kostenTonen = $<HTMLInputElement>('#kosten-tonen').checked;
+  zet('dakscanner-kosten', kostenTonen ? '1' : '0');
+  if (!$('#raming').hidden) werkStartKnopBij();
+  tekenLijst();
+});
+/** Kostentekst alleen als 'Kosten tonen' aan staat. Bevestigingsvragen bij grote scans tonen de kosten altijd. */
+const kostenTekst = (t: string) => (kostenTonen ? t : '');
+
+/** Geschat aantal panelen als tekst, of '' als er (nog) geen schatting is. */
+function aantalTekst(p: PandRecord): string {
+  const g = geschatAantal(p.opp, p.dekking);
+  if (!g || !g.hoog) return '';
+  return `Bedekt: ${DEKKING_TEKST[p.dekking!]} van het dak · geschat ca. <strong>${nl(g.laag)}–${nl(g.hoog)} panelen</strong> <span class="sc-zacht">(grove indicatie)</span>`;
+}
 const beeldUrls = new Map<string, string>();
 
 /* ---------- gebied kiezen ---------- */
@@ -204,11 +225,11 @@ function teDoen() {
 function werkStartKnopBij() {
   const n = teDoen();
   const kosten = n * geraamdeKostenUsd();
-  $('#start-knop').textContent = `Start scan van ${nl(n)} gebouwen (ca. ${dollar(kosten)})`;
+  $('#start-knop').textContent = `Start scan van ${nl(n)} gebouwen${kostenTekst(` (ca. ${dollar(kosten)})`)}`;
   $<HTMLButtonElement>('#start-knop').disabled = n === 0;
-  $('#raming-uitleg').textContent = `Raming: ca. ${dollar(geraamdeKostenUsd())} per gebouw aan Claude-API-kosten (Haiku 5.5, prijs november 2026), `
-    + `samen ca. ${dollar(kosten)}. Werkelijke kosten kunnen hoger uitvallen; tijdens de scan zie je het verbruik volgens de API. `
-    + `Duur ca. ${duur(n * SEC_PER_PAND)}. De luchtfoto's en BAG-gegevens zijn gratis.`;
+  $('#raming-uitleg').textContent = kostenTekst(`Raming: ca. ${dollar(geraamdeKostenUsd())} per gebouw aan Claude-API-kosten (Haiku 5.5, prijs november 2026), `
+    + `samen ca. ${dollar(kosten)}. Werkelijke kosten kunnen hoger uitvallen; tijdens de scan zie je het verbruik volgens de API. `)
+    + `Duur ca. ${duur(n * SEC_PER_PAND)}.`;
 }
 $('#limiet').addEventListener('input', werkStartKnopBij);
 
@@ -244,7 +265,7 @@ async function start(scanId: string, limiet = Infinity) {
       $<HTMLProgressElement>('#voortgang-balk').value = v.klaar;
       $('#voortgang-tekst').textContent = `${nl(v.klaar)} van ${nl(v.totaal)} beoordeeld`
         + (v.fouten ? ` · ${nl(v.fouten)} fout` : '')
-        + (v.tokensIn ? ` · verbruik deze sessie ${dollar(kostenUsd(v.tokensIn, v.tokensUit))} (volgens API-telling)` : '');
+        + (v.tokensIn ? kostenTekst(` · verbruik deze sessie ${dollar(kostenUsd(v.tokensIn, v.tokensUit))} (volgens API-telling)`) : '');
       if (v.laatste) { werkMarkerBij(v.laatste); planLijst(); }
     }, limiet);
     meld('#scan-melding', `Klaar in ${duur((performance.now() - t0) / 1000)}.${v.klaar < v.totaal ? ' Niet alle gebouwen zijn beoordeeld; je kunt hervatten.' : ''}`);
@@ -296,7 +317,11 @@ async function toonKaart(id: string) {
 async function pandenInWeergave(): Promise<PandRecord[]> {
   const keuze = $<HTMLSelectElement>('#weergave-scan').value;
   const alle = await allePanden();
-  return keuze === 'alle' ? alle.filter((p) => p.status !== 'wacht') : alle.filter((p) => p.scans.includes(keuze));
+  const ps = keuze === 'alle' ? alle.filter((p) => p.status !== 'wacht') : alle.filter((p) => p.scans.includes(keuze));
+  const min = Number($<HTMLInputElement>('#min-panelen').value) || 0;
+  if (!min) return ps;
+  // Alleen beoordeelde panden met een schatting kunnen afvallen; zonder schatting (oude versie, nog niet bekeken) blijven ze staan.
+  return ps.filter((p) => { const g = p.status === 'klaar' ? geschatAantal(p.opp, p.dekking) : null; return !g || g.hoog >= min; });
 }
 
 let lijstTimer = 0;
@@ -341,6 +366,7 @@ function kaartHtml(p: PandRecord): string {
         ${p.beoordeling ? `<span class="sc-label sc-label-${p.beoordeling}">${p.beoordeling === 'bevestigd' ? 'Bevestigd' : 'Afgewezen'}</span>` : ''}
         ${p.model === 'proef' ? '<span class="sc-label sc-label-afgewezen">PROEF</span>' : ''}</p>
       ${p.omvang && p.oordeel !== 'niet-gevonden' ? `<p class="sc-zacht">Omvang: <strong>${OMVANG_TEKST[p.omvang]}</strong> · ${p.zicht ?? 'onduidelijk'} zichtbaar</p>` : ''}
+      ${p.oordeel !== 'niet-gevonden' && aantalTekst(p) ? `<p>${aantalTekst(p)}</p>` : ''}
       ${p.toelichting ? `<p class="sc-toel">Model: “${esc(p.toelichting)}”</p>` : ''}
       ${p.fout ? `<p class="sc-toel">${esc(p.fout)}</p>` : ''}
       <p>${adres}</p>
@@ -448,10 +474,10 @@ $('#klassen').addEventListener('click', async (e) => {
 
 /* ---------- opnieuw beoordelen (oude vondsten zonder omvang) ---------- */
 function werkHerKnopBij(panden: PandRecord[]) {
-  const oud = panden.filter((p) => p.status === 'klaar' && !p.omvang && p.model !== 'proef');
+  const oud = panden.filter((p) => p.status === 'klaar' && !p.dekking && p.model !== 'proef');
   const knop = $<HTMLButtonElement>('#her-knop');
   knop.hidden = !oud.length || !!lopend;
-  knop.textContent = `Opnieuw beoordelen met omvang (${nl(oud.length)} panden, ca. ${dollar(oud.length * geraamdeKostenUsd())})`;
+  knop.textContent = `Opnieuw beoordelen voor omvang en aantal (${nl(oud.length)} panden${kostenTekst(`, ca. ${dollar(oud.length * geraamdeKostenUsd())}`)})`;
   knop.dataset.ids = oud.map((p) => p.id).join(',');
 }
 $('#her-knop').addEventListener('click', async () => {
@@ -462,7 +488,7 @@ $('#her-knop').addEventListener('click', async () => {
   $('#her-knop').hidden = true;
   try {
     const v = await herbeoordeel(ids, lopend.signal, (v) => {
-      meld('#her-melding', `Opnieuw beoordeeld: ${nl(v.klaar)} van ${nl(v.totaal)}${v.fouten ? ` · ${v.fouten} fout` : ''} · ${dollar(kostenUsd(v.tokensIn, v.tokensUit))} volgens API-telling`);
+      meld('#her-melding', `Opnieuw beoordeeld: ${nl(v.klaar)} van ${nl(v.totaal)}${v.fouten ? ` · ${v.fouten} fout` : ''}${kostenTekst(` · ${dollar(kostenUsd(v.tokensIn, v.tokensUit))} volgens API-telling`)}`);
       if (v.laatste) { werkMarkerBij(v.laatste); planLijst(); }
     });
     meld('#her-melding', `Klaar: ${nl(v.klaar)} opnieuw beoordeeld${v.fouten ? `, ${v.fouten} niet gelukt` : ''}.`);
@@ -503,6 +529,7 @@ async function toonSnel() {
   info.innerHTML = `<p><span class="sc-label" style="--k:${KLEUR[statusVan(p)]}">${OORDEEL_TEKST[statusVan(p)]}</span>
       ${p.beoordeling ? `<span class="sc-label sc-label-${p.beoordeling}">${p.beoordeling === 'bevestigd' ? 'Bevestigd' : 'Afgewezen'}</span>` : ''}</p>
     ${p.omvang ? `<p>Omvang: <strong>${OMVANG_TEKST[p.omvang]}</strong> · ${p.zicht ?? 'onduidelijk'} zichtbaar</p>` : ''}
+    ${aantalTekst(p) ? `<p>${aantalTekst(p)}</p>` : ''}
     ${p.toelichting ? `<p class="sc-toel">Model: “${esc(p.toelichting)}”</p>` : ''}
     <p>${p.adres ? esc(p.adres) + (p.adresSoort === 'nabij' ? ` <span class="sc-zacht">(dichtstbijzijnde adres, ${p.adresAfstand} m)</span>` : '') : '<span class="sc-zacht">Geen adres</span>'}</p>
     <p class="sc-zacht">${SOORT_TEKST[p.soort]} · ${nl(p.opp)} m² · luchtfoto ${p.beeldjaar ?? '?'}</p>
@@ -583,11 +610,22 @@ $('#weergave-scan').addEventListener('change', async () => {
   tekenLijst();
 });
 
-async function toonScanOpKaart() {
+async function tekenMarkers() {
   pandLaag.clearLayers(); markers.clear();
   const ps = await pandenInWeergave();
   for (const p of ps) zetMarker(p.id, p.x, p.y, statusVan(p));
   ps.forEach(werkMarkerBij);
+  return ps;
+}
+
+let minTimer = 0;
+$('#min-panelen').addEventListener('input', () => {
+  clearTimeout(minTimer);
+  minTimer = window.setTimeout(async () => { getoond = 60; await tekenMarkers(); tekenLijst(); }, 250);
+});
+
+async function toonScanOpKaart() {
+  const ps = await tekenMarkers();
   if (huidigeScan) {
     const s = await leesScan(huidigeScan);
     if (s) { zetGebied(s.gebied, s.naam); $('#raming').hidden = true; }

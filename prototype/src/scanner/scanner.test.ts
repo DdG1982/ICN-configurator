@@ -3,7 +3,7 @@ import { controleerGebied, isRond, pandSoort, sorteer, vlakEnMidden, type Kandid
 import { googleMapsUrl, bekijkDakUrl, pdokLuchtfotoUrl } from './links';
 import { naarCsv } from './export';
 import type { PandRecord } from './opslag';
-import { geldigBeeld, geraamdeKostenUsd, klasse, rangScore } from './oordeel';
+import { geldigBeeld, geraamdeKostenUsd, geschatAantal, klasse, rangScore } from './oordeel';
 import { rdNaarWgs, wgsNaarRd } from './rd';
 import { isLeeg, kader } from './uitsnede';
 
@@ -112,5 +112,18 @@ describe('rang en klasse', () => {
   it('klasse is leesbaar en markeert oude vondsten zonder omvang', () => {
     expect(klasse({ oordeel: 'waarschijnlijk', omvang: 'groot-deel', zicht: 'duidelijk' })).toBe('Waarschijnlijk · groot deel van het dak · duidelijk');
     expect(klasse({ oordeel: 'twijfel' })).toMatch(/oude versie/);
+  });
+});
+
+describe('geschat aantal panelen', () => {
+  it('bandbreedte uit grondvlak en bedekkingsklasse, afgerond op 5', () => {
+    // 1000 m² × 25–50%: 250/2,2 = 113 -> 110; 500/1,8 = 278 -> 280
+    expect(geschatAantal(1000, '25-50')).toEqual({ laag: 110, hoog: 280 });
+    expect(geschatAantal(1000, 'geen')).toEqual({ laag: 0, hoog: 0 });
+    expect(geschatAantal(1000, undefined)).toBeNull();
+  });
+  it('klein dak met weinig bedekking haalt geen 50 panelen', () => {
+    expect(geschatAantal(200, 'tot-10')!.hoog).toBeLessThan(50);
+    expect(geschatAantal(2000, '50-75')!.laag).toBeGreaterThan(400);
   });
 });

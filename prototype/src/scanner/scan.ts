@@ -59,7 +59,7 @@ export async function voerScanUit(scanId: string, signaal: AbortSignal, melding:
         const o = await vraagOordeel(u.base64, p.opp, u.jaar, signaal);
         await bewaarBeeld(p.id, u.blob);
         Object.assign(p, {
-          status: 'klaar', oordeel: o.oordeel, omvang: o.omvang, zicht: o.zicht, toelichting: o.toelichting, model: o.model, beeldjaar: u.jaar, laag: u.laag,
+          status: 'klaar', oordeel: o.oordeel, omvang: o.omvang, dekking: o.dekking, zicht: o.zicht, toelichting: o.toelichting, model: o.model, beeldjaar: u.jaar, laag: u.laag,
           beeldBron: u.bron, gescand: new Date().toISOString(), fout: undefined, tokensIn: o.tokensIn, tokensUit: o.tokensUit,
         } satisfies Partial<PandRecord>);
         await bewaarPand(p);
@@ -112,7 +112,7 @@ export async function herbeoordeel(ids: string[], signaal: AbortSignal, melding:
       if (!p || !b || !p.beeldjaar) { v.fouten++; continue; }
       try {
         const o = await vraagOordeel(await naarBase64(b), p.opp, p.beeldjaar, signaal);
-        Object.assign(p, { oordeel: o.oordeel, omvang: o.omvang, zicht: o.zicht, toelichting: o.toelichting, model: o.model,
+        Object.assign(p, { oordeel: o.oordeel, omvang: o.omvang, dekking: o.dekking, zicht: o.zicht, toelichting: o.toelichting, model: o.model,
           tokensIn: (p.tokensIn ?? 0) + o.tokensIn, tokensUit: (p.tokensUit ?? 0) + o.tokensUit } satisfies Partial<PandRecord>);
         await bewaarPand(p);
         v.klaar++; v.tokensIn += o.tokensIn; v.tokensUit += o.tokensUit;
