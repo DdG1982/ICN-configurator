@@ -92,6 +92,14 @@ Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest
   De scanduur in deze tabel is geraamd met 1,6 s per pand. Gemeten is later ca. 1,1 s per pand, dus de echte duur ligt ongeveer 30% lager (10 km: ca. 2,2–2,6 uur). Een scan van 7.000 panden kost ca. 500 MB opslag in de browser.
 - **Bevestigingsvraag met kosten:** pas vanaf 2.000 gebouwen (was 300). Dat geldt voor starten, hervatten en opnieuw beoordelen. Daaronder start de scan direct.
 
+## Snelheid (18-11-2026)
+
+- **Limieten bij Anthropic:** Danny zit in de Scale tier. Voor Haiku 5.5 mag hij 13.000 verzoeken per minuut doen; de piek tijdens de eerste scan was 67 (1%). Anthropic remt de scanner dus niet af.
+- **De echte grens:** de wachttijd per dak, ca. 3 s voor luchtfoto plus beoordeling.
+- **Aanpassing:** het aantal gelijktijdige beoordelingen is verhoogd van 3 naar 8.
+  - Lokaal getest: PDOK levert 58 luchtfoto's met 8 tegelijk zonder fouten (proefmodus, zonder echte beoordeling).
+  - De verwachte duur is ca. 0,5 s per dak. **Dat is een raming:** met 8 tegelijk is nog niet gemeten met echte beoordelingen.
+
 ## Instellen op Cloudflare
 
 1. Zet in het Pages-project `icn-zonnepanelen-demo` het secret **`ANTHROPIC_API_KEY`**. Zonder sleutel stopt de scan meteen met een duidelijke melding.

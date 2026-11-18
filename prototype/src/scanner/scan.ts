@@ -13,7 +13,8 @@ export class ScanStop extends Error {
   constructor(public reden: 'gebruiker' | 'geen-sleutel' | 'daglimiet' | 'te-veel-fouten', bericht: string) { super(bericht); }
 }
 
-const TEGELIJK = 3;
+/** Gelijktijdige beoordelingen. Anthropic (Scale tier: 13K verzoeken/min) is hier niet de grens; de wachttijd per dak wel. */
+const TEGELIJK = 8;
 const MAX_FOUTEN_OP_RIJ = 6;
 
 async function vraagOordeel(base64: string, opp: number, jaar: number, signaal: AbortSignal): Promise<Beoordeling> {

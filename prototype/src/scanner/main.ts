@@ -22,7 +22,7 @@ const dollar = (n: number) => '$ ' + (n < 0.1 ? nl(n, 3) : nl(n, 2));
 const duur = (s: number) => (s < 90 ? `${Math.round(s)} seconden` : s < 5400 ? `${Math.round(s / 60)} minuten` : `${nl(s / 3600, 1)} uur`);
 const LOCATIE = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1';
 const BASIS = location.href.split('#')[0];
-const SEC_PER_PAND = 1.15; // gemeten 18-11-2026: 1.491 daken in 28 min bij 3 tegelijk
+const SEC_PER_PAND = 0.5; // raming bij 8 tegelijk; gemeten 18-11-2026 bij 3 tegelijk: 1,1 s (1.491 daken in 28 min)
 /** Vanaf dit aantal gebouwen vraagt de scanner altijd om bevestiging, met de geraamde kosten erbij. */
 const GROTE_OPDRACHT = 2000;
 
