@@ -6,8 +6,10 @@ import { puntInVeelhoek } from '../live/geo';
 
 const BAG_WFS = 'https://service.pdok.nl/lv/bag/wfs/v2_0';
 const PAGINA = 1000;
-export const MAX_STRAAL = 3000;      // m
-export const MAX_OPPERVLAK = 30e6;   // m², ca. een cirkel met straal 3 km
+export const MAX_STRAAL = 10000;     // m
+export const MAX_OPPERVLAK = 320e6;  // m², ca. een cirkel met straal 10 km
+const TEGEL = 2000;                  // m: grote gebieden halen we per tegel op, zodat geen enkele vraag aan de BAG te groot wordt
+const TEGELS_TEGELIJK = 3;
 const ADRES_ZOEKSTRAAL = 150;        // m, voor het dichtstbijzijnde adres bij een pand zonder eigen adres
 
 export type Gebied =
@@ -152,36 +154,101 @@ const adresTekst = (p: VboProps) =>
  * Panden kleiner dan minOpp vallen af. Het adres komt uit de verblijfsobjecten; heeft een pand er geen
  * (schuur, stal), dan noemen we het dichtstbijzijnde adres binnen 150 m en zeggen we erbij dat het niet van dit pand is.
  */
-export async function pandenInGebied(g: Gebied, minOpp: number, signaal?: AbortSignal, voortgang?: (t: string) => void, rondOverslaan = true): Promise<{ kandidaten: Kandidaat[]; totaal: number; rond: number }> {
-  const bb = bbox(g);
-  voortgang?.('Gebouwen ophalen uit de BAG…');
-  const panden = await allePagina<PandProps>('bag:pand', bb, signaal, (n) => voortgang?.(`Gebouwen ophalen uit de BAG… ${n}`));
-  const inGebruik = panden.filter((f) => /in gebruik|verbouwing/i.test(f.properties.status ?? ''));
-  const ruw = inGebruik.map((f) => {
-    const c = f.geometry.coordinates as number[][][] | number[][][][];
-    const ring = (f.geometry.type === 'MultiPolygon' ? (c as number[][][][])[0][0] : (c as number[][][])[0]).map((q) => [q[0], q[1]] as [number, number]);
-    const { opp, x, y } = vlakEnMidden(ring);
-    return { f, ring, opp, x, y };
-  }).filter((r) => binnenGebied(g, r.x, r.y));
-  const grootAlle = ruw.filter((r) => r.opp >= minOpp);
-  const groot = rondOverslaan ? grootAlle.filter((r) => !isRond(r.ring)) : grootAlle;
-
-  voortgang?.('Adressen ophalen…');
-  const ruim = [bb[0] - ADRES_ZOEKSTRAAL, bb[1] - ADRES_ZOEKSTRAAL, bb[2] + ADRES_ZOEKSTRAAL, bb[3] + ADRES_ZOEKSTRAAL];
-  const vbos = groot.length ? await allePagina<VboProps>('bag:verblijfsobject', ruim, signaal, (n) => voortgang?.(`Adressen ophalen… ${n}`)) : [];
-  const perPand = new Map<string, string[]>();
-  const punten = vbos.map((v) => {
-    const [x, y] = v.geometry.coordinates as number[];
-    const tekst = adresTekst(v.properties);
-    for (const pid of String(v.properties.pandidentificatie ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
-      if (!perPand.has(pid)) perPand.set(pid, []);
-      perPand.get(pid)!.push(tekst);
+/** Tegels van hooguit 2 × 2 km die het gebied bedekken (bij een cirkel alleen tegels die de cirkel raken). */
+export function tegels(g: Gebied): [number, number, number, number][] {
+  const [x0, y0, x1, y1] = bbox(g);
+  const uit: [number, number, number, number][] = [];
+  for (let x = x0; x < x1; x += TEGEL) {
+    for (let y = y0; y < y1; y += TEGEL) {
+      const t: [number, number, number, number] = [x, y, Math.min(x + TEGEL, x1), Math.min(y + TEGEL, y1)];
+      if (g.soort === 'cirkel') {
+        const dx = Math.max(t[0] - g.x, 0, g.x - t[2]), dy = Math.max(t[1] - g.y, 0, g.y - t[3]);
+        if (dx * dx + dy * dy > g.r * g.r) continue;
+      }
+      uit.push(t);
     }
-    return { x, y, tekst };
-  });
+  }
+  return uit;
+}
 
-  const kandidaten: Kandidaat[] = groot.map(({ f, ring, opp, x, y }) => {
-    const p = f.properties;
+/** Voert werk per tegel uit, een paar tegelijk. */
+async function perTegel<T>(ts: T[], werk: (t: T) => Promise<void>, signaal?: AbortSignal) {
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(TEGELS_TEGELIJK, ts.length) }, async () => {
+    while (i < ts.length) {
+      if (signaal?.aborted) throw new DOMException('Afgebroken', 'AbortError');
+      await werk(ts[i++]);
+    }
+  }));
+}
+
+export async function pandenInGebied(g: Gebied, minOpp: number, signaal?: AbortSignal, voortgang?: (t: string) => void, rondOverslaan = true): Promise<{ kandidaten: Kandidaat[]; totaal: number; rond: number }> {
+  const ts = tegels(g);
+  let klaar = 0, totaal = 0, rond = 0;
+  type Ruw = { p: PandProps; ring: [number, number][]; opp: number; x: number; y: number; tegel: number };
+  const groot: Ruw[] = [];
+  voortgang?.('Gebouwen ophalen uit de BAG…');
+  await perTegel(ts.map((t, i) => ({ t, i })), async ({ t, i }) => {
+    const fs = await allePagina<PandProps>('bag:pand', t, signaal);
+    for (const f of fs) {
+      if (!/in gebruik|verbouwing/i.test(f.properties.status ?? '')) continue;
+      const c = f.geometry.coordinates as number[][][] | number[][][][];
+      const ring = (f.geometry.type === 'MultiPolygon' ? (c as number[][][][])[0][0] : (c as number[][][])[0]).map((q) => [q[0], q[1]] as [number, number]);
+      const { opp, x, y } = vlakEnMidden(ring);
+      // Elk pand hoort bij precies één tegel (die waarin het zwaartepunt ligt): zo tellen randpanden niet dubbel.
+      if (x < t[0] || x >= t[2] || y < t[1] || y >= t[3] || !binnenGebied(g, x, y)) continue;
+      totaal++;
+      if (opp < minOpp) continue;
+      if (rondOverslaan && isRond(ring)) { rond++; continue; }
+      groot.push({ p: f.properties, ring, opp, x, y, tegel: i });
+    }
+    klaar++;
+    voortgang?.(`Gebouwen ophalen uit de BAG… ${ts.length > 1 ? `tegel ${klaar} van ${ts.length} · ` : ''}${totaal.toLocaleString('nl-NL')} panden`);
+  }, signaal);
+
+  // Adressen alleen ophalen voor tegels met kandidaten, met 150 m marge.
+  const metKandidaat = [...new Set(groot.map((r) => r.tegel))].map((i) => ts[i]);
+  const perPand = new Map<string, string[]>();
+  const gezien = new Set<string>();
+  const raster = new Map<string, { x: number; y: number; tekst: string }[]>();
+  const cel = (x: number, y: number) => `${Math.floor(x / ADRES_ZOEKSTRAAL)},${Math.floor(y / ADRES_ZOEKSTRAAL)}`;
+  klaar = 0;
+  voortgang?.('Adressen ophalen…');
+  await perTegel(metKandidaat, async (t) => {
+    const m = ADRES_ZOEKSTRAAL;
+    const vbos = await allePagina<VboProps & { identificatie?: string }>('bag:verblijfsobject', [t[0] - m, t[1] - m, t[2] + m, t[3] + m], signaal);
+    for (const v of vbos) {
+      const id = String(v.properties.identificatie ?? '');
+      if (id && gezien.has(id)) continue;
+      if (id) gezien.add(id);
+      const [x, y] = v.geometry.coordinates as number[];
+      const tekst = adresTekst(v.properties);
+      for (const pid of String(v.properties.pandidentificatie ?? '').split(',').map((q) => q.trim()).filter(Boolean)) {
+        if (!perPand.has(pid)) perPand.set(pid, []);
+        perPand.get(pid)!.push(tekst);
+      }
+      const k = cel(x, y);
+      if (!raster.has(k)) raster.set(k, []);
+      raster.get(k)!.push({ x, y, tekst });
+    }
+    klaar++;
+    voortgang?.(`Adressen ophalen… ${metKandidaat.length > 1 ? `tegel ${klaar} van ${metKandidaat.length}` : ''}`);
+  }, signaal);
+
+  /** Dichtstbijzijnde adres binnen 150 m, via een raster van 150 m (alleen de 9 cellen eromheen). */
+  const dichtsbij = (x: number, y: number) => {
+    const cx = Math.floor(x / ADRES_ZOEKSTRAAL), cy = Math.floor(y / ADRES_ZOEKSTRAAL);
+    let beste: { d: number; tekst: string } | null = null;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      for (const q of raster.get(`${cx + dx},${cy + dy}`) ?? []) {
+        const d = Math.hypot(q.x - x, q.y - y);
+        if (d <= ADRES_ZOEKSTRAAL && (!beste || d < beste.d)) beste = { d, tekst: q.tekst };
+      }
+    }
+    return beste;
+  };
+
+  const kandidaten: Kandidaat[] = groot.map(({ p, ring, opp, x, y }) => {
     const eenheden = Number(p.aantal_verblijfsobjecten ?? 0);
     const k: Kandidaat = {
       id: String(p.identificatie), footprint: ring.map(([a, b]) => [Math.round(a * 100) / 100, Math.round(b * 100) / 100]),
@@ -194,14 +261,10 @@ export async function pandenInGebied(g: Gebied, minOpp: number, signaal?: AbortS
       k.adres = eigen.length > 1 ? `${eigen[0]} (+${eigen.length - 1} adres${eigen.length > 2 ? 'sen' : ''})` : eigen[0];
       k.adresSoort = 'eigen';
     } else {
-      let beste: { d: number; tekst: string } | null = null;
-      for (const q of punten) {
-        const d = Math.hypot(q.x - x, q.y - y);
-        if (d <= ADRES_ZOEKSTRAAL && (!beste || d < beste.d)) beste = { d, tekst: q.tekst };
-      }
+      const beste = dichtsbij(x, y);
       if (beste) { k.adres = beste.tekst; k.adresSoort = 'nabij'; k.adresAfstand = Math.round(beste.d); }
     }
     return k;
   });
-  return { kandidaten: sorteer(kandidaten), totaal: ruw.length, rond: grootAlle.length - groot.length };
+  return { kandidaten: sorteer(kandidaten), totaal, rond };
 }

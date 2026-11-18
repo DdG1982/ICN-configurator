@@ -76,6 +76,21 @@ Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest
 - **"Kosten tonen":** schakelaar rechtsboven, standaard uit en per browser onthouden. Staat hij uit, dan staan er geen bedragen op de knoppen en in de voortgang. **Bij grote opdrachten (meer dan 300 gebouwen) en bij "opnieuw beoordelen" toont de bevestigingsvraag de kosten altijd**, zodat er nooit ongemerkt een grote scan start.
 - **Bestaande vondsten:** die hebben nog geen schatting. Met "Opnieuw beoordelen voor omvang en aantal" gebeurt dat met de bewaarde luchtfoto's.
 
+## Straal tot 10 km en bevestiging vanaf 2.000 gebouwen (18-11-2026, versie 4)
+
+- **Straal:** naast 0,5–3 km kun je nu ook 5 km en 10 km kiezen. Een getekende rechthoek mag tot 320 km² zijn.
+- **Ophalen per tegel:** grote gebieden worden per tegel van 2 × 2 km bij de BAG opgevraagd, drie tegels tegelijk. Elk pand telt mee in de tegel waarin het zwaartepunt ligt, zodat er niets dubbel wordt geteld. Adressen worden alleen opgehaald voor tegels waarin kandidaten liggen.
+- **Gemeten (vanuit de ontwikkelomgeving):**
+
+  | Gebied | Panden | ≥ 150 m² | Ophalen | Geraamde scanduur |
+  |---|---|---|---|---|
+  | Peest, 1 km | 143 | 58 | 1 s | 2 min |
+  | Peest, 5 km | 5.815 | 937 | 14 s | 25 min |
+  | Peest, 10 km (met Roden, Leek) | 70.739 | 7.070 | 57 s | 3,1 uur |
+
+  De scanduur is een raming van 1,6 s per pand, en die raming is nog niet gemeten met echte beoordelingen. Een scan van 7.000 panden kost ca. 500 MB opslag in de browser.
+- **Bevestigingsvraag met kosten:** pas vanaf 2.000 gebouwen (was 300). Dat geldt voor starten, hervatten en opnieuw beoordelen. Daaronder start de scan direct.
+
 ## Instellen op Cloudflare
 
 1. Zet in het Pages-project `icn-zonnepanelen-demo` het secret **`ANTHROPIC_API_KEY`**. Zonder sleutel stopt de scan meteen met een duidelijke melding.

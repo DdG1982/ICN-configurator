@@ -19,10 +19,12 @@ const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySele
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const nl = (n: number, d = 0) => n.toLocaleString('nl-NL', { minimumFractionDigits: d, maximumFractionDigits: d });
 const dollar = (n: number) => '$ ' + (n < 0.1 ? nl(n, 3) : nl(n, 2));
-const duur = (s: number) => (s < 90 ? `${Math.round(s)} seconden` : `${Math.round(s / 60)} minuten`);
+const duur = (s: number) => (s < 90 ? `${Math.round(s)} seconden` : s < 5400 ? `${Math.round(s / 60)} minuten` : `${nl(s / 3600, 1)} uur`);
 const LOCATIE = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1';
 const BASIS = location.href.split('#')[0];
 const SEC_PER_PAND = 1.6; // gemeten richtwaarde bij 3 tegelijk; hangt af van PDOK en de API
+/** Vanaf dit aantal gebouwen vraagt de scanner altijd om bevestiging, met de geraamde kosten erbij. */
+const GROTE_OPDRACHT = 2000;
 
 const KLEUR: Record<string, string> = { waarschijnlijk: '#2b9a3b', twijfel: '#e39b12', 'niet-gevonden': '#8a94a6', fout: '#c2362b', wacht: '#ffffff' };
 const OORDEEL_TEKST: Record<string, string> = { waarschijnlijk: 'Waarschijnlijk zonnepanelen', twijfel: 'Twijfel', 'niet-gevonden': 'Niet gevonden', fout: 'Fout bij ophalen', wacht: 'Nog niet bekeken' };
@@ -229,7 +231,8 @@ function werkStartKnopBij() {
   $<HTMLButtonElement>('#start-knop').disabled = n === 0;
   $('#raming-uitleg').textContent = kostenTekst(`Raming: ca. ${dollar(geraamdeKostenUsd())} per gebouw aan Claude-API-kosten (Haiku 5.5, prijs november 2026), `
     + `samen ca. ${dollar(kosten)}. Werkelijke kosten kunnen hoger uitvallen; tijdens de scan zie je het verbruik volgens de API. `)
-    + `Duur ca. ${duur(n * SEC_PER_PAND)}.`;
+    + `Duur ca. ${duur(n * SEC_PER_PAND)}${n * SEC_PER_PAND > 1800 ? ' (je kunt tussendoor stoppen en later hervatten)' : ''}.`
+    + (n >= 1000 ? ` Opslag in deze browser: ca. ${nl((n * 70) / 1000)} MB.` : '');
 }
 $('#limiet').addEventListener('input', werkStartKnopBij);
 
@@ -237,7 +240,7 @@ $('#start-knop').addEventListener('click', async () => {
   if (!gebied || !kandidaten.length || lopend) return;
   const n = teDoen();
   const kosten = n * geraamdeKostenUsd();
-  if (n > 300 && !confirm(`Je start een scan van ${nl(n)} gebouwen.\nGeraamde API-kosten: ca. ${dollar(kosten)}, duur ca. ${duur(n * SEC_PER_PAND)}.\nJe kunt altijd stoppen en later hervatten. Doorgaan?`)) return;
+  if (n >= GROTE_OPDRACHT && !confirm(`Je start een scan van ${nl(n)} gebouwen.\nGeraamde API-kosten: ca. ${dollar(kosten)}, duur ca. ${duur(n * SEC_PER_PAND)}.\nJe kunt altijd stoppen en later hervatten. Doorgaan?`)) return;
   const s: ScanRecord = {
     id: `scan-${Date.now()}`, naam: `${gebiedNaam} · ≥ ${$<HTMLInputElement>('#min-opp').value} m²`, gebied,
     minOpp: Number($<HTMLInputElement>('#min-opp').value), gemaakt: new Date().toISOString(),
@@ -483,7 +486,7 @@ function werkHerKnopBij(panden: PandRecord[]) {
 $('#her-knop').addEventListener('click', async () => {
   const ids = ($('#her-knop').dataset.ids ?? '').split(',').filter(Boolean);
   if (!ids.length || lopend) return;
-  if (!confirm(`${nl(ids.length)} panden opnieuw laten beoordelen met de bewaarde luchtfoto's. Geraamde kosten ca. ${dollar(ids.length * geraamdeKostenUsd())}. Je bevestigingen en afwijzingen blijven staan. Doorgaan?`)) return;
+  if (ids.length >= GROTE_OPDRACHT && !confirm(`${nl(ids.length)} panden opnieuw laten beoordelen met de bewaarde luchtfoto's. Geraamde kosten ca. ${dollar(ids.length * geraamdeKostenUsd())}. Je bevestigingen en afwijzingen blijven staan. Doorgaan?`)) return;
   lopend = new AbortController();
   $('#her-knop').hidden = true;
   try {
@@ -657,7 +660,7 @@ $('#scans').addEventListener('click', async (e) => {
     const s = await leesScan(id);
     const ps = await allePanden();
     const rest = s ? s.pandIds.filter((pid) => ps.find((p) => p.id === pid)?.status !== 'klaar').length : 0;
-    if (rest > 300 && !confirm(`Nog ${nl(rest)} gebouwen te beoordelen, ca. ${dollar(rest * geraamdeKostenUsd())}. Doorgaan?`)) return;
+    if (rest >= GROTE_OPDRACHT && !confirm(`Nog ${nl(rest)} gebouwen te beoordelen, ca. ${dollar(rest * geraamdeKostenUsd())}. Doorgaan?`)) return;
     start(id);
   }
 });

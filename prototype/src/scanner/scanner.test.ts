@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { controleerGebied, isRond, pandSoort, sorteer, vlakEnMidden, type Kandidaat } from './gebied';
+import { controleerGebied, isRond, tegels, pandSoort, sorteer, vlakEnMidden, type Kandidaat } from './gebied';
 import { googleMapsUrl, bekijkDakUrl, pdokLuchtfotoUrl } from './links';
 import { naarCsv } from './export';
 import type { PandRecord } from './opslag';
@@ -44,9 +44,17 @@ describe('gebied en panden', () => {
     expect(isRond([[0, 0], [20, 0], [20, 20], [0, 20], [0, 0]])).toBe(false);
   });
   it('weigert te grote gebieden', () => {
-    expect(controleerGebied({ soort: 'cirkel', x: 0, y: 0, r: 5000 })).toMatch(/straal/);
-    expect(controleerGebied({ soort: 'cirkel', x: 0, y: 0, r: 1000 })).toBeNull();
-    expect(controleerGebied({ soort: 'rechthoek', x0: 0, y0: 0, x1: 10000, y1: 10000 })).toMatch(/te groot/);
+    expect(controleerGebied({ soort: 'cirkel', x: 0, y: 0, r: 12000 })).toMatch(/straal/);
+    expect(controleerGebied({ soort: 'cirkel', x: 0, y: 0, r: 10000 })).toBeNull();
+    expect(controleerGebied({ soort: 'cirkel', x: 0, y: 0, r: 5000 })).toBeNull();
+    expect(controleerGebied({ soort: 'rechthoek', x0: 0, y0: 0, x1: 20000, y1: 20000 })).toMatch(/te groot/);
+  });
+  it('grote gebieden in tegels van 2 km; bij een cirkel alleen tegels die de cirkel raken', () => {
+    expect(tegels({ soort: 'cirkel', x: 0, y: 0, r: 1000 })).toHaveLength(1);
+    const t = tegels({ soort: 'cirkel', x: 0, y: 0, r: 10000 });
+    expect(t.length).toBeLessThan(100); // 10 x 10 tegels in het vierkant, de hoeken vallen af
+    expect(t.length).toBeGreaterThan(70);
+    expect(t.every(([a, b, c, d]) => c - a <= 2000 && d - b <= 2000)).toBe(true);
   });
 });
 
