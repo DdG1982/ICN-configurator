@@ -113,6 +113,12 @@ CHROMIUM=/opt/pw-browsers/chromium PLAATS=Peest STRAAL=1000 LIMIET=40 node scrip
 
 ## Kosten
 
+**Gemeten 18-11-2026 (Danny):** 1.491 daken kostten $0,53, dus ca. $0,00036 per dak en **ca. $0,36 per 1.000 daken**. Dat is ca. 1,7× de eerste raming. Het verschil zit vermoedelijk in de uitvoer: denkwerk van het model en de extra velden (omvang, bedekking). De raming in de scanner is hierop geijkt.
+
+Een scan van 10 km met ca. 8.000 kandidaten kost dan ongeveer $3.
+
+Eerste raming (achterhaald):
+
 - **Raming:** ca. $0,0002 per gebouw, dus ongeveer $0,20 per 1.000 gebouwen.
   - Haiku 5.5 kost $0,10 per miljoen inputtokens en $0,50 per miljoen outputtokens (november 2026).
   - Per gebouw: ca. 790 tokens beeld, 500 tokens instructie en 150 tokens uitvoer.

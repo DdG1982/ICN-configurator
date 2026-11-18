@@ -63,10 +63,11 @@ export function klasse(p: { oordeel?: Oordeel; omvang?: Omvang; zicht?: Zicht })
 export const kostenUsd = (tokensIn: number, tokensUit: number) => (tokensIn * PRIJS.invoer + tokensUit * PRIJS.uitvoer) / 1e6;
 
 /**
- * Raming per beoordeling: beeld (px²/750 tokens) + instructie (~500) in, ~150 uit (antwoord plus wat denkwerk).
+ * Raming per beoordeling, geijkt op de eerste echte run (18-11-2026: 1.491 daken voor $0,53, ca. $0,00036 per dak):
+ * beeld (px²/750 tokens) + instructie (~500) in, ~450 uit (antwoord plus denkwerk van het model).
  * Het werkelijke verbruik tonen we tijdens de scan uit de tellingen van de API.
  */
-export const geraamdeKostenUsd = (px = 768) => kostenUsd(Math.round((px * px) / 750) + 500, 150);
+export const geraamdeKostenUsd = (px = 768) => kostenUsd(Math.round((px * px) / 750) + 500, 450);
 
 /** Controle van de invoer: alleen een JPEG van redelijke grootte. */
 export function geldigBeeld(b: unknown): b is string {
