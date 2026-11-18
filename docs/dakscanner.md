@@ -87,6 +87,7 @@ Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest
   | Peest, 1 km | 143 | 58 | 1 s | 2 min |
   | Peest, 5 km | 5.815 | 937 | 14 s | 25 min |
   | Peest, 10 km (met Roden, Leek) | 70.739 | 7.070 | 57 s | 3,1 uur |
+  | Roden, 10 km | 61.751 | 8.176 | 62 s | 3,6 uur |
 
   De scanduur is een raming van 1,6 s per pand, en die raming is nog niet gemeten met echte beoordelingen. Een scan van 7.000 panden kost ca. 500 MB opslag in de browser.
 - **Bevestigingsvraag met kosten:** pas vanaf 2.000 gebouwen (was 300). Dat geldt voor starten, hervatten en opnieuw beoordelen. Daaronder start de scan direct.
