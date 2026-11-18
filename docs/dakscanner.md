@@ -89,7 +89,7 @@ Danny na de eerste echte run: ongeveer 35–40% klopt, 15% is twijfel en de rest
   | Peest, 10 km (met Roden, Leek) | 70.739 | 7.070 | 57 s | 3,1 uur |
   | Roden, 10 km | 61.751 | 8.176 | 62 s | 3,6 uur |
 
-  De scanduur is een raming van 1,6 s per pand, en die raming is nog niet gemeten met echte beoordelingen. Een scan van 7.000 panden kost ca. 500 MB opslag in de browser.
+  De scanduur in deze tabel is geraamd met 1,6 s per pand. Gemeten is later ca. 1,1 s per pand, dus de echte duur ligt ongeveer 30% lager (10 km: ca. 2,2–2,6 uur). Een scan van 7.000 panden kost ca. 500 MB opslag in de browser.
 - **Bevestigingsvraag met kosten:** pas vanaf 2.000 gebouwen (was 300). Dat geldt voor starten, hervatten en opnieuw beoordelen. Daaronder start de scan direct.
 
 ## Instellen op Cloudflare
@@ -113,7 +113,7 @@ CHROMIUM=/opt/pw-browsers/chromium PLAATS=Peest STRAAL=1000 LIMIET=40 node scrip
 
 ## Kosten
 
-**Gemeten 18-11-2026 (Danny):** 1.491 daken kostten $0,53, dus ca. $0,00036 per dak en **ca. $0,36 per 1.000 daken**. Dat is ca. 1,7× de eerste raming. Het verschil zit vermoedelijk in de uitvoer: denkwerk van het model en de extra velden (omvang, bedekking). De raming in de scanner is hierop geijkt.
+**Gemeten 18-11-2026 (Danny, Anthropic Console):** 1.491 daken kostten $0,53 en duurden 28 minuten (ca. 1,1 s per dak bij 3 tegelijk). Dat is dus ca. $0,00036 per dak en **ca. $0,36 per 1.000 daken**. Dat is ca. 1,7× de eerste raming. Het verschil zit vermoedelijk in de uitvoer: denkwerk van het model en de extra velden (omvang, bedekking). De raming in de scanner is hierop geijkt.
 
 Een scan van 10 km met ca. 8.000 kandidaten kost dan ongeveer $3.
 
